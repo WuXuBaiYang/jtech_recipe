@@ -1,0 +1,14 @@
+im_mysql：JXuIAi4wqP0kho
+im_redis：cLkatVqKEHfrbx
+im_minio：w29C6rFazGkSMJ
+secret：8OVL0bcFGEozHW
+im_moinio_client：ycGvglZCd0YKDP（app_client）
+im_moinio_client_token：7HRDo5w97f6pNufE（XrlsjXelCnKUa1Wemx15U0QdmjHsIEMx）
+
+
+
+备用：
+fmekST31BnzvPa
+TxkytNwsL3uM9F
+X0RrnycFiMt8ab
+ZhCaRoEAN85yHp
