@@ -1,0 +1,42 @@
+[
+  {
+    "code": "11",
+    "name": "蔬菜与菌类",
+    "children": []
+  },
+  {
+    "code": "12",
+    "name": "肉",
+    "children": []
+  },
+  {
+    "code": "13",
+    "name": "蛋",
+    "children": []
+  },
+  {
+    "code": "14",
+    "name": "奶",
+    "children": []
+  },
+  {
+    "code": "15",
+    "name": "海鲜",
+    "children": []
+  },
+  {
+    "code": "16",
+    "name": "豆制品",
+    "children": []
+  },
+  {
+    "code": "17",
+    "name": "水果",
+    "children": []
+  },
+  {
+    "code": "18",
+    "name": "谷物",
+    "children": []
+  }
+]

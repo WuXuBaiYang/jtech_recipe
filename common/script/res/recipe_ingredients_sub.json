@@ -1,0 +1,27 @@
+[
+  {
+    "code": "11",
+    "name": "调味料",
+    "children": []
+  },
+  {
+    "code": "12",
+    "name": "香料",
+    "children": []
+  },
+  {
+    "code": "13",
+    "name": "食用油",
+    "children": []
+  },
+  {
+    "code": "14",
+    "name": "微生物",
+    "children": []
+  },
+  {
+    "code": "15",
+    "name": "其他添加剂",
+    "children": []
+  }
+]

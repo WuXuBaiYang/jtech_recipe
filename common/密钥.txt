@@ -1,14 +1,14 @@
-im_mysql：JXuIAi4wqP0kho
-im_redis：cLkatVqKEHfrbx
-im_minio：w29C6rFazGkSMJ
-secret：8OVL0bcFGEozHW
-im_moinio_client：ycGvglZCd0YKDP（app_client）
-im_moinio_client_token：7HRDo5w97f6pNufE（XrlsjXelCnKUa1Wemx15U0QdmjHsIEMx）
+mysql：jtech_server @ JXuIAi4wqP0kho
+mysql_root：root @ fmekST31BnzvPa
+minio：jtech @ w29C6rFazGkSMJ
+moinio_client：jtech_client @ ycGvglZCd0YKDP
+moinio_client_token：nSqaA75vcufqZPIr @ Sr77FJwLzVDs1afZ3HKP3xKUt2Xow2Ew
 
 
 
 备用：
-fmekST31BnzvPa
 TxkytNwsL3uM9F
 X0RrnycFiMt8ab
 ZhCaRoEAN85yHp
+cLkatVqKEHfrbx
+8OVL0bcFGEozHW

@@ -1,0 +1,24 @@
+docker环境部署
+1、部署docker
+
+
+2、mysql
+	1)
+	挂载本地：docker run --name jtech_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=fmekST31BnzvPa --restart=always -v /mydata/mysql/log:/var/log/mysql -v /mydata/mysql/data:/var/lib/mysql -v /mydata/mysql/conf:/etc/mysql mysql
+	  不挂载：docker run --name jtech_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=fmekST31BnzvPa --restart=always mysql
+	2)使用navicat连接到数据库，创建：jtech_recipe 数据库，字符集：utf8-mb4 
+	3)创建服务器链接用户：jtech_server:JXuIAi4wqP0kho 域名：% ，设定访问权限和数据库权限
+	4)测试用户是否可用
+
+3、minio
+	1)
+	挂载本地：docker run -d -p 9000:9000 -p 9001:9001 --name jtech_minio --restart=always -e "MINIO_ACCESS_KEY=jtech" -e "MINIO_SECRET_KEY=w29C6rFazGkSMJ" -v /home/minio/data:/data -v /home/minio/config:/root/.minio minio/minio server /data --console-address ":9001" --address ":9000"
+	  不挂载：docker run -d -p 9000:9000 -p 9001:9001 --name jtech_minio --restart=always -e "MINIO_ACCESS_KEY=jtech" -e "MINIO_SECRET_KEY=w29C6rFazGkSMJ" minio/minio server /data --console-address ":9001" --address ":9000"
+	2)
+	创建bucket
+		--activity
+		--post
+		--profile
+		--recipe
+	3)创建客户端访问用户
+		jtech_client:ycGvglZCd0YKDP

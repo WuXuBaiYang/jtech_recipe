@@ -1,0 +1,22 @@
+[
+  {
+    "code": "11",
+    "name": "调理用具",
+    "children": []
+  },
+  {
+    "code": "12",
+    "name": "进餐用具",
+    "children": []
+  },
+  {
+    "code": "13",
+    "name": "烹调用具",
+    "children": []
+  },
+  {
+    "code": "14",
+    "name": "储藏用具",
+    "children": []
+  }
+]
