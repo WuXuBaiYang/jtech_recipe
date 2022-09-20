@@ -2,6 +2,7 @@ mysql = require('mysql')
 fs = require('fs')
 
 const tableMap = {
+    'dict_index': './res/index_info.json',// 索引总表
     'dict_user_gender': './res/user_gender.json',// 用户性别
     'dict_user_evaluate': './res/user_evaluate.json',// 用户水平等级
     'dict_user_address_tag': './res/user_address_tag.json', // 用户收货地址标签
@@ -15,7 +16,6 @@ const tableMap = {
     'dict_recipe_not_suitable': './res/recipe_not_suitable.json',// 食谱禁忌
     'dict_recipe_ingredients_main': './res/recipe_ingredients_main.json',// 食谱主材
     'dict_recipe_ingredients_sub': './res/recipe_ingredients_main.json',// 食谱辅料
-    'dict_recipe_supplies': './res/recipe_supplies.json',// 食谱器具
 }
 
 conn = mysql.createConnection({

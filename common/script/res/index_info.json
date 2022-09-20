@@ -1,0 +1,54 @@
+[
+  {
+    "code": "11",
+    "name": "dict_user_gender"
+  },
+  {
+    "code": "12",
+    "name": "dict_user_evaluate"
+  },
+  {
+    "code": "13",
+    "name": "dict_user_address_tag"
+  },
+  {
+    "code": "14",
+    "name": "dict_notice_type"
+  },
+  {
+    "code": "15",
+    "name": "dict_activity_type"
+  },
+  {
+    "code": "16",
+    "name": "dict_post_tag"
+  },
+  {
+    "code": "17",
+    "name": "dict_address"
+  },
+  {
+    "code": "18",
+    "name": "dict_recipe_cuisine"
+  },
+  {
+    "code": "19",
+    "name": "dict_recipe_taste"
+  },
+  {
+    "code": "20",
+    "name": "dict_recipe_tag"
+  },
+  {
+    "code": "21",
+    "name": "dict_recipe_not_suitable"
+  },
+  {
+    "code": "22",
+    "name": "dict_recipe_ingredients_main"
+  },
+  {
+    "code": "23",
+    "name": "dict_recipe_ingredients_sub"
+  }
+]

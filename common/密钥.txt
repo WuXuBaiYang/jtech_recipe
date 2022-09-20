@@ -1,9 +1,9 @@
-mysql：jtech_server @ JXuIAi4wqP0kho
-mysql_root：root @ fmekST31BnzvPa
-minio：jtech @ w29C6rFazGkSMJ
-moinio_client：jtech_client @ ycGvglZCd0YKDP
-moinio_client_token：nSqaA75vcufqZPIr @ Sr77FJwLzVDs1afZ3HKP3xKUt2Xow2Ew
-
+mysql：jtech_server@JXuIAi4wqP0kho
+mysql_root：root@fmekST31BnzvPa
+minio：jtech@w29C6rFazGkSMJ
+moinio_client：jtech_client@ycGvglZCd0YKDP
+moinio_client_token_office：nSqaA75vcufqZPIr@Sr77FJwLzVDs1afZ3HKP3xKUt2Xow2Ew
+moinio_client_token_home：GyrKMBcMf8oyibgd@0qnwEJbhMNOvn898DnuJmw8rUrI4sxno
 
 
 备用：
