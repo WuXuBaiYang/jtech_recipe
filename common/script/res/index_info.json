@@ -50,5 +50,9 @@
   {
     "code": "23",
     "name": "dict_recipe_ingredients_sub"
+  },
+  {
+    "code": "24",
+    "name": "dict_medal_rarity"
   }
 ]

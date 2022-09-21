@@ -17,9 +17,9 @@ const tableMap = {
     'dict_recipe_cuisine': './res/recipe_cuisine.json',// 食谱菜系
     'dict_recipe_taste': './res/recipe_taste.json',// 食谱口味
     'dict_recipe_tag': './res/recipe_tag.json',// 食谱标签
-    'dict_recipe_not_suitable': './res/recipe_not_suitable.json',// 食谱禁忌
     'dict_recipe_ingredients_main': './res/recipe_ingredients_main.json',// 食谱主材
-    'dict_recipe_ingredients_sub': './res/recipe_ingredients_main.json',// 食谱辅料
+    'dict_recipe_ingredients_sub': './res/recipe_ingredients_sub.json',// 食谱辅料
+    'dict_medal_rarity': './res/medal_rarity.json',// 勋章稀有度等级
 }
 
 conn = mysql.createConnection({
@@ -81,16 +81,16 @@ function forEachResJson(pCode, result) {
 }
 
 // 构建表单插入map
-function buildInsertItem(pCode, code, tag, info) {
+function buildInsertItem(pCode, code, tag, desc) {
     let date = new Date()
-    return [genId(), date, date, true, pCode, code, tag, info]
+    return [genId(), date, date, true, pCode, code, tag, desc]
 }
 
 // 批量插入数据
 function batchInsert(name, values) {
     let sql = `insert into $name
-                (id,created_at,updated_at,state,p_code,code,tag,info) 
-                values ?`.replaceAll('$name', name)
+                (id,created_at,updated_at,state,p_code,code,tag,$d) 
+                values ?`.replaceAll('$name', name).replaceAll('$d', '\`desc\`')
     return new Promise((y, n) => {
         conn.query(sql, [values], function (err, result) {
             if (err) return n(new Error(name + '表数据插入失败：' + err.message))
@@ -112,10 +112,10 @@ function createTable(name) {
                    p_code     varchar(20)     not null comment '父级字典码',
                    code       varchar(20)     not null unique comment '字典码',
                    tag        text            not null comment '标签',
-                   info       longtext        not null comment '描述',
+                   $d       longtext        not null comment '描述',
                    primary key (id),
                    index idx_$name_deleted_at (deleted_at)
-               )`.replaceAll('$name', name)
+               )`.replaceAll('$name', name).replaceAll('$d', '\`desc\`')
     return new Promise((y, n) => {
         conn.query(sql, function (err, result) {
             if (err) return n(new Error(name + '表创建失败：' + err.message))

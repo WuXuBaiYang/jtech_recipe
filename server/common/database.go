@@ -34,12 +34,25 @@ func InitDB() *gorm.DB {
 		panic("数据库连接失败：" + err.Error())
 	}
 	dst := []any{
+		// 用户
 		&model.UserModel{},
 		&model.UserProfileModel{},
-		&model.NotifyModel{},
+		&model.UserShipAddressModel{},
+		&model.UserConfigModel{},
+		&model.UserLevelModel{},
+		// 帖子
 		&model.PostModel{},
 		&model.PostCommentModel{},
 		&model.PostCommentReplayModel{},
+		// 消息通知
+		&model.NotifyModel{},
+		// 活动
+		&model.ActivityModel{},
+		&model.ActivityRecordModel{},
+		// 成就
+		&model.MedalModel{},
+		// 食谱
+		&model.RecipeModel{},
 	}
 	if err := DB.AutoMigrate(dst...); err != nil {
 		panic("数据库自动合并失败：" + err.Error())

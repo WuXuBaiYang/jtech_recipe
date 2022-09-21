@@ -8,8 +8,14 @@ type PostModel struct {
 	Title    string `json:"title" gorm:"varchar(80);not null;comment:帖子标题"`
 	Contents []any  `json:"contents" gorm:"type:json;serializer:json;not null;comment:帖子内容"`
 
-	TagCodes []string         `json:"tagCodes" gorm:"type:json;serializer:json;comment:标签值集合"`
-	Tags     *[]RespDictModel `json:"tags,omitempty" gorm:"-"`
+	TagCodes []string        `json:"tagCodes" gorm:"type:json;serializer:json;comment:标签值集合"`
+	Tags     []RespDictModel `json:"tags" gorm:"-"`
+
+	// 使用的是活动记录表中的id
+	ActivityId *int64         `json:"activityId" gorm:"comment:活动id"`
+	Activity   *ActivityModel `json:"activity" gorm:"-"`
+	RecipeId   *int64         `json:"recipeId" gorm:"comment:食谱id"`
+	Recipe     *RecipeModel   `json:"recipe" gorm:"-"`
 }
 
 // PostCommentModel 帖子评论结构体
