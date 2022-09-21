@@ -1,5 +1,9 @@
 mysql = require('mysql')
 fs = require('fs')
+flakeId = require('flake-idgen');
+intformat = require('biguint-format')
+
+flakeIdGen = new flakeId();
 
 const tableMap = {
     'dict_index': './res/index_info.json',// 索引总表
@@ -47,7 +51,7 @@ async function handleDict(name, resPath) {
     console.log('正在读取资源文件')
     let result = await fs.readFileSync(resPath)
     result = JSON.parse(result.toString())
-    let array = forEachResJson(0, result)
+    let array = forEachResJson('', result)
     if (array.length < 1000) {
         console.log('正在插入数据（' + array.length + '）')
         await batchInsert(name, array)
@@ -70,22 +74,23 @@ function forEachResJson(pCode, result) {
     let array = []
     for (const i in result) {
         let it = result[i]
-        let code = parseInt(it.code)
-        array.push(buildInsertItem(pCode, it.name, code, ""))
-        if (it.children) array.push(...forEachResJson(code, it.children))
+        array.push(buildInsertItem(pCode, it.code, it.name, ""))
+        if (it.children) array.push(...forEachResJson(it.code, it.children))
     }
     return array
 }
 
 // 构建表单插入map
-function buildInsertItem(pCode, tag, code, desc) {
+function buildInsertItem(pCode, code, tag, info) {
     let date = new Date()
-    return [date, date, pCode, 0, tag, 0, code, true, desc]
+    return [genId(), date, date, true, pCode, code, tag, info]
 }
 
 // 批量插入数据
 function batchInsert(name, values) {
-    let sql = "INSERT INTO `" + name + "` (`created_at`,`updated_at`,`p_code`,`creator_id`,`tag`,`order`,`code`,`state`,`desc`) VALUES ?";
+    let sql = `insert into $name
+                (id,created_at,updated_at,state,p_code,code,tag,info) 
+                values ?`.replaceAll('$name', name)
     return new Promise((y, n) => {
         conn.query(sql, [values], function (err, result) {
             if (err) return n(new Error(name + '表数据插入失败：' + err.message))
@@ -96,7 +101,21 @@ function batchInsert(name, values) {
 
 // 创建表单
 function createTable(name) {
-    let sql = "CREATE TABLE IF NOT EXISTS `" + name + "` (`id` bigint unsigned AUTO_INCREMENT,`created_at` datetime(3) NULL COMMENT '创建时间',`updated_at` datetime(3) NULL COMMENT '更新时间',`deleted_at` datetime(3) NULL COMMENT '删除时间',`p_code` bigint unsigned NOT NULL COMMENT '父id',`creator_id` bigint unsigned COMMENT '创建者id',`tag` longtext NOT NULL COMMENT '标签',`order` bigint NOT NULL COMMENT '排序',`code` bigint NOT NULL UNIQUE COMMENT '键值',`state` boolean NOT NULL COMMENT '是否可用',`desc` longtext COMMENT '标记/描述',PRIMARY KEY (`id`),INDEX `idx_dict_deleted_at` (`deleted_at`))"
+    let sql = `create table if not exists $name
+               (
+                   id         bigint unsigned,
+                   created_at datetime(3)     not null comment '创建时间',
+                   updated_at datetime(3)     not null comment '更新时间',
+                   deleted_at datetime(3)     null comment '删除时间',
+                   creator_id bigint unsigned null comment '创建者id',
+                   state      boolean         not null comment '是否可用',
+                   p_code     varchar(20)     not null comment '父级字典码',
+                   code       varchar(20)     not null unique comment '字典码',
+                   tag        text            not null comment '标签',
+                   info       longtext        not null comment '描述',
+                   primary key (id),
+                   index idx_$name_deleted_at (deleted_at)
+               )`.replaceAll('$name', name)
     return new Promise((y, n) => {
         conn.query(sql, function (err, result) {
             if (err) return n(new Error(name + '表创建失败：' + err.message))
@@ -107,11 +126,19 @@ function createTable(name) {
 
 // 判断表是否存在
 function tableExists(name) {
-    let sql = "select * from information_schema.TABLES where TABLE_NAME = '" + name + "'"
+    let sql = `select *
+               from information_schema.TABLES
+               where TABLE_NAME = '$name'`
+        .replaceAll('$name', name)
     return new Promise((y, n) => {
         conn.query(sql, function (err, result) {
             if (err) return n(new Error(name + '表查询失败：' + err.message))
             y(result.length > 0)
         })
     })
+}
+
+// 生成id
+function genId() {
+    return intformat(flakeIdGen.next(), 'dec')
 }
