@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"server/tool"
 	"time"
 )
 
@@ -14,16 +15,16 @@ type Pagination struct {
 	Data        interface{} `json:"data"`
 }
 
-// AuthWithProfile 授权信息与用户信息结构体
-type AuthWithProfile struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-	User         User   `json:"user"`
+// AuthWithUser 授权信息与用户信息结构体
+type AuthWithUser struct {
+	AccessToken  string    `json:"accessToken"`
+	RefreshToken string    `json:"refreshToken"`
+	User         UserModel `json:"user"`
 }
 
 // OrmModel gorm基类
 type OrmModel struct {
-	ID        string         `json:"id" gorm:"primarykey"`
+	ID        int64          `json:"id" gorm:"primarykey"`
 	CreatedAt time.Time      `json:"createdAt" gorm:"comment:创建时间"`
 	UpdatedAt time.Time      `json:"updatedAt" gorm:"comment:更新时间"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index;comment:删除时间"`
@@ -31,6 +32,18 @@ type OrmModel struct {
 
 // CreatorModel 创建者结构体
 type CreatorModel struct {
-	Creator   *SimpleUser `json:"creator,omitempty" gorm:"foreignKey:CreatorID;references:ID;"`
-	CreatorID uint        `json:"creatorId" gorm:"comment:创建者id"`
+	CreatorId int64      `json:"creatorId" gorm:"not null;comment:创建者id"`
+	Creator   *UserModel `json:"creator,omitempty" gorm:"-"`
+}
+
+// CreateOrmModel 创建基础结构体
+func CreateOrmModel() *OrmModel {
+	if id := tool.GenID(); id != 0 {
+		return &OrmModel{
+			ID:        id,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+	}
+	return nil
 }

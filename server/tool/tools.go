@@ -3,8 +3,24 @@ package tool
 import (
 	"crypto/md5"
 	"fmt"
+	"github.com/bwmarrin/snowflake"
 	"regexp"
 )
+
+// 缓存雪花算法节点
+var genNode *snowflake.Node
+
+// GenID 雪花算法生成id
+func GenID() int64 {
+	if genNode == nil {
+		Node, err := snowflake.NewNode(899)
+		if err != nil {
+			return 0
+		}
+		genNode = Node
+	}
+	return genNode.Generate().Int64()
+}
 
 // MD5 计算md5
 func MD5(str string) string {

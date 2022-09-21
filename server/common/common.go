@@ -9,8 +9,7 @@ const DebugMode = true
 var ServerHost = tool.If[string](DebugMode, devServerHost, productionServerHost)
 
 // 开发地址 api.jtech.live
-// const devServerHost = "api.jtech.live"
 const devServerHost = "127.0.0.1"
 
 // 生产地址
-const productionServerHost = "127.0.0.1"
+const productionServerHost = ""
