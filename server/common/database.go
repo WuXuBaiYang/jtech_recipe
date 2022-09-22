@@ -4,55 +4,45 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	"server/model"
-	"strings"
 )
 
 var db *gorm.DB
 
+// 要合并的表单
+var dst = []any{
+	// 用户
+	&model.UserModel{},
+	&model.UserProfileModel{},
+	&model.UserShipAddressModel{},
+	&model.UserConfigModel{},
+	&model.UserLevelModel{},
+	// 帖子
+	&model.PostModel{},
+	&model.PostCommentModel{},
+	&model.PostCommentReplayModel{},
+	// 消息通知
+	&model.NotifyModel{},
+	// 活动
+	&model.ActivityModel{},
+	&model.ActivityRecordModel{},
+	// 成就
+	&model.MedalModel{},
+	// 食谱
+	&model.RecipeModel{},
+	&model.RecipeStepModel{},
+	// 菜单
+	&model.MenuMode{},
+}
+
 // InitDB 初始化数据库
 func InitDB() *gorm.DB {
-	username := "jtech_server"
-	password := "JXuIAi4wqP0kho"
-	host := ServerHost
-	port := "3306"
-	database := "jtech_recipe"
-	charset := "utf8mb4"
-	parseTime := "True"
-	loc := "Local"
+	c := DBConfig
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s",
-		username, password, host, port, database, charset, parseTime, loc)
-	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   "jtech_",
-			NameReplacer:  strings.NewReplacer("Resp", "", "Model", ""),
-			SingularTable: true,
-		},
-	})
+		c.UserName, c.ParseTime, c.Host, c.Port, c.Database, c.Charset, c.ParseTime, c.Loc)
+	DB, err := gorm.Open(mysql.Open(dsn), c.GormConfig)
 	if err != nil {
 		panic("数据库连接失败：" + err.Error())
-	}
-	dst := []any{
-		// 用户
-		&model.UserModel{},
-		&model.UserProfileModel{},
-		&model.UserShipAddressModel{},
-		&model.UserConfigModel{},
-		&model.UserLevelModel{},
-		// 帖子
-		&model.PostModel{},
-		&model.PostCommentModel{},
-		&model.PostCommentReplayModel{},
-		// 消息通知
-		&model.NotifyModel{},
-		// 活动
-		&model.ActivityModel{},
-		&model.ActivityRecordModel{},
-		// 成就
-		&model.MedalModel{},
-		// 食谱
-		&model.RecipeModel{},
 	}
 	if err := DB.AutoMigrate(dst...); err != nil {
 		panic("数据库自动合并失败：" + err.Error())
