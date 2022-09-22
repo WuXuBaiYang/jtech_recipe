@@ -37,13 +37,10 @@ type CreatorModel struct {
 }
 
 // CreateOrmModel 创建基础结构体
-func CreateOrmModel() *OrmModel {
-	if id := tool.GenID(); id != 0 {
-		return &OrmModel{
-			ID:        id,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
+func CreateOrmModel() OrmModel {
+	return OrmModel{
+		ID:        tool.GenID(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
-	return nil
 }

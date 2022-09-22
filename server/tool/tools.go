@@ -5,7 +5,13 @@ import (
 	"fmt"
 	"github.com/bwmarrin/snowflake"
 	"regexp"
+	"time"
 )
+
+// GenInitUserNickName 根据格式生成初始化用户昵称
+func GenInitUserNickName(uId int64) string {
+	return fmt.Sprintf("用户_%d_%v", uId, time.Now())
+}
 
 // 缓存雪花算法节点
 var genNode *snowflake.Node
@@ -30,11 +36,11 @@ func MD5(str string) string {
 }
 
 // 手机号校验正则
-var telephoneRegExp = "^1(3\\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$"
+var phoneNumberRegExp = "^1(3\\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$"
 
-// VerifyTelephone 验证手机号时候正确
-func VerifyTelephone(telephone string) bool {
-	ok, _ := regexp.MatchString(telephoneRegExp, telephone)
+// VerifyPhoneNumber 验证手机号时候正确
+func VerifyPhoneNumber(phone string) bool {
+	ok, _ := regexp.MatchString(phoneNumberRegExp, phone)
 	return ok
 }
 

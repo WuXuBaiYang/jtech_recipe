@@ -9,8 +9,13 @@ docker环境部署
 	2)使用navicat连接到数据库，创建：jtech_recipe 数据库，字符集：utf8-mb4 
 	3)创建服务器链接用户：jtech_server:JXuIAi4wqP0kho 域名：% ，设定访问权限和数据库权限
 	4)测试用户是否可用
+	
+3、redis
+	1)
+	挂载本地：docker run --restart=always -p 6379:6379 --name jtech_redis -v /home/redis/myredis/myredis.conf:/etc/redis/redis.conf -v /home/redis/myredis/data:/data -d redis redis-server  --appendonly yes  --requirepass X0RrnycFiMt8ab
+	  不挂载：docker run --restart=always -p 6379:6379 --name jtech_redis -d redis redis-server  --appendonly yes  --requirepass X0RrnycFiMt8ab
 
-3、minio
+4、minio
 	1)
 	挂载本地：docker run -d -p 9000:9000 -p 9001:9001 --name jtech_minio --restart=always -e "MINIO_ACCESS_KEY=jtech" -e "MINIO_SECRET_KEY=w29C6rFazGkSMJ" -v /home/minio/data:/data -v /home/minio/config:/root/.minio minio/minio server /data --console-address ":9001" --address ":9000"
 	  不挂载：docker run -d -p 9000:9000 -p 9001:9001 --name jtech_minio --restart=always -e "MINIO_ACCESS_KEY=jtech" -e "MINIO_SECRET_KEY=w29C6rFazGkSMJ" minio/minio server /data --console-address ":9001" --address ":9000"

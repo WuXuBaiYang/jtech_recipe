@@ -33,8 +33,6 @@ type UserProfileModel struct {
 	Profession   string          `json:"profession" gorm:"varchar(40);comment:职业"`
 	GenderCode   string          `json:"genderCode" gorm:"comment:性别字典码"`
 	Birth        time.Time       `json:"birth" gorm:"default:null;comment:生日"`
-	MedalIds     []int64         `json:"medalIds" gorm:"type:json;serializer:json;comment:勋章id集合"`
-	Medals       []MedalModel    `json:"medals" gorm:"-"`
 
 	ShipAddress []UserShipAddressModel `json:"shipAddress" gorm:"-"`
 	Config      UserConfigModel        `json:"config" gorm:"-"`
@@ -45,10 +43,10 @@ type UserProfileModel struct {
 type RespUserProfileModel struct {
 	CreatorModel
 
-	NickName   string           `json:"nickName" gorm:"varchar(20);comment:昵称"`
-	Avatar     string           `json:"avatar" gorm:"varchar(40);comment:头像（只存储oss的key/id）"`
-	MedalCodes *[]string        `json:"medalCods,omitempty" gorm:"comment:勋章字典码集合"`
-	Medals     *[]RespDictModel `json:"medals,omitempty" gorm:"-"`
+	NickName string        `json:"nickName" gorm:"varchar(20);comment:昵称"`
+	Avatar   string        `json:"avatar" gorm:"varchar(40);comment:头像（只存储oss的key/id）"`
+	MedalIds *[]int64      `json:"medalIds,omitempty" gorm:"type:json;serializer:json;comment:勋章id集合"`
+	Medals   *[]MedalModel `json:"medals,omitempty" gorm:"-"`
 }
 
 // UserShipAddressModel 用户收货地址
