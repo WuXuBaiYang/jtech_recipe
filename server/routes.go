@@ -20,22 +20,23 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// token刷新
 	group.POST("/refreshToken", middleware.AuthMiddleware(false), controller.RefreshToken)
 
-	//// 创建用户相关请求组
-	//userGroup := group.Group("/user", middleware.AuthMiddleware(true))
+	// 创建用户相关请求组
+	userGroup := group.Group("/user", middleware.AuthMiddleware(true))
+	// 订阅用户
+	userGroup.POST("/subscribe/:userId", controller.SubscribeUser)
+	// 取消订阅用户
+	userGroup.DELETE("/subscribe/:userId", controller.UnSubscribeUser)
+	// 分页获取订阅列表
+	userGroup.GET("/subscribe", controller.GetSubPagination)
+	// 分页获取目标用户的订阅列表
+	userGroup.GET("/subscribe/:userId", controller.GetSubPagination)
+
 	//// 获取用户信息
 	//userGroup.GET("/info/:userId", controller.GetUserProfile)
 	//// 获取当前用户信息
 	//userGroup.GET("/info", controller.GetUserProfile)
 	//// 编辑当前用户信息
 	//userGroup.PUT("/info", controller.UpdateUserProfile)
-	//// 订阅用户
-	//userGroup.POST("/subscribe/:userId", controller.SubscribeUser)
-	//// 取消订阅用户
-	//userGroup.DELETE("/subscribe/:userId", controller.UnSubscribeUser)
-	//// 分页获取订阅列表
-	//userGroup.GET("/subscribe", controller.GetSubscribePagination)
-	//// 分页获取目标用户的订阅列表
-	//userGroup.GET("/subscribe/:userId", controller.GetSubscribePagination)
 	//// 分页获取用户点赞帖子列表
 	//userGroup.GET("/common/like", controller.GetUserLikePostPagination)
 	//// 分页获取目标用户点赞帖子列表

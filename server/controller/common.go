@@ -86,6 +86,7 @@ func Register(c *gin.Context) {
 		}
 		// 创建用户详细信息
 		profile := model.UserProfileModel{}
+		profile.CreatorId = user.ID
 		profile.OrmModel = model.CreateOrmModel()
 		profile.NickName = tool.GenInitUserNickName(user.ID)
 		if err := tx.Create(&profile).Error; err != nil {
@@ -98,8 +99,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	// 构造授权信息并返回
-	platform, _ := getPlatform(c)
-	if auth, err := createAuthInfo(user, *platform); err == nil {
+	if auth, err := createAuthInfo(user, *getPlatform(c)); err == nil {
 		response.SuccessDef(c, auth)
 		// 删除使用过的短信验证码
 		rdb.Del(c, phoneNumber)
@@ -151,8 +151,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 构造授权信息并返回
-	platform, _ := getPlatform(c)
-	if auth, err := createAuthInfo(user, *platform); err == nil {
+	if auth, err := createAuthInfo(user, *getPlatform(c)); err == nil {
 		response.SuccessDef(c, auth)
 		// 删除使用过的短信验证码
 		rdb.Del(c, phoneNumber)
@@ -181,9 +180,7 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 	// 重新生成授权信息并返回
-	user, _ := getCurrentUser(c)
-	platform, _ := getPlatform(c)
-	newAuth, errAuth := createAuthInfo(*user, *platform)
+	newAuth, errAuth := createAuthInfo(*getCurrUser(c), *getPlatform(c))
 	if errAuth != nil {
 		response.FailDef(c, -1, "授权失败")
 		return
@@ -226,20 +223,31 @@ func getPaginationParams(c *gin.Context) (model.Pagination, error) {
 	return pagination, nil
 }
 
+// 格式化id格式
+func parseId(id string) int64 {
+	v, _ := strconv.ParseInt(id, 10, 64)
+	return v
+}
+
+// 获取当前用户id
+func getCurrUId(c *gin.Context) *int64 {
+	return &getCurrUser(c).ID
+}
+
 // 从上下文中获取到当前访问的用户信息
-func getCurrentUser(c *gin.Context) (*model.UserModel, error) {
-	user, _ := c.Get("user")
-	if u, ok := user.(model.UserModel); ok {
-		return &u, nil
+func getCurrUser(c *gin.Context) *model.UserModel {
+	if user, ok := c.Get("user"); ok {
+		u, _ := user.(model.UserModel)
+		return &u
 	}
-	return nil, errors.New("用户不存在")
+	return nil
 }
 
 // 获取平台信息
-func getPlatform(c *gin.Context) (*string, error) {
-	platform, _ := c.Get("platform")
-	if v, ok := platform.(string); ok {
-		return &v, nil
+func getPlatform(c *gin.Context) *string {
+	if platform, ok := c.Get("platform"); ok {
+		p, _ := platform.(string)
+		return &p
 	}
-	return nil, errors.New("平台信息不存在")
+	return nil
 }

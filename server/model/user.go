@@ -8,9 +8,23 @@ import (
 type UserModel struct {
 	OrmModel
 
-	PhoneNumber string            `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
-	Password    string            `json:"-" gorm:"size:255;not null;comment:密码（登录密码）"`
-	Profile     *UserProfileModel `json:"profile,omitempty" gorm:"-"`
+	PhoneNumber string `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
+	Password    string `json:"-" gorm:"size:255;not null;comment:密码（登录密码）"`
+
+	// 用户信息详情
+	Profile *UserProfileModel `json:"profile,omitempty" gorm:"-"`
+
+	// 关注列表
+	Subscribes []UserModel `json:"-" gorm:"many2many:user_subscribes;comment:用户订阅列表"`
+
+	// 帖子的浏览/点赞/收藏
+	ViewPosts    []PostModel `json:"-" gorm:"many2many:post_view_users"`
+	LikePosts    []PostModel `json:"-" gorm:"many2many:post_like_users"`
+	CollectPosts []PostModel `json:"-" gorm:"many2many:post_collect_users"`
+
+	// 帖子的评论/回复的点赞
+	LikePostComments       []PostCommentModel       `json:"-" gorm:"many2many:post_comment_like_users"`
+	LikePostCommentReplays []PostCommentReplayModel `json:"-" gorm:"many2many:post_comment_replay_like_users"`
 }
 
 // RespUserModel 报文用户结构体
