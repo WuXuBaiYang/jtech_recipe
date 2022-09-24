@@ -77,10 +77,19 @@ func GetSubPagination(c *gin.Context) {
 	}
 	var subList []model.RespUserModel
 	db := common.GetDB()
+
+	var t any
+	db.Select("? total", db.Model(&model.UserModel{
+		OrmModel: createBase(&userId),
+	}).Association("Subscribes").Count()).Find(&t)
+	//a := db.Model(&model.UserModel{
+	//	OrmModel: createBase(&userId),
+	//}).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
+	//	Association("Subscribes").Find(&subList)
+	println(t)
+
 	if err := db.Model(&model.UserModel{
-		OrmModel: model.OrmModel{
-			ID: userId,
-		},
+		OrmModel: createBase(&userId),
 	}).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
 		Association("Subscribes").Find(&subList); err != nil {
 		response.FailDef(c, -1, "数据查询失败")

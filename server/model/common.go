@@ -2,7 +2,6 @@ package model
 
 import (
 	"gorm.io/gorm"
-	"server/tool"
 	"time"
 )
 
@@ -34,13 +33,4 @@ type OrmModel struct {
 type CreatorModel struct {
 	CreatorId int64      `json:"creatorId" gorm:"not null;comment:创建者id"`
 	Creator   *UserModel `json:"creator,omitempty" gorm:"-"`
-}
-
-// CreateOrmModel 创建基础结构体
-func CreateOrmModel() OrmModel {
-	return OrmModel{
-		ID:        tool.GenID(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
 }

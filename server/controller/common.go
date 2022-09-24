@@ -9,6 +9,7 @@ import (
 	"server/model"
 	"server/tool"
 	"strconv"
+	"time"
 )
 
 // 用户登录注册授权信息结构体
@@ -80,14 +81,14 @@ func Register(c *gin.Context) {
 	// 在事件中执行注册
 	err := db.Transaction(func(tx *gorm.DB) error {
 		// 创建用户信息
-		user.OrmModel = model.CreateOrmModel()
+		user.OrmModel = createBase(nil)
 		if err := tx.Create(&user).Error; err != nil {
 			return err
 		}
 		// 创建用户详细信息
 		profile := model.UserProfileModel{}
 		profile.CreatorId = user.ID
-		profile.OrmModel = model.CreateOrmModel()
+		profile.OrmModel = createBase(nil)
 		profile.NickName = tool.GenInitUserNickName(user.ID)
 		if err := tx.Create(&profile).Error; err != nil {
 			return err
@@ -221,6 +222,15 @@ func getPaginationParams(c *gin.Context) (model.Pagination, error) {
 		return pagination, errors.New("pageSize不合法（1~100）")
 	}
 	return pagination, nil
+}
+
+// 创建基础结构体
+func createBase(id *int64) model.OrmModel {
+	return model.OrmModel{
+		ID:        tool.If(id != nil, *id, tool.GenID()),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 }
 
 // 格式化id格式
