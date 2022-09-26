@@ -70,7 +70,7 @@ var dbConfig = struct {
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   "jtech_",
 			NameReplacer:  strings.NewReplacer("Resp", "", "Model", ""),
-			SingularTable: false,
+			SingularTable: true,
 		},
 	},
 }
