@@ -4,7 +4,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 	"server/tool"
-	"strings"
 	"time"
 )
 
@@ -67,9 +66,9 @@ var dbConfig = struct {
 	ParseTime: "True",
 	Loc:       "Local",
 	GormConfig: &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   "jtech_",
-			NameReplacer:  strings.NewReplacer("Resp", "", "Model", ""),
+			TablePrefix:   "sys_",
 			SingularTable: true,
 		},
 	},

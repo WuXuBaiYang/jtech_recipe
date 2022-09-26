@@ -1,12 +1,12 @@
 package model
 
-// MenuMode 菜单信息结构
-type MenuMode struct {
-	OrmModel
-	CreatorModel
+// RecipeMenu 食谱菜单信息结构
+type RecipeMenu struct {
+	OrmBase
+	Creator
 
 	Contents []any `json:"contents" gorm:"type:json;serializer:json;not null;comment:菜单内容集合"`
-	// 使用的是活动记录表中的id
-	ActivityId *int64         `json:"activityId" gorm:"comment:活动id"`
-	Activity   *ActivityModel `json:"activity" gorm:"-"`
+
+	ActivityRecordId *int64          `json:"activityId" gorm:"not null;comment:活动id"`
+	ActivityRecord   *ActivityRecord `json:"activity" gorm:"foreignKey:ActivityRecordId"`
 }

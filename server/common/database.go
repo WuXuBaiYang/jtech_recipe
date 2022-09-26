@@ -13,27 +13,23 @@ import (
 // 要合并的表单
 var dst = []any{
 	// 用户
-	&model.UserModel{},
-	&model.UserProfileModel{},
-	&model.UserShipAddressModel{},
-	&model.UserConfigModel{},
-	&model.UserLevelModel{},
+	&model.User{},
+	&model.UserAddress{},
 	// 帖子
-	&model.PostModel{},
-	&model.PostCommentModel{},
-	&model.PostCommentReplayModel{},
+	&model.Post{},
+	&model.PostComment{},
+	&model.PostCommentReplay{},
 	// 消息通知
-	&model.NotifyModel{},
+	&model.Notify{},
 	// 活动
-	&model.ActivityModel{},
-	&model.ActivityRecordModel{},
+	&model.Activity{},
+	&model.ActivityRecord{},
 	// 成就
-	&model.MedalModel{},
+	&model.Medal{},
 	// 食谱
-	&model.RecipeModel{},
-	&model.RecipeStepModel{},
+	&model.Recipe{},
 	// 菜单
-	&model.MenuMode{},
+	&model.RecipeMenu{},
 }
 
 // InitDB 初始化数据库

@@ -1,8 +1,8 @@
 package model
 
-// MedalModel 勋章结构体
-type MedalModel struct {
-	OrmModel
+// Medal 勋章结构体
+type Medal struct {
+	OrmBase
 
 	Logo       string `json:"logo" gorm:"not null;comment:勋章图标（oss的key/id）"`
 	Name       string `json:"name" gorm:"not null;comment:勋章名称"`

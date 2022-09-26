@@ -1,16 +1,16 @@
 package model
 
-// DictModel 字典项结构体
-type DictModel struct {
-	OrmModel
-	CreatorModel
-	RespDictModel
+// Dict 字典项结构体
+type Dict struct {
+	OrmBase
+	Creator
+	SimpleDict
 
 	State bool `json:"state"`
 }
 
-// RespDictModel 字典项报文结构体
-type RespDictModel struct {
+// SimpleDict 字典项报文结构体
+type SimpleDict struct {
 	PCode string `json:"pCode"`
 	Code  string `json:"code"`
 	Tag   string `json:"tag"`

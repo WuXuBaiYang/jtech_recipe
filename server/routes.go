@@ -2,34 +2,32 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"server/controller"
-	"server/middleware"
 )
 
 // CollectRoutes 统一注册路由方法
 func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 根节点，使用api版本区分 **//
-	group := r.Group("/api", middleware.CommonMiddleware())
-	//** 用户授权相关 **//
-	// 发送短信验证码
-	group.POST("/sms/:phone", controller.GetSMS)
-	// 用户注册
-	group.POST("/register", controller.Register)
-	// 用户登录
-	group.POST("/login", controller.Login)
-	// token刷新
-	group.POST("/refreshToken", middleware.AuthMiddleware(false), controller.RefreshToken)
-
-	// 创建用户相关请求组
-	userGroup := group.Group("/user", middleware.AuthMiddleware(true))
-	// 订阅用户
-	userGroup.POST("/subscribe/:userId", controller.SubscribeUser)
-	// 取消订阅用户
-	userGroup.DELETE("/subscribe/:userId", controller.UnSubscribeUser)
-	// 分页获取订阅列表
-	userGroup.GET("/subscribe", controller.GetSubPagination)
-	// 分页获取目标用户的订阅列表
-	userGroup.GET("/subscribe/:userId", controller.GetSubPagination)
+	//group := r.Group("/api", middleware.CommonMiddleware())
+	////** 用户授权相关 **//
+	//// 发送短信验证码
+	//group.POST("/sms/:phone", controller.GetSMS)
+	//// 用户注册
+	//group.POST("/register", controller.Register)
+	//// 用户登录
+	//group.POST("/login", controller.Login)
+	//// token刷新
+	//group.POST("/refreshToken", middleware.AuthMiddleware(false), controller.RefreshToken)
+	//
+	//// 创建用户相关请求组
+	//userGroup := group.Group("/user", middleware.AuthMiddleware(true))
+	//// 订阅用户
+	//userGroup.POST("/subscribe/:userId", controller.SubscribeUser)
+	//// 取消订阅用户
+	//userGroup.DELETE("/subscribe/:userId", controller.UnSubscribeUser)
+	//// 分页获取订阅列表
+	//userGroup.GET("/subscribe", controller.GetSubPagination)
+	//// 分页获取目标用户的订阅列表
+	//userGroup.GET("/subscribe/:userId", controller.GetSubPagination)
 
 	//// 获取用户信息
 	//userGroup.GET("/info/:userId", controller.GetUserProfile)

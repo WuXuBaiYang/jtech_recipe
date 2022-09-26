@@ -11,6 +11,8 @@ import (
 
 var ctx = context.Background()
 
+// lucene solr/es wukong 分词检索框架
+
 func main() {
 	// 初始化日志系统
 	logger := common.InitLogger()

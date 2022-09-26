@@ -6,20 +6,20 @@ intformat = require('biguint-format')
 flakeIdGen = new flakeId();
 
 const tableMap = {
-    'jtech_dict_index': './res/index_info.json',// 索引总表
-    'jtech_dict_user_gender': './res/user_gender.json',// 用户性别
-    'jtech_dict_user_evaluate': './res/user_evaluate.json',// 用户水平等级
-    'jtech_dict_user_address_tag': './res/user_address_tag.json', // 用户收货地址标签
-    'jtech_dict_notice_type': './res/notice_type.json',// 消息通知类型
-    'jtech_dict_activity_type': './res/activity_type.json',// 活动类型
-    'jtech_dict_post_tag': './res/post_tag.json',// 帖子标签
-    'jtech_dict_address': './res/address.json',// 省市区三级联动
-    'jtech_dict_recipe_cuisine': './res/recipe_cuisine.json',// 食谱菜系
-    'jtech_dict_recipe_taste': './res/recipe_taste.json',// 食谱口味
-    'jtech_dict_recipe_tag': './res/recipe_tag.json',// 食谱标签
-    'jtech_dict_recipe_ingredients_main': './res/recipe_ingredients_main.json',// 食谱主材
-    'jtech_dict_recipe_ingredients_sub': './res/recipe_ingredients_sub.json',// 食谱辅料
-    'jtech_dict_medal_rarity': './res/medal_rarity.json',// 勋章稀有度等级
+    'dict_index': './res/index_info.json',// 索引总表
+    'dict_user_gender': './res/user_gender.json',// 用户性别
+    'dict_user_evaluate': './res/user_evaluate.json',// 用户水平等级
+    'dict_user_address_tag': './res/user_address_tag.json', // 用户收货地址标签
+    'dict_notice_type': './res/notice_type.json',// 消息通知类型
+    'dict_activity_type': './res/activity_type.json',// 活动类型
+    'dict_post_tag': './res/post_tag.json',// 帖子标签
+    'dict_address': './res/address.json',// 省市区三级联动
+    'dict_recipe_cuisine': './res/recipe_cuisine.json',// 食谱菜系
+    'dict_recipe_taste': './res/recipe_taste.json',// 食谱口味
+    'dict_recipe_tag': './res/recipe_tag.json',// 食谱标签
+    'dict_recipe_ingredients_main': './res/recipe_ingredients_main.json',// 食谱主材
+    'dict_recipe_ingredients_sub': './res/recipe_ingredients_sub.json',// 食谱辅料
+    'dict_medal_rarity': './res/medal_rarity.json',// 勋章稀有度等级
 }
 
 conn = mysql.createConnection({

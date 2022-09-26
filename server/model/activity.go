@@ -2,9 +2,9 @@ package model
 
 import "time"
 
-// ActivityModel 活动信息结构体
-type ActivityModel struct {
-	OrmModel
+// Activity 活动信息结构体
+type Activity struct {
+	OrmBase
 
 	CycleTime int64 `json:"cycleTime" gorm:"comment:周期持续时间"`
 	// 长期活动的话，定时器在结算上一个周期之后，会自动发起下一个周期的活动
@@ -15,12 +15,12 @@ type ActivityModel struct {
 	TypeCodes []string `json:"typeCodes" gorm:"type:json;serializer:json;not null;comment:活动接受投稿的类型字典码集合"`
 }
 
-// ActivityRecordModel 活动信息记录
-type ActivityRecordModel struct {
-	OrmModel
+// ActivityRecord 活动信息记录
+type ActivityRecord struct {
+	OrmBase
 
-	BeginTime  time.Time     `json:"beginTime" gorm:"not null;comment:开始时间"`
-	EndTime    time.Time     `json:"endTime" gorm:"not null;comment:结束时间"`
-	ActivityId int64         `json:"activityId" gorm:"not null;comment:活动id"`
-	Activity   ActivityModel `json:"activity" gorm:"-"`
+	BeginTime  time.Time `json:"beginTime" gorm:"not null;comment:开始时间"`
+	EndTime    time.Time `json:"endTime" gorm:"not null;comment:结束时间"`
+	ActivityId int64     `json:"activityId" gorm:"not null;comment:活动id"`
+	Activity   Activity  `json:"activity" gorm:"foreignKey:ActivityId"`
 }
