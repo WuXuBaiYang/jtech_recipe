@@ -18,7 +18,7 @@ type User struct {
 	Profession  string    `json:"profession" gorm:"varchar(40);comment:职业"`
 	GenderCode  string    `json:"genderCode" gorm:"comment:性别字典码"`
 	Birth       time.Time `json:"birth" gorm:"default:null;comment:生日"`
-	MedalIds    []int64   `json:"medalIds" gorm:"type:json;serializer:json;comment:勋章id集合"`
+	Medals      []int64   `json:"medalIds" gorm:"many2many:user_medals;comment:已获得的勋章列表"`
 
 	// 关注列表
 	Subscribes []User `json:"-" gorm:"many2many:user_subscribes;comment:用户订阅列表"`

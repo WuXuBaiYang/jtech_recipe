@@ -18,13 +18,13 @@ type Post struct {
 	Recipe           *Recipe         `json:"recipe" gorm:"foreignKey:RecipeId"`
 
 	// 浏览/点赞/收藏过的用户
-	ViewUsers    []User `json:"-" gorm:"many2many:post_view_users"`
+	ViewUsers    []SimpleUser `json:"-" gorm:"many2many:post_view_users"`
 	Viewed       bool   `json:"viewed" gorm:"-"`
 	ViewCount    int64  `json:"viewCount" gorm:"-"`
-	LikeUsers    []User `json:"-" gorm:"many2many:post_like_users"`
+	LikeUsers    []SimpleUser `json:"-" gorm:"many2many:post_like_users"`
 	Liked        bool   `json:"liked" gorm:"-"`
 	LikeCount    int64  `json:"likeCount" gorm:"-"`
-	CollectUsers []User `json:"-" gorm:"many2many:post_collect_users"`
+	CollectUsers []SimpleUser `json:"-" gorm:"many2many:post_collect_users"`
 	Collected    bool   `json:"collected" gorm:"-"`
 	CollectCount int64  `json:"collectCount" gorm:"-"`
 }
@@ -38,7 +38,7 @@ type PostComment struct {
 	Content string `json:"content" gorm:"varchar(300);not null;comment:帖子评论文本内容"`
 
 	// 点赞过的用户
-	LikeUsers []User `json:"-" gorm:"many2many:post_comment_like_users"`
+	LikeUsers []SimpleUser `json:"-" gorm:"many2many:post_comment_like_users"`
 	Liked     bool   `json:"liked" gorm:"-"`
 	LikeCount int64  `json:"likeCount" gorm:"-"`
 }
@@ -52,7 +52,7 @@ type PostCommentReplay struct {
 	Content string `json:"content" gorm:"varchar(300);not null;comment:帖子评论回复文本内容" `
 
 	// 点赞过的用户
-	LikeUsers []User `json:"-" gorm:"many2many:post_comment_replay_like_users"`
+	LikeUsers []SimpleUser `json:"-" gorm:"many2many:post_comment_replay_like_users"`
 	Liked     bool   `json:"liked" gorm:"-"`
 	LikeCount int64  `json:"likeCount" gorm:"-"`
 }
