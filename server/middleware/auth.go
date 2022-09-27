@@ -37,7 +37,7 @@ func AuthMiddleware(tokenCheck bool) gin.HandlerFunc {
 		// 提取token中的用户id
 		userId := claims.UserId
 		db := common.GetDB()
-		var user model.UserModel
+		var user model.User
 		db.First(&user, userId)
 		// 判断用户是否存在
 		if user.ID == 0 {

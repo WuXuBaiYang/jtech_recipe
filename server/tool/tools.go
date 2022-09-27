@@ -10,7 +10,7 @@ import (
 
 // GenInitUserNickName 根据格式生成初始化用户昵称
 func GenInitUserNickName(uId int64) string {
-	return fmt.Sprintf("用户_%d_%v", uId, time.Now())
+	return fmt.Sprintf("用户_%d_%v", uId, time.Now().UnixMilli())
 }
 
 // 缓存雪花算法节点

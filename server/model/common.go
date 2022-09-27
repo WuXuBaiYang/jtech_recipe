@@ -6,12 +6,11 @@ import (
 )
 
 // Pagination 分页结构体
-type Pagination struct {
-	PageIndex   int         `json:"pageIndex"`
-	PageSize    int         `json:"pageSize"`
-	Total       int64       `json:"total"`
-	CurrentSize int         `json:"currentSize"`
-	Data        interface{} `json:"data"`
+type Pagination[T interface{}] struct {
+	PageIndex int   `json:"pageIndex"`
+	PageSize  int   `json:"pageSize"`
+	Total     int64 `json:"total"`
+	Data      []T   `json:"data"`
 }
 
 // AuthWithUser 授权信息与用户信息结构体

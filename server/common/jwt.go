@@ -21,7 +21,7 @@ type RefreshClaims struct {
 }
 
 // ReleaseAccessToken 发放授权token
-func ReleaseAccessToken(user model.UserModel, platform string) (string, error) {
+func ReleaseAccessToken(user model.User, platform string) (string, error) {
 	expiresAt := time.Now().Add(jwtConfig.ExpirationTime)
 	claims := &AccessClaims{
 		UserId:   user.ID,
@@ -37,7 +37,7 @@ func ReleaseAccessToken(user model.UserModel, platform string) (string, error) {
 }
 
 // ReleaseRefreshToken 发放刷新token
-func ReleaseRefreshToken(user model.UserModel, target string) (string, error) {
+func ReleaseRefreshToken(user model.User, target string) (string, error) {
 	expiresAt := time.Now().Add(jwtConfig.RefreshExpirationTime)
 	claims := &RefreshClaims{
 		Target: target,
