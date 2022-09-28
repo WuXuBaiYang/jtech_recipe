@@ -136,16 +136,16 @@ func GetUserCollectPagination(c *gin.Context) {
 	getUserPostPagination(c, "CollectPosts", "用户收藏帖子列表获取失败")
 }
 
-// GetAllMedalList 获取全部勋章列表
-func GetAllMedalList(c *gin.Context) {
+// GetAllUserMedalList 获取全部勋章列表
+func GetAllUserMedalList(c *gin.Context) {
 	db := common.GetDB()
 	var result []model.UserMedal
 	db.Find(&result)
 	response.SuccessDef(c, result)
 }
 
-// AddMedal 添加勋章
-func AddMedal(c *gin.Context) {
+// AddUserMedal 添加勋章
+func AddUserMedal(c *gin.Context) {
 	// 获取请求参数
 	var medal model.UserMedal
 	if err := c.BindJSON(&medal); err != nil {
@@ -183,8 +183,8 @@ func AddMedal(c *gin.Context) {
 	response.SuccessDef(c, result)
 }
 
-// UpdateMedal 更新勋章信息
-func UpdateMedal(c *gin.Context) {
+// UpdateUserMedal 更新勋章信息
+func UpdateUserMedal(c *gin.Context) {
 	// 获取请求参数
 	var medal model.UserMedal
 	if err := c.BindJSON(&medal); err != nil {

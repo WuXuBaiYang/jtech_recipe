@@ -10,7 +10,7 @@ import (
 func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 根节点，使用api版本区分 **//
 	group := r.Group("/api", middleware.Common())
-	//** 用户授权相关 **//
+	//** 授权相关 **//
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
 	// 用户注册
@@ -20,6 +20,7 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken, middleware.AuthCheck(false))
 
+	//** 用户相关 **//
 	// 创建用户相关请求组
 	userGroup := group.Group("/user", middleware.AuthCheck(true))
 	// 订阅用户
@@ -30,7 +31,6 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	userGroup.GET("/subscribe", controller.GetSubscribePagination)
 	// 分页获取目标用户的订阅列表
 	userGroup.GET("/subscribe/:userId", controller.GetSubscribePagination)
-
 	// 获取用户信息
 	userGroup.GET("/info/:userId", controller.GetUserProfile)
 	// 获取当前用户信息
@@ -50,11 +50,16 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// 分页获取目标用户收藏帖子列表
 	userGroup.GET("/common/collect/:userId", controller.GetUserCollectPagination)
 	// 获取全部勋章列表
-	userGroup.GET("/medal", controller.GetAllMedalList)
+	userGroup.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章
-	userGroup.POST("/medal", controller.AddMedal, middleware.PermissionCheck())
+	userGroup.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck())
 	// 更新勋章信息
-	userGroup.PUT("/medal/:medalId", controller.UpdateMedal, middleware.PermissionCheck())
+	userGroup.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck())
+
+	////** 通知相关 **//
+	//notificationGroup := group.Group("/notification", middleware.AuthMiddleware(true))
+	//// 分页获取通知列表
+	//notificationGroup.GET("", controller.GetNotificationPagination)
 
 	////** 帖子相关 **//
 	//postGroup := group.Group("/post", middleware.AuthMiddleware(true))
@@ -104,10 +109,5 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//postCommentGroup.POST("/replay/like/:replayId", controller.AddPostCommentReplayLike)
 	//// 对帖子评论回复取消点赞
 	//postCommentGroup.DELETE("/replay/like/:replayId", controller.RemovePostCommentReplayLike)
-	//
-	////** 通知相关 **//
-	//notificationGroup := group.Group("/notification", middleware.AuthMiddleware(true))
-	//// 分页获取通知列表
-	//notificationGroup.GET("", controller.GetNotificationPagination)
 	return r
 }
