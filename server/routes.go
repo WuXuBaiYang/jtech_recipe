@@ -56,10 +56,10 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// 更新勋章信息
 	userGroup.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck())
 
-	////** 通知相关 **//
-	//notificationGroup := group.Group("/notification", middleware.AuthMiddleware(true))
-	//// 分页获取通知列表
-	//notificationGroup.GET("", controller.GetNotificationPagination)
+	//** 通知相关 **//
+	notificationGroup := group.Group("/notification", middleware.AuthCheck(true))
+	// 分页获取通知列表
+	notificationGroup.GET("", controller.GetNotifyPagination)
 
 	////** 帖子相关 **//
 	//postGroup := group.Group("/post", middleware.AuthMiddleware(true))
