@@ -57,8 +57,8 @@ var dbConfig = struct {
 	Loc        string
 	GormConfig *gorm.Config
 }{
-	UserName:  "jtech_server",
-	Password:  "JXuIAi4wqP0kho",
+	UserName:  "root",
+	Password:  "fmekST31BnzvPa",
 	Host:      ServerHost,
 	Port:      "3306",
 	Database:  "jtech_recipe",
