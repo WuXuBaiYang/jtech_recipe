@@ -135,3 +135,97 @@ func GetUserLikePostPagination(c *gin.Context) {
 func GetUserCollectPagination(c *gin.Context) {
 	getUserPostPagination(c, "CollectPosts", "用户收藏帖子列表获取失败")
 }
+
+// GetAllMedalList 获取全部勋章列表
+func GetAllMedalList(c *gin.Context) {
+	db := common.GetDB()
+	var result []model.UserMedal
+	db.Find(&result)
+	response.SuccessDef(c, result)
+}
+
+// AddMedal 添加勋章
+func AddMedal(c *gin.Context) {
+	// 获取请求参数
+	var medal model.UserMedal
+	if err := c.BindJSON(&medal); err != nil {
+		response.FailParamsDef(c)
+		return
+	}
+	// 数据校验
+	logo := medal.Logo
+	name := medal.Name
+	rarityCode := medal.RarityCode
+	if len(logo) == 0 {
+		response.FailParams(c, "图标不能为空")
+		return
+	}
+	if len(name) == 0 {
+		response.FailParams(c, "名称不能为空")
+		return
+	}
+	if len(rarityCode) == 0 {
+		response.FailParams(c, "稀有度不能为空")
+		return
+	}
+	// 创建并保存到数据库
+	db := common.GetDB()
+	result := model.UserMedal{
+		OrmBase:    createBase(),
+		Logo:       logo,
+		Name:       name,
+		RarityCode: rarityCode,
+	}
+	if err := db.Create(&result).Error; err != nil {
+		response.FailDef(c, -1, "勋章创建失败")
+		return
+	}
+	response.SuccessDef(c, result)
+}
+
+// UpdateMedal 更新勋章信息
+func UpdateMedal(c *gin.Context) {
+	// 获取请求参数
+	var medal model.UserMedal
+	if err := c.BindJSON(&medal); err != nil {
+		response.FailParamsDef(c)
+		return
+	}
+	// 数据校验
+	logo := medal.Logo
+	name := medal.Name
+	rarityCode := medal.RarityCode
+	medalId := parseId(c.Param("medalId"))
+	if len(logo) == 0 {
+		response.FailParams(c, "图标不能为空")
+		return
+	}
+	if len(name) == 0 {
+		response.FailParams(c, "名称不能为空")
+		return
+	}
+	if len(rarityCode) == 0 {
+		response.FailParams(c, "稀有度不能为空")
+		return
+	}
+	if medalId == 0 {
+		response.FailParams(c, "勋章id不能为空")
+		return
+	}
+	db := common.GetDB()
+	var result model.UserMedal
+	db.Find(&result, medalId)
+	if result.ID == 0 {
+		response.FailParams(c, "勋章信息不存在")
+		return
+	}
+	// 创建并保存到数据库
+	result.Name = name
+	result.Logo = logo
+	result.RarityCode = rarityCode
+	if err := db.Save(&result).Error; err != nil {
+		response.FailDef(c, -1, "勋章信息保存失败")
+		return
+	}
+	response.SuccessDef(c, result)
+}

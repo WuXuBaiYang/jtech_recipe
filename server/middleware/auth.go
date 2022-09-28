@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// AuthMiddleware 授权中间件
-func AuthMiddleware(tokenCheck bool) gin.HandlerFunc {
+// AuthCheck 授权校验
+func AuthCheck(tokenCheck bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从请求头获取token
 		tokenString := c.GetHeader("Authorization")

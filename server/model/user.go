@@ -9,13 +9,13 @@ type User struct {
 	PhoneNumber string `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
 	Password    string `json:"-" gorm:"varchar(120);not null;comment:密码（登录密码）"`
 	// 用户详细信息
-	NickName   string     `json:"nickName" gorm:"varchar(40);comment:昵称"`
-	Avatar     string     `json:"avatar" gorm:"varchar(80);comment:头像（只存储oss的key/id）"`
-	Bio        string     `json:"bio" gorm:"varchar(40);comment:个人简介"`
-	Profession string     `json:"profession" gorm:"varchar(40);comment:职业"`
-	GenderCode string     `json:"genderCode" gorm:"comment:性别字典码"`
-	Birth      *time.Time `json:"birth" gorm:"comment:生日"`
-	Medals     []Medal    `json:"medals,omitempty" gorm:"many2many:user_medals;comment:已获得的勋章列表"`
+	NickName   string      `json:"nickName" gorm:"varchar(40);comment:昵称"`
+	Avatar     string      `json:"avatar" gorm:"varchar(80);comment:头像（只存储oss的key/id）"`
+	Bio        string      `json:"bio" gorm:"varchar(40);comment:个人简介"`
+	Profession string      `json:"profession" gorm:"varchar(40);comment:职业"`
+	GenderCode string      `json:"genderCode" gorm:"comment:性别字典码"`
+	Birth      *time.Time  `json:"birth" gorm:"comment:生日"`
+	Medals     []UserMedal `json:"medals,omitempty" gorm:"many2many:user_has_medals;comment:已获得的勋章列表"`
 	// 用户配置相关
 	EvaluateCode       string   `json:"evaluateCode" gorm:"not null;comment:自我评价字典码"`
 	RecipeCuisineCodes []string `json:"recipeCuisineCodes" gorm:"type:json;serializer:json;comment:偏好食谱菜系字典码集合"`
@@ -59,4 +59,13 @@ type UserAddress struct {
 	Tag           *SimpleDict `json:"tag" gorm:"-"`
 	Default       bool        `json:"default" gorm:"not null;comment:是否为默认收货地址"`
 	Order         int64       `json:"order" gorm:"not null;comment:排序"`
+}
+
+// UserMedal 用户勋章结构体
+type UserMedal struct {
+	OrmBase
+
+	Logo       string `json:"logo" gorm:"unique;not null;comment:勋章图标（oss的key/id）"`
+	Name       string `json:"name" gorm:"unique;not null;comment:勋章名称"`
+	RarityCode string `json:"rarityCode" gorm:"not null;comment:勋章稀有度字典码"`
 }

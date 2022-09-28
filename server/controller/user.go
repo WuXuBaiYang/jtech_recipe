@@ -10,15 +10,15 @@ import (
 
 // 用户详细信息结构体
 type userProfile struct {
-	ID         int64         `json:"id"`
-	Level      int64         `json:"level"`
-	NickName   string        `json:"nickName"`
-	Avatar     string        `json:"avatar"`
-	Bio        string        `json:"bio"`
-	Profession string        `json:"profession"`
-	GenderCode string        `json:"genderCode"`
-	Birth      *time.Time    `json:"birth"`
-	Medals     []model.Medal `json:"medals,omitempty"`
+	ID         int64             `json:"id"`
+	Level      int64             `json:"level"`
+	NickName   string            `json:"nickName"`
+	Avatar     string            `json:"avatar"`
+	Bio        string            `json:"bio"`
+	Profession string            `json:"profession"`
+	GenderCode string            `json:"genderCode"`
+	Birth      *time.Time        `json:"birth"`
+	Medals     []model.UserMedal `json:"medals,omitempty"`
 }
 
 // 全部可修改的用户信息
@@ -34,8 +34,7 @@ type fullUserProfile struct {
 func UpdateUserProfile(c *gin.Context) {
 	// 获取请求体参数
 	var profile fullUserProfile
-	err := c.BindJSON(&profile)
-	if err != nil {
+	if err := c.BindJSON(&profile); err != nil {
 		response.FailParamsDef(c)
 		return
 	}
@@ -85,7 +84,7 @@ func GetUserProfile(c *gin.Context) {
 	userId := parseId(c.Param("userId"))
 	if userId == 0 { // 获取个人信息（完整）
 		user := getCurrUser(c)
-		if err := getUserMedals(user.ID, &user.Medals); err != nil {
+		if err := loadUserMedals(user.ID, &user.Medals); err != nil {
 			response.FailDef(c, -1, "获取用户信息失败")
 			return
 		}
@@ -95,7 +94,7 @@ func GetUserProfile(c *gin.Context) {
 	var profile userProfile
 	db.Model(&model.User{}).
 		First(&profile, userId)
-	if err := getUserMedals(userId, &profile.Medals); err != nil {
+	if err := loadUserMedals(userId, &profile.Medals); err != nil {
 		response.FailDef(c, -1, "获取用户信息失败")
 		return
 	}
@@ -103,12 +102,10 @@ func GetUserProfile(c *gin.Context) {
 }
 
 // 获取用户勋章
-func getUserMedals(userId int64, medals *[]model.Medal) error {
+func loadUserMedals(userId int64, medals *[]model.UserMedal) error {
 	db := common.GetDB()
-	if err := db.Model(&model.User{
+	err := db.Model(&model.User{
 		OrmBase: model.OrmBase{ID: userId},
-	}).Association("Medals").Find(medals); err != nil {
-		return err
-	}
-	return nil
+	}).Association("Medals").Find(medals)
+	return err
 }

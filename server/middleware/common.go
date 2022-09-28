@@ -6,8 +6,8 @@ import (
 	"server/tool"
 )
 
-// CommonMiddleware 通用中间件
-func CommonMiddleware() gin.HandlerFunc {
+// Common 通用方法
+func Common() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取平台信息
 		platform := c.GetHeader("Platform")

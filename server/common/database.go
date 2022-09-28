@@ -14,6 +14,7 @@ import (
 var dst = []any{
 	// 用户
 	&model.User{},
+	&model.UserMedal{},
 	&model.UserAddress{},
 	// 帖子
 	&model.Post{},
@@ -24,8 +25,6 @@ var dst = []any{
 	// 活动
 	&model.Activity{},
 	&model.ActivityRecord{},
-	// 成就
-	&model.Medal{},
 	// 食谱
 	&model.Recipe{},
 	// 菜单
