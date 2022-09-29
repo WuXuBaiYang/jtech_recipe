@@ -4,13 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 	"time"
 )
 
 // 用户详细信息结构体
 type userProfile struct {
-	ID         int64             `json:"id"`
+	ID         string            `json:"id"`
 	Level      int64             `json:"level"`
 	NickName   string            `json:"nickName"`
 	Avatar     string            `json:"avatar"`
@@ -61,7 +62,7 @@ func UpdateUserProfile(c *gin.Context) {
 	}
 	// 获取到当前用户信息并写入新的信息
 	db := common.GetDB()
-	user := getCurrUser(c)
+	user := middleware.GetCurrUser(c)
 	user.NickName = profile.NickName
 	user.Avatar = profile.Avatar
 	user.Bio = profile.Bio
@@ -75,15 +76,15 @@ func UpdateUserProfile(c *gin.Context) {
 		response.FailDef(c, -1, "用户信息修改失败")
 		return
 	}
-	response.SuccessDef(c, profile)
+	response.SuccessDef(c, user)
 }
 
 // GetUserProfile 获取用户信息
 func GetUserProfile(c *gin.Context) {
 	db := common.GetDB()
-	userId := parseId(c.Param("userId"))
-	if userId == 0 { // 获取个人信息（完整）
-		user := getCurrUser(c)
+	userId := c.Param("userId")
+	if len(userId) == 0 { // 获取个人信息（完整）
+		user := middleware.GetCurrUser(c)
 		if err := loadUserMedals(user.ID, &user.Medals); err != nil {
 			response.FailDef(c, -1, "获取用户信息失败")
 			return
@@ -92,8 +93,10 @@ func GetUserProfile(c *gin.Context) {
 		return
 	}
 	var profile userProfile
-	db.Model(&model.User{}).
-		First(&profile, userId)
+	if err := db.Model(&model.User{}).First(&profile, userId).Error; err != nil {
+		response.FailDef(c, -1, "用户不存在")
+		return
+	}
 	if err := loadUserMedals(userId, &profile.Medals); err != nil {
 		response.FailDef(c, -1, "获取用户信息失败")
 		return
@@ -102,7 +105,7 @@ func GetUserProfile(c *gin.Context) {
 }
 
 // 获取用户勋章
-func loadUserMedals(userId int64, medals *[]model.UserMedal) error {
+func loadUserMedals(userId string, medals *[]model.UserMedal) error {
 	db := common.GetDB()
 	err := db.Model(&model.User{
 		OrmBase: model.OrmBase{ID: userId},

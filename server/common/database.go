@@ -34,7 +34,7 @@ var dst = []any{
 // InitDB 初始化数据库
 func InitDB() *gorm.DB {
 	// 初始化雪花算法
-	if tool.GenID() == 0 {
+	if len(tool.GenID()) == 0 {
 		panic("雪花算法初始化失败")
 	}
 	c := dbConfig

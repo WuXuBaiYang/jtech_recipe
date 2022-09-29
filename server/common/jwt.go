@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"server/model"
 	"time"
@@ -8,7 +9,7 @@ import (
 
 // AccessClaims 授权token中的claim
 type AccessClaims struct {
-	UserId   int64
+	UserId   string
 	UserName string
 	Platform string
 	jwt.RegisteredClaims
@@ -30,7 +31,7 @@ func ReleaseAccessToken(user model.User, platform string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    jwtConfig.Issuer,
-			Subject:   user.PhoneNumber,
+			Subject:   fmt.Sprintf("%d", user.ID),
 		},
 	}
 	return ReleaseToken(claims)
@@ -45,7 +46,7 @@ func ReleaseRefreshToken(user model.User, target string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    jwtConfig.Issuer,
-			Subject:   user.PhoneNumber,
+			Subject:   fmt.Sprintf("%d", user.ID),
 		},
 	}
 	return ReleaseToken(claims)

@@ -9,7 +9,7 @@ import (
 // CollectRoutes 统一注册路由方法
 func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 根节点，使用api版本区分 **//
-	group := r.Group("/api", middleware.Common())
+	group := r.Group("/api", middleware.Common)
 	//** 授权相关 **//
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
@@ -18,11 +18,13 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// 用户登录
 	group.POST("/login", controller.Login)
 	// token刷新
-	group.POST("/refreshToken", controller.RefreshToken, middleware.AuthCheck(false))
+	group.POST("/refreshToken", controller.RefreshToken)
 
+	//** 授权校验组 **//
+	authGroup := group.Group("", middleware.AuthCheck)
 	//** 用户相关 **//
 	// 创建用户相关请求组
-	userGroup := group.Group("/user", middleware.AuthCheck(true))
+	userGroup := authGroup.Group("/user")
 	// 订阅用户
 	userGroup.POST("/subscribe/:userId", controller.SubscribeUser)
 	// 取消订阅用户
@@ -52,14 +54,14 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// 获取全部勋章列表
 	userGroup.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章
-	userGroup.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck())
+	userGroup.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck)
 	// 更新勋章信息
-	userGroup.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck())
+	userGroup.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck)
 
 	//** 通知相关 **//
-	notificationGroup := group.Group("/notification", middleware.AuthCheck(true))
+	notifyGroup := authGroup.Group("/notification")
 	// 分页获取通知列表
-	notificationGroup.GET("", controller.GetNotifyPagination)
+	notifyGroup.GET("", controller.GetNotifyPagination)
 
 	////** 帖子相关 **//
 	//postGroup := group.Group("/post", middleware.AuthMiddleware(true))

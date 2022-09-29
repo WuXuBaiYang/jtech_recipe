@@ -22,7 +22,7 @@ type AuthWithUser struct {
 
 // OrmBase gorm基类
 type OrmBase struct {
-	ID        int64          `json:"id" gorm:"primarykey"`
+	ID        string         `json:"id" gorm:"primarykey"`
 	CreatedAt time.Time      `json:"createdAt" gorm:"comment:创建时间"`
 	UpdatedAt time.Time      `json:"updatedAt" gorm:"comment:更新时间"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index;comment:删除时间"`
@@ -30,6 +30,6 @@ type OrmBase struct {
 
 // Creator 创建者结构体
 type Creator struct {
-	CreatorId int64       `json:"creatorId" gorm:"not null;comment:创建者id"`
+	CreatorId string      `json:"creatorId" gorm:"not null;comment:创建者id"`
 	Creator   *SimpleUser `json:"creator,omitempty" gorm:"foreignKey:CreatorId"`
 }

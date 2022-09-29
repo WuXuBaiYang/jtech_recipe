@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 	"server/tool"
 	"strconv"
@@ -74,7 +75,7 @@ func Register(c *gin.Context) {
 	}
 	db := common.GetDB()
 	db.Where("phone_number = ?", phoneNumber).First(&user)
-	if user.ID != 0 {
+	if len(user.ID) != 0 {
 		response.FailDef(c, -1, "用户已存在")
 		return
 	}
@@ -93,7 +94,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	// 构造授权信息并返回
-	if auth, err := createAuthInfo(user, *getPlatform(c)); err == nil {
+	if auth, err := createAuthInfo(c, user); err == nil {
 		response.SuccessDef(c, auth)
 		// 删除使用过的短信验证码
 		rdb.Del(c, phoneNumber)
@@ -125,7 +126,7 @@ func Login(c *gin.Context) {
 	}
 	db := common.GetDB()
 	db.Where("phone_number = ?", phoneNumber).First(&user)
-	if user.ID == 0 {
+	if len(user.ID) == 0 {
 		response.FailParams(c, "用户不存在")
 		return
 	}
@@ -145,7 +146,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 构造授权信息并返回
-	if auth, err := createAuthInfo(user, *getPlatform(c)); err == nil {
+	if auth, err := createAuthInfo(c, user); err == nil {
 		response.SuccessDef(c, auth)
 		// 删除使用过的短信验证码
 		rdb.Del(c, phoneNumber)
@@ -156,34 +157,33 @@ func Login(c *gin.Context) {
 
 // RefreshToken 刷新过期token
 func RefreshToken(c *gin.Context) {
-	// 获取请求参数
-	accessToken := c.GetHeader("Authorization")[7:]
-	refreshToken := c.GetHeader("RefreshToken")
-	if len(refreshToken) == 0 {
-		response.FailParams(c, "header中缺少refreshToken")
-		return
+	if claims, err := middleware.GetTokenClaim(c); err == nil {
+		if refreshClaims, err := middleware.GetRefreshTokenClaim(c); err == nil {
+			// 校验参数
+			if refreshClaims.Target != tool.MD5(middleware.GetToken(c)[7:]) {
+				response.FailParams(c, "token不匹配")
+				return
+			}
+			// 重新生成授权信息并返回
+			db := common.GetDB()
+			var user = model.User{}
+			db.Find(&user, claims.UserId)
+			newAuth, errAuth := createAuthInfo(c, user)
+			if errAuth != nil {
+				response.FailDef(c, -1, "授权失败")
+				return
+			}
+			response.SuccessDef(c, newAuth)
+			return
+		}
 	}
-	// 校验参数
-	_, refreshClaims, parseErr := common.ParseRefreshToken(refreshToken)
-	if parseErr != nil {
-		response.FailParams(c, "refreshToken非法")
-		return
-	}
-	if refreshClaims.Target != tool.MD5(accessToken) {
-		response.FailParams(c, "token不匹配")
-		return
-	}
-	// 重新生成授权信息并返回
-	newAuth, errAuth := createAuthInfo(*getCurrUser(c), *getPlatform(c))
-	if errAuth != nil {
-		response.FailDef(c, -1, "授权失败")
-		return
-	}
-	response.SuccessDef(c, newAuth)
+	// 验证失败
+	response.FailParams(c, "授权信息无效")
 }
 
 // 创建授权信息
-func createAuthInfo(user model.User, platform string) (*model.AuthWithUser, error) {
+func createAuthInfo(c *gin.Context, user model.User) (*model.AuthWithUser, error) {
+	platform := middleware.GetPlatform(c)
 	token, err := common.ReleaseAccessToken(user, platform)
 	if err != nil {
 		return nil, err
@@ -224,33 +224,4 @@ func createBase() model.OrmBase {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-}
-
-// 格式化id格式
-func parseId(id string) int64 {
-	v, _ := strconv.ParseInt(id, 10, 64)
-	return v
-}
-
-// 获取当前用户id
-func getCurrUId(c *gin.Context) *int64 {
-	return &getCurrUser(c).ID
-}
-
-// 从上下文中获取到当前访问的用户信息
-func getCurrUser(c *gin.Context) *model.User {
-	if user, ok := c.Get("user"); ok {
-		u, _ := user.(model.User)
-		return &u
-	}
-	return nil
-}
-
-// 获取平台信息
-func getPlatform(c *gin.Context) *string {
-	if platform, ok := c.Get("platform"); ok {
-		p, _ := platform.(string)
-		return &p
-	}
-	return nil
 }

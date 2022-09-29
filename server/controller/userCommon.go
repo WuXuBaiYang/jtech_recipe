@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 )
 
@@ -18,11 +19,11 @@ func SubscribeUser(c *gin.Context) {
 	var subUser model.User
 	db := common.GetDB()
 	db.Where("id = ?", subUserId).Find(&subUser)
-	if subUser.ID == 0 {
+	if len(subUser.ID) == 0 {
 		response.FailParams(c, "用户不存在")
 		return
 	}
-	user := getCurrUser(c)
+	user := middleware.GetCurrUser(c)
 	if subUser.ID == user.ID {
 		response.FailParams(c, "不能订阅自己")
 		return
@@ -47,12 +48,12 @@ func UnSubscribeUser(c *gin.Context) {
 	var subUser model.User
 	db := common.GetDB()
 	db.Where("id = ?", subUserId).Find(&subUser)
-	if subUser.ID == 0 {
+	if len(subUser.ID) == 0 {
 		response.FailParams(c, "用户不存在")
 		return
 	}
 	// 移除订阅关系
-	if err := db.Model(getCurrUser(c)).
+	if err := db.Model(middleware.GetCurrUser(c)).
 		Association("Subscribes").Delete(&subUser); err != nil {
 		response.FailDef(c, -1, "取消订阅失败")
 		return
@@ -71,9 +72,9 @@ func GetSubscribePagination(c *gin.Context) {
 	// 分页查询
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	userId := parseId(c.Param("userId"))
-	if userId == 0 {
-		userId = *getCurrUId(c)
+	userId := c.Param("userId")
+	if len(userId) == 0 {
+		userId = middleware.GetCurrUId(c)
 	}
 	db := common.GetDB()
 	result := model.Pagination[model.SimpleUser]{
@@ -101,9 +102,9 @@ func getUserPostPagination(c *gin.Context, columnName string, errMessage string)
 	// 分页查询
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	userId := parseId(c.Param("userId"))
-	if userId == 0 {
-		userId = *getCurrUId(c)
+	userId := c.Param("userId")
+	if len(userId) == 0 {
+		userId = middleware.GetCurrUId(c)
 	}
 	db := common.GetDB()
 	result := model.Pagination[model.Post]{
@@ -195,7 +196,7 @@ func UpdateUserMedal(c *gin.Context) {
 	logo := medal.Logo
 	name := medal.Name
 	rarityCode := medal.RarityCode
-	medalId := parseId(c.Param("medalId"))
+	medalId := c.Param("medalId")
 	if len(logo) == 0 {
 		response.FailParams(c, "图标不能为空")
 		return
@@ -208,14 +209,14 @@ func UpdateUserMedal(c *gin.Context) {
 		response.FailParams(c, "稀有度不能为空")
 		return
 	}
-	if medalId == 0 {
+	if len(medalId) == 0 {
 		response.FailParams(c, "勋章id不能为空")
 		return
 	}
 	db := common.GetDB()
 	var result model.UserMedal
 	db.Find(&result, medalId)
-	if result.ID == 0 {
+	if len(result.ID) == 0 {
 		response.FailParams(c, "勋章信息不存在")
 		return
 	}

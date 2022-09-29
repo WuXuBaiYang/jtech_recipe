@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 )
 
@@ -29,7 +30,7 @@ func GetNotifyPagination(c *gin.Context) {
 		PageSize:  pageSize,
 	}
 	notifyDB := db.Model(&model.Notify{}).
-		Where("to_user_id", getCurrUId(c))
+		Where("to_user_id", middleware.GetCurrUId(c))
 	notifyDB.Count(&result.Total)
 	notifyDB.Order("created_at DESC").Preload("FromUser", "ToUser").
 		Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&result.Data)

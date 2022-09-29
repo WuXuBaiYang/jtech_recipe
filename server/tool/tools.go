@@ -9,23 +9,23 @@ import (
 )
 
 // GenInitUserNickName 根据格式生成初始化用户昵称
-func GenInitUserNickName(uId int64) string {
-	return fmt.Sprintf("用户_%d_%v", uId, time.Now().UnixMilli())
+func GenInitUserNickName(uId string) string {
+	return fmt.Sprintf("用户_%s_%v", uId, time.Now().UnixMilli())
 }
 
 // 缓存雪花算法节点
 var genNode *snowflake.Node
 
 // GenID 雪花算法生成id
-func GenID() int64 {
+func GenID() string {
 	if genNode == nil {
 		Node, err := snowflake.NewNode(899)
 		if err != nil {
-			return 0
+			return ""
 		}
 		genNode = Node
 	}
-	return genNode.Generate().Int64()
+	return fmt.Sprintf("%d", genNode.Generate().Int64())
 }
 
 // MD5 计算md5
