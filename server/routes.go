@@ -63,7 +63,7 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	// 分页获取通知列表
 	notifyGroup.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
-	notifyGroup.POST("", controller.SendNotify, middleware.PermissionCheck)
+	notifyGroup.POST("", controller.PushNotify, middleware.PermissionCheck)
 
 	////** 帖子相关 **//
 	//postGroup := group.Group("/post", middleware.AuthMiddleware(true))
