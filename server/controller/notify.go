@@ -8,9 +8,23 @@ import (
 	"server/model"
 )
 
+// 接收消息通知发送的结构体
+type notify struct {
+	ToUsers  []string `json:"toUsers"`
+	TypeCode string   `json:"typeCode"`
+	Title    string   `json:"title"`
+	Content  string   `json:"content"`
+	Uri      string   `json:"uri"`
+}
+
 // 发送通知
-func sendNotify(c *gin.Context, notify model.Notify, toUserIds []int64) []error {
+func sendNotify(c *gin.Context, notify notify, toUserIds []int64) []error {
 	return nil
+}
+
+// SendNotify 发送通知
+func SendNotify(c *gin.Context) {
+
 }
 
 // GetNotifyPagination 分页获取通知消息列表

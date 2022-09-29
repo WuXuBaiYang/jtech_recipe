@@ -53,15 +53,17 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	userGroup.GET("/common/collect/:userId", controller.GetUserCollectPagination)
 	// 获取全部勋章列表
 	userGroup.GET("/medal", controller.GetAllUserMedalList)
-	// 添加勋章
+	// 添加勋章[权限]
 	userGroup.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck)
-	// 更新勋章信息
+	// 更新勋章信息[权限]
 	userGroup.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck)
 
 	//** 通知相关 **//
 	notifyGroup := authGroup.Group("/notification")
 	// 分页获取通知列表
 	notifyGroup.GET("", controller.GetNotifyPagination)
+	// 发送消息通知[权限]
+	notifyGroup.POST("", controller.SendNotify, middleware.PermissionCheck)
 
 	////** 帖子相关 **//
 	//postGroup := group.Group("/post", middleware.AuthMiddleware(true))
