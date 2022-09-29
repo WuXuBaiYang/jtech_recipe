@@ -21,6 +21,6 @@ type ActivityRecord struct {
 
 	BeginTime  time.Time `json:"beginTime" gorm:"not null;comment:开始时间"`
 	EndTime    time.Time `json:"endTime" gorm:"not null;comment:结束时间"`
-	ActivityId int64     `json:"activityId" gorm:"not null;comment:活动id"`
+	ActivityId string    `json:"activityId" gorm:"not null;comment:活动id"`
 	Activity   Activity  `json:"activity" gorm:"foreignKey:ActivityId"`
 }
