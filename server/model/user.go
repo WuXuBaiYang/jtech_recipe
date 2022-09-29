@@ -36,7 +36,7 @@ type User struct {
 
 // SimpleUser 简易用户结构体
 type SimpleUser struct {
-	ID       int64  `json:"id"`
+	ID       string `json:"id"`
 	NickName string `json:"nickName"`
 	Avatar   string `json:"avatar"`
 	Level    int64  `json:"level"`

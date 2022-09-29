@@ -293,6 +293,13 @@ func UpdateUserMedal(c *gin.Context) {
 	name := medal.Name
 	rarityCode := medal.RarityCode
 	medalId := c.Param("medalId")
+	db := common.GetDB()
+	var result model.UserMedal
+	db.Find(&result, medalId)
+	if len(result.ID) == 0 {
+		response.FailParams(c, "勋章信息不存在")
+		return
+	}
 	if len(logo) == 0 {
 		response.FailParams(c, "图标不能为空")
 		return
@@ -309,14 +316,7 @@ func UpdateUserMedal(c *gin.Context) {
 		response.FailParams(c, "勋章id不能为空")
 		return
 	}
-	db := common.GetDB()
-	var result model.UserMedal
-	db.Find(&result, medalId)
-	if len(result.ID) == 0 {
-		response.FailParams(c, "勋章信息不存在")
-		return
-	}
-	// 创建并保存到数据库
+	// 更新已有数据
 	result.Name = name
 	result.Logo = logo
 	result.RarityCode = rarityCode

@@ -225,3 +225,10 @@ func createBase() model.OrmBase {
 		UpdatedAt: time.Now(),
 	}
 }
+
+// 创建创建者信息
+func createCreator(c *gin.Context) model.Creator {
+	return model.Creator{
+		CreatorId: middleware.GetCurrUId(c),
+	}
+}

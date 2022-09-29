@@ -7,6 +7,6 @@ type RecipeMenu struct {
 
 	Contents []any `json:"contents" gorm:"type:json;serializer:json;not null;comment:菜单内容集合"`
 
-	ActivityRecordId *int64          `json:"activityId" gorm:"not null;comment:活动id"`
+	ActivityRecordId *string         `json:"activityId" gorm:"not null;comment:活动id"`
 	ActivityRecord   *ActivityRecord `json:"activity" gorm:"foreignKey:ActivityRecordId"`
 }

@@ -11,11 +11,8 @@ import (
 
 // 接收消息通知发送的结构体
 type notifyItem struct {
-	ToUsers  []string `json:"toUsers"`
-	TypeCode string   `json:"typeCode"`
-	Title    string   `json:"title"`
-	Content  string   `json:"content"`
-	Uri      string   `json:"uri"`
+	ToUsers []string `json:"toUsers"`
+	model.Notify
 }
 
 // 发送通知

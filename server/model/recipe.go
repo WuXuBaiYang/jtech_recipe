@@ -18,7 +18,7 @@ type Recipe struct {
 	TagCodes             []string     `json:"tagCodes" gorm:"type:json;serializer:json;comment:标签字典码集合"`
 	Tags                 []SimpleDict `json:"tags" gorm:"-"`
 	// 使用的是活动记录表中的id
-	ActivityRecordId *int64          `json:"activityId" gorm:"not null;comment:活动id"`
+	ActivityRecordId *string         `json:"activityId" gorm:"not null;comment:活动id"`
 	ActivityRecord   *ActivityRecord `json:"activity" gorm:"foreignKey:ActivityRecordId"`
 }
 
