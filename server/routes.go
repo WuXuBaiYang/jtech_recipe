@@ -10,7 +10,25 @@ import (
 func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 根节点，使用api版本区分 **//
 	group := r.Group("/api", middleware.Common)
+	//** 授权校验组 **//
+	authGroup := group.Group("", middleware.AuthCheck)
 	//** 授权相关 **//
+	authRoutes(group)
+	//** 用户相关 **//
+	userRoutes(authGroup.Group("/user"))
+	//** 通知相关 **//
+	notifyRoutes(authGroup.Group("/notification"))
+	//** 帖子相关 **//
+	postRoutes(authGroup.Group("/post"))
+	//** 帖子评论/回复相关 **//
+	postCommentReplayRoutes(authGroup.Group("/post").Group("/comment"))
+	//** 活动相关 **//
+	activityRoutes(authGroup.Group("activity"))
+	return r
+}
+
+// 授权相关路由
+func authRoutes(group *gin.RouterGroup) {
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
 	// 用户注册
@@ -19,90 +37,102 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	group.POST("/login", controller.Login)
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken)
+}
 
-	//** 授权校验组 **//
-	authGroup := group.Group("", middleware.AuthCheck)
-	//** 用户相关 **//
-	// 创建用户相关请求组
-	userGroup := authGroup.Group("/user")
+// 用户相关路由
+func userRoutes(group *gin.RouterGroup) {
 	// 订阅用户
-	userGroup.POST("/subscribe/:userId", controller.SubscribeUser)
+	group.POST("/subscribe/:userId", controller.SubscribeUser)
 	// 取消订阅用户
-	userGroup.DELETE("/subscribe/:userId", controller.UnSubscribeUser)
+	group.DELETE("/subscribe/:userId", controller.UnSubscribeUser)
 	// 分页获取订阅列表
-	userGroup.GET("/subscribe", controller.GetSubscribePagination)
+	group.GET("/subscribe", controller.GetSubscribePagination)
 	// 分页获取目标用户的订阅列表
-	userGroup.GET("/subscribe/:userId", controller.GetSubscribePagination)
+	group.GET("/subscribe/:userId", controller.GetSubscribePagination)
 	// 获取用户信息
-	userGroup.GET("/info/:userId", controller.GetUserProfile)
+	group.GET("/info/:userId", controller.GetUserProfile)
 	// 获取当前用户信息
-	userGroup.GET("/info", controller.GetUserProfile)
+	group.GET("/info", controller.GetUserProfile)
 	// 编辑当前用户信息
-	userGroup.PUT("/info", controller.UpdateUserProfile)
+	group.PUT("/info", controller.UpdateUserProfile)
 	// 分页获取用户点赞帖子列表
-	userGroup.GET("/common/like", controller.GetUserLikePostPagination)
+	group.GET("/common/like", controller.GetUserLikePostPagination)
 	// 分页获取目标用户点赞帖子列表
-	userGroup.GET("/common/like/:userId", controller.GetUserLikePostPagination)
+	group.GET("/common/like/:userId", controller.GetUserLikePostPagination)
 	// 分页获取用户浏览帖子列表
-	userGroup.GET("/common/view", controller.GetUserViewPostPagination)
+	group.GET("/common/view", controller.GetUserViewPostPagination)
 	// 分页获取目标用户浏览帖子列表
-	userGroup.GET("/common/view/:userId", controller.GetUserViewPostPagination)
+	group.GET("/common/view/:userId", controller.GetUserViewPostPagination)
 	// 分页获取用户收藏帖子列表
-	userGroup.GET("/common/collect", controller.GetUserCollectPagination)
+	group.GET("/common/collect", controller.GetUserCollectPagination)
 	// 分页获取目标用户收藏帖子列表
-	userGroup.GET("/common/collect/:userId", controller.GetUserCollectPagination)
+	group.GET("/common/collect/:userId", controller.GetUserCollectPagination)
 	// 获取全部勋章列表
-	userGroup.GET("/medal", controller.GetAllUserMedalList)
+	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
-	userGroup.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck)
+	group.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck)
 	// 更新勋章信息[权限]
-	userGroup.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck)
+	group.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck)
+}
 
-	//** 通知相关 **//
-	notifyGroup := authGroup.Group("/notification")
+// 通知相关路由
+func notifyRoutes(group *gin.RouterGroup) {
 	// 分页获取通知列表
-	notifyGroup.GET("", controller.GetNotifyPagination)
+	group.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
-	notifyGroup.POST("", controller.PushNotify, middleware.PermissionCheck)
+	group.POST("", controller.PushNotify, middleware.PermissionCheck)
+}
 
-	//** 帖子相关 **//
-	postGroup := authGroup.Group("/post")
+// 帖子相关路由
+func postRoutes(group *gin.RouterGroup) {
 	// 发布帖子
-	postGroup.POST("", controller.PublishPost)
+	group.POST("", controller.PublishPost)
 	// 编辑帖子
-	postGroup.PUT("/:postId", controller.UpdatePost)
+	group.PUT("/:postId", controller.UpdatePost)
 	// 获取帖子分页列表
-	postGroup.GET("", controller.GetPostPagination)
+	group.GET("", controller.GetPostPagination)
 	// 获取帖子详情信息
-	postGroup.GET("/:postId", controller.GetPostInfo)
+	group.GET("/:postId", controller.GetPostInfo)
 	// 对帖子浏览
-	postGroup.POST("/view/:postId", controller.AddPostView)
+	group.POST("/view/:postId", controller.AddPostView)
 	// 对帖子点赞
-	postGroup.POST("/like/:postId", controller.AddPostLike)
+	group.POST("/like/:postId", controller.AddPostLike)
 	// 对帖子取消点赞
-	postGroup.DELETE("/like/:postId", controller.RemovePostLike)
+	group.DELETE("/like/:postId", controller.RemovePostLike)
 	// 对帖子收藏
-	postGroup.POST("/collect/:postId", controller.AddPostCollect)
+	group.POST("/collect/:postId", controller.AddPostCollect)
 	// 对帖子取消收藏
-	postGroup.DELETE("/collect/:postId", controller.RemovePostCollect)
+	group.DELETE("/collect/:postId", controller.RemovePostCollect)
+}
 
-	//** 帖子评论/回复相关 **//
-	postCommentGroup := postGroup.Group("/comment")
+// 帖子评论回复相关
+func postCommentReplayRoutes(group *gin.RouterGroup) {
 	// 发布帖子评论
-	postCommentGroup.POST("/:postId", controller.PublishPostComment)
+	group.POST("/:postId", controller.PublishPostComment)
 	// 分页查询帖子评论和简略（3条）评论回复
-	postCommentGroup.GET("/:postId", controller.GetPostCommentPagination)
+	group.GET("/:postId", controller.GetPostCommentPagination)
 	// 发布帖子评论回复
-	postCommentGroup.POST("/replay/:commentId", controller.PublishPostCommentReplay)
+	group.POST("/replay/:commentId", controller.PublishPostCommentReplay)
 	// 分页查询帖子评论回复
-	postCommentGroup.GET("/replay/:commentId", controller.GetPostCommentReplayPagination)
+	group.GET("/replay/:commentId", controller.GetPostCommentReplayPagination)
 	// 对帖子评论点赞
-	postCommentGroup.POST("/like/:commentId", controller.AddPostCommentLike)
+	group.POST("/like/:commentId", controller.AddPostCommentLike)
 	// 对帖子评论取消点赞
-	postCommentGroup.DELETE("/like/:commentId", controller.RemovePostCommentLike)
+	group.DELETE("/like/:commentId", controller.RemovePostCommentLike)
 	// 对帖子评论回复点赞
-	postCommentGroup.POST("/replay/like/:replayId", controller.AddPostCommentReplayLike)
+	group.POST("/replay/like/:replayId", controller.AddPostCommentReplayLike)
 	// 对帖子评论回复取消点赞
-	postCommentGroup.DELETE("/replay/like/:replayId", controller.RemovePostCommentReplayLike)
-	return r
+	group.DELETE("/replay/like/:replayId", controller.RemovePostCommentReplayLike)
+}
+
+// 活动相关路由
+func activityRoutes(group *gin.RouterGroup) {
+	// 发布一个活动
+	group.POST("", controller.PublishActivity, middleware.PermissionCheck)
+	// 编辑一个活动
+	group.PUT("", controller.UpdateActivity, middleware.PermissionCheck)
+	// 开始一个活动
+	group.POST("/start/:activityId", controller.StartActivity, middleware.PermissionCheck)
+	// 获取全部活动列表
+	group.GET("", controller.GetAllActivityList)
 }
