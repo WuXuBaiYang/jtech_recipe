@@ -130,9 +130,11 @@ func activityRoutes(group *gin.RouterGroup) {
 	// 发布一个活动
 	group.POST("", controller.PublishActivity, middleware.PermissionCheck)
 	// 编辑一个活动
-	group.PUT("", controller.UpdateActivity, middleware.PermissionCheck)
+	group.PUT("/:activityId", controller.UpdateActivity, middleware.PermissionCheck)
 	// 开始一个活动
 	group.POST("/start/:activityId", controller.StartActivity, middleware.PermissionCheck)
 	// 获取全部活动列表
 	group.GET("", controller.GetAllActivityList)
+	// 获取全部进行中的活动列表
+	group.GET("/process", controller.GetAllActivityProcessList)
 }
