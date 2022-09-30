@@ -2,8 +2,10 @@ package tool
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/snowflake"
+	"os"
 	"regexp"
 	"time"
 )
@@ -56,4 +58,23 @@ func If[T any](isTrue bool, a, b T) T {
 		return a
 	}
 	return b
+}
+
+// ReadJsonFile 读取Json文件
+func ReadJsonFile(path string, v any) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			println("文件关闭失败")
+		}
+	}(f)
+	if err := json.NewDecoder(f).
+		Decode(&v); err != nil {
+		return err
+	}
+	return nil
 }

@@ -10,7 +10,7 @@ func main() {
 	//r := gin.Default()
 	//r.GET("test", testAPI)
 	//panic(r.Run(":9528"))
-	db := common.InitDB()
+	db := common.InitDB(true)
 	err := db.Where("phone_number = ?", "18600574971").First(&model.User{}).Error
 	println(err.Error())
 }

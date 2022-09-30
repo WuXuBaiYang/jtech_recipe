@@ -23,6 +23,6 @@ type OrmBase struct {
 
 // Creator 创建者结构体
 type Creator struct {
-	CreatorId string      `json:"creatorId" gorm:"not null;comment:创建者id"`
+	CreatorId string      `json:"creatorId" gorm:"comment:创建者id"`
 	Creator   *SimpleUser `json:"creator,omitempty" gorm:"foreignKey:CreatorId"`
 }
