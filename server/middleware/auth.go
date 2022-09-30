@@ -11,7 +11,7 @@ import (
 
 // AuthCheck 授权校验
 func AuthCheck(c *gin.Context) {
-	claims, err := GetTokenClaim(c)
+	claims, err := GetAccessTokenClaim(c)
 	if err != nil {
 		response.FailAuthDef(c)
 		c.Abort()
@@ -27,14 +27,14 @@ func AuthCheck(c *gin.Context) {
 	c.Next()
 }
 
-// GetToken 获取token
-func GetToken(c *gin.Context) string {
+// GetAccessToken 获取token
+func GetAccessToken(c *gin.Context) string {
 	return c.GetHeader("Authorization")
 }
 
-// GetTokenClaim 获取授权token信息
-func GetTokenClaim(c *gin.Context) (*common.AccessClaims, error) {
-	tokenString := GetToken(c)
+// GetAccessTokenClaim 获取授权token信息
+func GetAccessTokenClaim(c *gin.Context) (*common.AccessClaims, error) {
+	tokenString := GetAccessToken(c)
 	if len(tokenString) == 0 || !strings.HasPrefix(tokenString, "Bearer ") {
 		return nil, errors.New("token不存在/格式错误")
 	}

@@ -9,14 +9,17 @@ import (
 	"server/model"
 )
 
-// 接收消息通知发送的结构体
-type notifyItem struct {
-	ToUsers []string `json:"toUsers"`
-	model.Notify
+// 消息请求
+type notifyReq struct {
+	ToUsers  []string `json:"toUsers" validate:"required,unique"`
+	TypeCode string   `json:"typeCode" validate:"required"`
+	Title    string   `json:"title" validate:"required,gte=6"`
+	Content  string   `json:"content"`
+	Uri      string   `json:"uri"`
 }
 
 // 发送通知
-func sendNotify(c *gin.Context, notify notifyItem) error {
+func sendNotify(c *gin.Context, notify notifyReq) error {
 	db := common.GetDB()
 	err := db.Transaction(func(tx *gorm.DB) error {
 		// 创建要插入的数据集合并插入数据库
@@ -52,29 +55,13 @@ func sendNotify(c *gin.Context, notify notifyItem) error {
 // PushNotify 推送一条通知
 func PushNotify(c *gin.Context) {
 	// 获取请求参数体
-	var notify notifyItem
-	if err := c.BindJSON(&notify); err != nil {
+	var req notifyReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c)
 		return
 	}
-	// 校验参数
-	title := notify.Title
-	content := notify.Content
-	typeCode := notify.TypeCode
-	if len(title) == 0 {
-		response.FailParams(c, "标题不能为空")
-		return
-	}
-	if len(content) == 0 {
-		response.FailParams(c, "内容不能为空")
-		return
-	}
-	if len(typeCode) == 0 {
-		response.FailParams(c, "消息类型不能为空")
-		return
-	}
 	// 交给方法实现消息推送和写入
-	if err := sendNotify(c, notify); err != nil {
+	if err := sendNotify(c, req); err != nil {
 		response.FailDef(c, -1, "消息发送失败")
 		return
 	}
@@ -84,23 +71,20 @@ func PushNotify(c *gin.Context) {
 // GetNotifyPagination 分页获取通知消息列表
 func GetNotifyPagination(c *gin.Context) {
 	// 获取分页参数
-	pagination, err := getPaginationParams(c)
-	if err != nil {
-		response.FailParams(c, err.Error())
+	var pagination model.Pagination[model.Notify]
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.FailParamsDef(c)
 		return
 	}
 	// 分页查询
+	db := common.GetDB()
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	db := common.GetDB()
-	result := model.Pagination[model.Notify]{
-		PageIndex: pageIndex,
-		PageSize:  pageSize,
-	}
 	notifyDB := db.Model(&model.Notify{}).
 		Where("to_user_id in ?", []string{middleware.GetCurrUId(c), ""})
-	notifyDB.Count(&result.Total)
+	notifyDB.Count(&pagination.Total)
 	notifyDB.Order("created_at DESC").Preload("FromUser").
-		Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&result.Data)
-	response.SuccessDef(c, result)
+		Offset((pageIndex - 1) * pageSize).Limit(pageSize).
+		Find(&pagination.Data)
+	response.SuccessDef(c, pagination)
 }

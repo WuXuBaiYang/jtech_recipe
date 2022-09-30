@@ -7,7 +7,6 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/golang-jwt/jwt/v4 v4.4.2
-	github.com/imdario/mergo v0.3.13
 	go.uber.org/zap v1.23.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.3.6

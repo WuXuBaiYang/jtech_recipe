@@ -1,6 +1,17 @@
 package controller
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
+
+// 活动请求
+type activityReq struct {
+	CycleTime int64    `json:"cycleTime" validate:"required,gte=86400000"`
+	Always    bool     `json:"always" validate:"required"`
+	Title     string   `json:"title" validate:"required,gte=6"`
+	Url       string   `json:"url" validate:"required,url"`
+	TypeCodes []string `json:"typeCodes" validate:"required,unique,gte=1"`
+}
 
 // PublishActivity 发布活动信息
 func PublishActivity(c *gin.Context) {

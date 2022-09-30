@@ -6,12 +6,11 @@ import "time"
 type Activity struct {
 	OrmBase
 
-	CycleTime int64 `json:"cycleTime" gorm:"comment:周期持续时间"`
+	CycleTime int64 `json:"cycleTime" gorm:"not null;comment:周期持续时间"`
 	// 长期活动的话，定时器在结算上一个周期之后，会自动发起下一个周期的活动
-	Always    bool     `json:"always" gorm:"comment:是否为长期活动"`
-	Title     string   `json:"title" gorm:"varchar(80);comment:活动标题"`
-	Contents  *[]any   `json:"contents,omitempty" gorm:"type:json;serializer:json;comment:活动内容"`
-	Url       *string  `json:"url,omitempty" gorm:"varchar(200);comment:活动介绍网址"`
+	Always    bool     `json:"always" gorm:"not null;comment:是否为长期活动"`
+	Title     string   `json:"title" gorm:"varchar(80);not null;comment:活动标题"`
+	Url       string   `json:"url" gorm:"varchar(200);not null;comment:活动介绍网址"`
 	TypeCodes []string `json:"typeCodes" gorm:"type:json;serializer:json;not null;comment:活动接受投稿的类型字典码集合"`
 }
 

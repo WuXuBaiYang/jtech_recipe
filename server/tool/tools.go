@@ -9,8 +9,8 @@ import (
 )
 
 // GenInitUserNickName 根据格式生成初始化用户昵称
-func GenInitUserNickName(uId string) string {
-	return fmt.Sprintf("用户_%s_%v", uId, time.Now().UnixMilli())
+func GenInitUserNickName() string {
+	return fmt.Sprintf("用户_%d", time.Now().UnixMilli())
 }
 
 // 缓存雪花算法节点
@@ -26,6 +26,12 @@ func GenID() string {
 		genNode = Node
 	}
 	return fmt.Sprintf("%d", genNode.Generate().Int64())
+}
+
+// GenSMSCode 生成短信验证码
+func GenSMSCode(count int) string {
+	code := GenID()
+	return code[len(code)-count:]
 }
 
 // MD5 计算md5

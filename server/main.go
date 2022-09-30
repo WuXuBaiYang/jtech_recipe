@@ -40,6 +40,8 @@ func main() {
 	}(rdb)
 	// 创建默认路由引擎
 	r := gin.Default()
+	// 注册验证方法
+	common.InitValidator()
 	// 注册路由
 	CollectRoutes(r)
 	// 启动服务

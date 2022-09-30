@@ -9,69 +9,61 @@ import (
 	"time"
 )
 
-// 用户详细信息结构体
+// 用户信息请求
+type userProfileReq struct {
+	userProfile
+
+	EvaluateCode       string   `json:"evaluateCode" validate:"required"`
+	RecipeCuisineCodes []string `json:"recipeCuisineCodes" validate:"required"`
+	RecipeTasteCodes   []string `json:"recipeTasteCodes" validate:"required"`
+}
+
+// 用户信息
 type userProfile struct {
 	ID         string            `json:"id"`
 	Level      int64             `json:"level"`
-	NickName   string            `json:"nickName"`
+	NickName   string            `json:"nickName" validate:"required,gte=1"`
 	Avatar     string            `json:"avatar"`
 	Bio        string            `json:"bio"`
 	Profession string            `json:"profession"`
-	GenderCode string            `json:"genderCode"`
+	GenderCode string            `json:"genderCode" validate:"required"`
 	Birth      *time.Time        `json:"birth"`
-	Medals     []model.UserMedal `json:"medals,omitempty"`
+	Medals     []model.UserMedal `json:"medals"`
 }
 
-// 全部可修改的用户信息
-type fullUserProfile struct {
-	userProfile
-
-	EvaluateCode       string   `json:"evaluateCode"`
-	RecipeCuisineCodes []string `json:"recipeCuisineCodes"`
-	RecipeTasteCodes   []string `json:"recipeTasteCodes"`
+// 用户勋章请求
+type medalReq struct {
+	Logo       string `json:"logo" validate:"required"`
+	Name       string `json:"name" validate:"required,gte=2"`
+	RarityCode string `json:"rarityCode"  validate:"required"`
 }
 
 // UpdateUserProfile 修改用户信息
 func UpdateUserProfile(c *gin.Context) {
 	// 获取请求体参数
-	var profile fullUserProfile
-	if err := c.BindJSON(&profile); err != nil {
+	var req userProfileReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c)
 		return
 	}
 	// 校验参数
-	nickName := profile.NickName
-	gender := profile.GenderCode
-	birth := profile.Birth
-	evaluateCode := profile.EvaluateCode
-	if len(nickName) == 0 {
-		response.FailParams(c, "昵称不能为空")
-		return
-	}
-	if len(gender) == 0 {
-		response.FailParams(c, "性别不能为空")
-		return
-	}
+	birth := req.Birth
 	if birth != nil && time.Now().Before(*birth) {
 		response.FailParams(c, "生日填写错误")
-		return
-	}
-	if len(evaluateCode) == 0 {
-		response.FailParams(c, "个人评价信息有误")
 		return
 	}
 	// 获取到当前用户信息并写入新的信息
 	db := common.GetDB()
 	user := middleware.GetCurrUser(c)
-	user.NickName = profile.NickName
-	user.Avatar = profile.Avatar
-	user.Bio = profile.Bio
-	user.Profession = profile.Profession
-	user.GenderCode = profile.GenderCode
-	user.Birth = profile.Birth
-	user.EvaluateCode = profile.EvaluateCode
-	user.RecipeCuisineCodes = profile.RecipeCuisineCodes
-	user.RecipeTasteCodes = profile.RecipeTasteCodes
+	user.NickName = req.NickName
+	user.Avatar = req.Avatar
+	user.Bio = req.Bio
+	user.Profession = req.Profession
+	user.GenderCode = req.GenderCode
+	user.Birth = req.Birth
+	user.EvaluateCode = req.EvaluateCode
+	user.RecipeCuisineCodes = req.RecipeCuisineCodes
+	user.RecipeTasteCodes = req.RecipeTasteCodes
 	if err := db.Save(&user).Error; err != nil {
 		response.FailDef(c, -1, "用户信息修改失败")
 		return
@@ -83,7 +75,8 @@ func UpdateUserProfile(c *gin.Context) {
 func GetUserProfile(c *gin.Context) {
 	db := common.GetDB()
 	userId := c.Param("userId")
-	if len(userId) == 0 { // 获取个人信息（完整）
+	// 没有指定id则返回当前登录用户完整信息
+	if len(userId) == 0 {
 		user := middleware.GetCurrUser(c)
 		if err := loadUserMedals(user.ID, &user.Medals); err != nil {
 			response.FailDef(c, -1, "获取用户信息失败")
@@ -92,6 +85,7 @@ func GetUserProfile(c *gin.Context) {
 		response.SuccessDef(c, user)
 		return
 	}
+	// 指定用户id则根据id查询目标用户的部分信息
 	var profile userProfile
 	if err := db.Model(&model.User{}).First(&profile, userId).Error; err != nil {
 		response.FailDef(c, -1, "用户不存在")
@@ -106,22 +100,21 @@ func GetUserProfile(c *gin.Context) {
 
 // SubscribeUser 订阅用户
 func SubscribeUser(c *gin.Context) {
-	// 校验数据
-	subUserId := c.Param("userId")
-	if len(subUserId) == 0 {
+	// 获取数据并校验
+	subUId := c.Param("userId")
+	if len(subUId) == 0 {
 		response.FailParams(c, "用户id不能为空")
 		return
 	}
-	var subUser model.User
 	db := common.GetDB()
-	db.Where("id = ?", subUserId).Find(&subUser)
-	if len(subUser.ID) == 0 {
-		response.FailParams(c, "用户不存在")
+	user := middleware.GetCurrUser(c)
+	if subUId == user.ID {
+		response.FailParams(c, "不能订阅自己")
 		return
 	}
-	user := middleware.GetCurrUser(c)
-	if subUser.ID == user.ID {
-		response.FailParams(c, "不能订阅自己")
+	var subUser model.User
+	if err := db.First(&subUser, subUId).Error; err != nil {
+		response.FailParams(c, "用户不存在")
 		return
 	}
 	// 添加订阅关系
@@ -136,15 +129,14 @@ func SubscribeUser(c *gin.Context) {
 // UnSubscribeUser 取消订阅用户
 func UnSubscribeUser(c *gin.Context) {
 	// 校验数据
-	subUserId := c.Param("userId")
-	if len(subUserId) == 0 {
+	subUId := c.Param("userId")
+	if len(subUId) == 0 {
 		response.FailParams(c, "用户id不能为空")
 		return
 	}
-	var subUser model.User
 	db := common.GetDB()
-	db.Where("id = ?", subUserId).Find(&subUser)
-	if len(subUser.ID) == 0 {
+	var subUser model.User
+	if err := db.First(&subUser, subUId).Error; err != nil {
 		response.FailParams(c, "用户不存在")
 		return
 	}
@@ -160,62 +152,56 @@ func UnSubscribeUser(c *gin.Context) {
 // GetSubscribePagination 分页获取订阅列表
 func GetSubscribePagination(c *gin.Context) {
 	// 获取分页参数
-	pagination, err := getPaginationParams(c)
-	if err != nil {
-		response.FailParams(c, err.Error())
+	var pagination model.Pagination[model.SimpleUser]
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		response.FailParamsDef(c)
 		return
 	}
+	// 获取用户id
+	uId := c.Param("userId")
+	if len(uId) == 0 {
+		uId = middleware.GetCurrUId(c)
+	}
 	// 分页查询
+	db := common.GetDB()
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	userId := c.Param("userId")
-	if len(userId) == 0 {
-		userId = middleware.GetCurrUId(c)
-	}
-	db := common.GetDB()
-	result := model.Pagination[model.SimpleUser]{
-		PageIndex: pageIndex,
-		PageSize:  pageSize,
-	}
-	target := model.User{OrmBase: model.OrmBase{ID: userId}}
-	result.Total = db.Model(&target).Association("Subscribes").Count()
+	target := model.User{OrmBase: model.OrmBase{ID: uId}}
+	pagination.Total = db.Model(&target).Association("Subscribes").Count()
 	if err := db.Model(&target).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
-		Association("Subscribes").Find(&result.Data); err != nil {
+		Association("Subscribes").Find(&pagination.Data); err != nil {
 		response.FailDef(c, -1, "数据查询失败")
 		return
 	}
-	response.SuccessDef(c, result)
+	response.SuccessDef(c, pagination)
 }
 
 // 分页获取用户帖子操作列表
 func getUserPostPagination(c *gin.Context, columnName string, errMessage string) {
 	// 获取分页参数
-	pagination, err := getPaginationParams(c)
-	if err != nil {
+	var pagination model.Pagination[model.Post]
+	if err := c.ShouldBindQuery(&pagination); err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
+	// 获取用户id
+	uId := c.Param("userId")
+	if len(uId) == 0 {
+		uId = middleware.GetCurrUId(c)
+	}
 	// 分页查询
+	db := common.GetDB()
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	userId := c.Param("userId")
-	if len(userId) == 0 {
-		userId = middleware.GetCurrUId(c)
-	}
-	db := common.GetDB()
-	result := model.Pagination[model.Post]{
-		PageIndex: pageIndex,
-		PageSize:  pageSize,
-	}
-	target := model.User{OrmBase: model.OrmBase{ID: userId}}
-	result.Total = db.Model(&target).Association(columnName).Count()
+	target := model.User{OrmBase: model.OrmBase{ID: uId}}
+	pagination.Total = db.Model(&target).Association(columnName).Count()
 	if err := db.Model(&target).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
-		Association(columnName).Find(&result.Data); err != nil {
+		Association(columnName).Find(&pagination.Data); err != nil {
 		response.FailDef(c, -1, errMessage)
 		return
 	}
-	fillPostInfo(c, &result.Data)
-	response.SuccessDef(c, result)
+	fillPostInfo(c, &pagination.Data)
+	response.SuccessDef(c, pagination)
 }
 
 // GetUserViewPostPagination 分页获取用户浏览过的帖子列表
@@ -244,34 +230,18 @@ func GetAllUserMedalList(c *gin.Context) {
 // AddUserMedal 添加勋章
 func AddUserMedal(c *gin.Context) {
 	// 获取请求参数
-	var medal model.UserMedal
-	if err := c.BindJSON(&medal); err != nil {
+	var req medalReq
+	if err := c.BindJSON(&req); err != nil {
 		response.FailParamsDef(c)
-		return
-	}
-	// 数据校验
-	logo := medal.Logo
-	name := medal.Name
-	rarityCode := medal.RarityCode
-	if len(logo) == 0 {
-		response.FailParams(c, "图标不能为空")
-		return
-	}
-	if len(name) == 0 {
-		response.FailParams(c, "名称不能为空")
-		return
-	}
-	if len(rarityCode) == 0 {
-		response.FailParams(c, "稀有度不能为空")
 		return
 	}
 	// 创建并保存到数据库
 	db := common.GetDB()
 	result := model.UserMedal{
 		OrmBase:    createBase(),
-		Logo:       logo,
-		Name:       name,
-		RarityCode: rarityCode,
+		Logo:       req.Logo,
+		Name:       req.Name,
+		RarityCode: req.RarityCode,
 	}
 	if err := db.Create(&result).Error; err != nil {
 		response.FailDef(c, -1, "勋章创建失败")
@@ -283,43 +253,26 @@ func AddUserMedal(c *gin.Context) {
 // UpdateUserMedal 更新勋章信息
 func UpdateUserMedal(c *gin.Context) {
 	// 获取请求参数
-	var medal model.UserMedal
-	if err := c.BindJSON(&medal); err != nil {
+	var req medalReq
+	if err := c.BindJSON(&req); err != nil {
 		response.FailParamsDef(c)
 		return
 	}
-	// 数据校验
-	logo := medal.Logo
-	name := medal.Name
-	rarityCode := medal.RarityCode
 	medalId := c.Param("medalId")
-	db := common.GetDB()
-	var result model.UserMedal
-	db.Find(&result, medalId)
-	if len(result.ID) == 0 {
-		response.FailParams(c, "勋章信息不存在")
-		return
-	}
-	if len(logo) == 0 {
-		response.FailParams(c, "图标不能为空")
-		return
-	}
-	if len(name) == 0 {
-		response.FailParams(c, "名称不能为空")
-		return
-	}
-	if len(rarityCode) == 0 {
-		response.FailParams(c, "稀有度不能为空")
-		return
-	}
 	if len(medalId) == 0 {
 		response.FailParams(c, "勋章id不能为空")
 		return
 	}
+	db := common.GetDB()
+	var result model.UserMedal
+	if err := db.First(&result, medalId).Error; err != nil {
+		response.FailParams(c, "勋章id不能为空")
+		return
+	}
 	// 更新已有数据
-	result.Name = name
-	result.Logo = logo
-	result.RarityCode = rarityCode
+	result.Name = req.Name
+	result.Logo = req.Logo
+	result.RarityCode = req.RarityCode
 	if err := db.Save(&result).Error; err != nil {
 		response.FailDef(c, -1, "勋章信息保存失败")
 		return
@@ -328,10 +281,10 @@ func UpdateUserMedal(c *gin.Context) {
 }
 
 // 获取用户勋章
-func loadUserMedals(userId string, medals *[]model.UserMedal) error {
+func loadUserMedals(uId string, medals *[]model.UserMedal) error {
 	db := common.GetDB()
 	err := db.Model(&model.User{
-		OrmBase: model.OrmBase{ID: userId},
+		OrmBase: model.OrmBase{ID: uId},
 	}).Association("Medals").Find(medals)
 	return err
 }

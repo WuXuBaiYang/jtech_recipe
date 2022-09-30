@@ -1,220 +1,184 @@
 package controller
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"server/common"
 	"server/controller/response"
 	"server/middleware"
 	"server/model"
 	"server/tool"
-	"strconv"
 	"time"
 )
 
-// 用户登录注册授权信息结构体
-type userAuth struct {
-	PhoneNumber string `json:"phoneNumber"`
-	Password    string `json:"password"`
-	Code        string `json:"code"`
+// 授权请求
+type authReq struct {
+	PhoneNumber string `json:"phoneNumber" validate:"required,phone,gte=11"`
+	Password    string `json:"-" validate:"gte=8"`
+	Code        string `json:"code" validate:"len=4"`
+}
+
+// 授权响应
+type authRes struct {
+	AccessToken  string     `json:"accessToken"`
+	RefreshToken string     `json:"refreshToken"`
+	User         model.User `json:"user"`
 }
 
 // GetSMS 获取短信验证码
 func GetSMS(c *gin.Context) {
-	// 获取请求参数
+	// 获取请求参数并校验手机号
 	phone := c.Param("phone")
 	if !tool.VerifyPhoneNumber(phone) {
 		response.FailParams(c, "手机号校验失败")
 		return
 	}
-	// 发送短信验证码并写入redis
+	// 发送短信验证码
+	code := tool.GenSMSCode(4)
+	if err := common.SendSMSVerify(phone, code); err != nil {
+		response.FailDef(c, -1, "短信发送失败")
+		return
+	}
+	// 写入redis
 	rdb := common.GetRDB()
-	code, err := common.SendSMSVerify(phone)
-	if err != nil {
+	if err := rdb.Set(c, phone, code,
+		common.SMSExpirationTime).Err(); err != nil {
 		response.FailDef(c, -1, "短信发送失败")
 		return
 	}
-	r := rdb.Set(c, phone, *code, common.SMSExpirationTime)
-	if r.Err() != nil {
-		response.FailDef(c, -1, "短信发送失败")
-		return
-	}
-	response.SuccessDef(c, true)
+	// 响应发送成功的结果,调试模式则返回code
+	result := tool.If[any](common.DebugMode, code, true)
+	response.SuccessDef(c, result)
 }
 
 // Register 用户注册接口
 func Register(c *gin.Context) {
 	// 获取请求体参数
-	reqAuth := &userAuth{}
-	if err := c.BindJSON(reqAuth); err != nil {
+	var req authReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c)
 		return
 	}
-	phoneNumber := reqAuth.PhoneNumber
-	password := reqAuth.Password
-	code := reqAuth.Code
+	// 校验短信验证码
 	rdb := common.GetRDB()
-	// 数据校验
-	if !tool.VerifyPhoneNumber(phoneNumber) {
-		response.FailParams(c, "手机号校验失败")
-		return
-	}
-	vCode := rdb.Get(c, phoneNumber).Val()
-	if len(code) == 0 || vCode != code {
+	vCode := rdb.Get(c, req.PhoneNumber).Val()
+	if vCode != req.Code {
 		response.FailParams(c, "短信验证码校验失败")
 		return
 	}
-	if len(password) == 0 {
-		response.FailParams(c, "密码不能为空")
-		return
-	}
-	user := model.User{
-		PhoneNumber: phoneNumber,
-		Password:    password,
-	}
+	// 判断用户（手机号）是否已存在
 	db := common.GetDB()
-	db.Where("phone_number = ?", phoneNumber).First(&user)
-	if len(user.ID) != 0 {
+	if err := db.Where("phone_number = ?", req.PhoneNumber).
+		First(&model.User{}).Error; err == nil {
 		response.FailDef(c, -1, "用户已存在")
 		return
 	}
-	// 在事件中执行注册
-	err := db.Transaction(func(tx *gorm.DB) error {
-		// 创建用户信息
-		user.OrmBase = createBase()
-		user.NickName = tool.GenInitUserNickName(user.ID)
-		if err := tx.Create(&user).Error; err != nil {
-			return err
-		}
-		return nil
-	})
-	if err != nil {
+	// 插入用户信息
+	result := model.User{
+		OrmBase:  createBase(),
+		NickName: tool.GenInitUserNickName(),
+	}
+	if err := db.Create(&result).Error; err != nil {
 		response.FailDef(c, -1, "用户创建失败")
 		return
 	}
 	// 构造授权信息并返回
-	if auth, err := createAuthInfo(c, user); err == nil {
-		response.SuccessDef(c, auth)
-		// 删除使用过的短信验证码
-		rdb.Del(c, phoneNumber)
+	auth, authErr := createAuthInfo(c, result)
+	if authErr != nil {
+		response.FailDef(c, -1, "注册失败")
 		return
 	}
-	response.FailDef(c, -1, "授权失败")
+	// 删除使用过的短信验证码
+	rdb.Del(c, req.PhoneNumber)
+	response.SuccessDef(c, auth)
 }
 
 // Login 用户登录接口
 func Login(c *gin.Context) {
 	// 获取请求体参数
-	reqAuth := &userAuth{}
-	if err := c.BindJSON(reqAuth); err != nil {
+	var req authReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c)
 		return
 	}
-	phoneNumber := reqAuth.PhoneNumber
-	password := reqAuth.Password
-	code := reqAuth.Code
-	rdb := common.GetRDB()
-	// 数据校验
-	if !tool.VerifyPhoneNumber(phoneNumber) {
-		response.FailParams(c, "手机号校验失败")
-		return
-	}
-	user := model.User{
-		PhoneNumber: phoneNumber,
-		Password:    password,
-	}
+	// 判断用户是否存在
 	db := common.GetDB()
-	db.Where("phone_number = ?", phoneNumber).First(&user)
-	if len(user.ID) == 0 {
+	var result model.User
+	if err := db.Where("phone_number = ?", req.PhoneNumber).
+		First(&result).Error; err != nil {
 		response.FailParams(c, "用户不存在")
 		return
 	}
-	if len(code) != 0 {
-		vCode := rdb.Get(c, phoneNumber).Val()
-		if vCode != code {
-			response.FailParams(c, "短信验证码校验失败")
-			return
-		}
-	} else if len(password) != 0 {
-		if user.Password != password {
+	// 存在密码则验证密码，否则验证校验码
+	rdb := common.GetRDB()
+	if len(req.Password) != 0 {
+		if result.Password != req.Password {
 			response.FailParams(c, "密码错误")
 			return
 		}
 	} else {
-		response.FailParams(c, "缺少短信验证码或密码")
-		return
+		vCode := rdb.Get(c, req.PhoneNumber).Val()
+		if vCode != req.Code {
+			response.FailParams(c, "短信验证码校验失败")
+			return
+		}
 	}
 	// 构造授权信息并返回
-	if auth, err := createAuthInfo(c, user); err == nil {
-		response.SuccessDef(c, auth)
-		// 删除使用过的短信验证码
-		rdb.Del(c, phoneNumber)
+	auth, authErr := createAuthInfo(c, result)
+	if authErr != nil {
+		response.FailDef(c, -1, "登录失败")
 		return
 	}
-	response.FailDef(c, -1, "授权失败")
+	// 删除使用过的短信验证码
+	rdb.Del(c, req.PhoneNumber)
+	response.SuccessDef(c, auth)
 }
 
 // RefreshToken 刷新过期token
 func RefreshToken(c *gin.Context) {
-	if claims, err := middleware.GetTokenClaim(c); err == nil {
-		if refreshClaims, err := middleware.GetRefreshTokenClaim(c); err == nil {
-			// 校验参数
-			if refreshClaims.Target != tool.MD5(middleware.GetToken(c)[7:]) {
-				response.FailParams(c, "token不匹配")
-				return
-			}
-			// 重新生成授权信息并返回
-			db := common.GetDB()
-			var user = model.User{}
-			db.Find(&user, claims.UserId)
-			newAuth, errAuth := createAuthInfo(c, user)
-			if errAuth != nil {
-				response.FailDef(c, -1, "授权失败")
-				return
-			}
-			response.SuccessDef(c, newAuth)
-			return
-		}
+	claims, err := middleware.GetAccessTokenClaim(c)
+	if err != nil {
+		response.FailParams(c, "授权信息无效")
+		return
 	}
-	// 验证失败
-	response.FailParams(c, "授权信息无效")
+	rClaims, rErr := middleware.GetRefreshTokenClaim(c)
+	if rErr != nil {
+		response.FailParams(c, "授权信息无效")
+		return
+	}
+	// 校验参数
+	if rClaims.Target != tool.MD5(middleware.GetAccessToken(c)[7:]) {
+		response.FailParams(c, "token不匹配")
+		return
+	}
+	// 重新生成授权信息并返回
+	db := common.GetDB()
+	var user model.User
+	db.Find(&user, claims.UserId)
+	auth, authErr := createAuthInfo(c, user)
+	if authErr != nil {
+		response.FailDef(c, -1, "授权失败")
+		return
+	}
+	response.SuccessDef(c, auth)
 }
 
 // 创建授权信息
-func createAuthInfo(c *gin.Context, user model.User) (*model.AuthWithUser, error) {
-	platform := middleware.GetPlatform(c)
-	token, err := common.ReleaseAccessToken(user, platform)
+func createAuthInfo(c *gin.Context, user model.User) (*authRes, error) {
+	token, err := common.
+		ReleaseAccessToken(user, middleware.GetPlatform(c))
 	if err != nil {
 		return nil, err
 	}
-	target := tool.MD5(token)
-	refreshToken, refreshErr := common.ReleaseRefreshToken(user, target)
-	if refreshErr != nil {
-		return nil, refreshErr
+	refreshToken, rErr := common.
+		ReleaseRefreshToken(user, tool.MD5(token))
+	if rErr != nil {
+		return nil, rErr
 	}
-	return &model.AuthWithUser{
+	return &authRes{
 		AccessToken:  token,
 		RefreshToken: refreshToken,
 		User:         user,
 	}, nil
-}
-
-// 获取分页请求字段
-func getPaginationParams(c *gin.Context) (model.Pagination[any], error) {
-	pageIndex, _ := strconv.Atoi(c.Query("pageIndex"))
-	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
-	pagination := model.Pagination[any]{
-		PageIndex: pageIndex,
-		PageSize:  pageSize,
-	}
-	if pageIndex <= 0 {
-		return pagination, errors.New("pageIndex不合法（>0）")
-	}
-	if pageSize <= 0 || pageSize > 100 {
-		return pagination, errors.New("pageSize不合法（1~100）")
-	}
-	return pagination, nil
 }
 
 // 创建基础结构体

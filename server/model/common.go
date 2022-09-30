@@ -7,23 +7,16 @@ import (
 
 // Pagination 分页结构体
 type Pagination[T interface{}] struct {
-	PageIndex int   `json:"pageIndex"`
-	PageSize  int   `json:"pageSize"`
+	PageIndex int   `json:"pageIndex" form:"pageIndex" validate:"gte=1"`
+	PageSize  int   `json:"pageSize" form:"pageSize" validate:"gte=10"`
 	Total     int64 `json:"total"`
 	Data      []T   `json:"data"`
-}
-
-// AuthWithUser 授权信息与用户信息结构体
-type AuthWithUser struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-	User         User   `json:"user"`
 }
 
 // OrmBase gorm基类
 type OrmBase struct {
 	ID        string         `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"createdAt" gorm:"comment:创建时间"`
+	CreatedAt time.Time      `json:"-" gorm:"comment:创建时间"`
 	UpdatedAt time.Time      `json:"updatedAt" gorm:"comment:更新时间"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index;comment:删除时间"`
 }
