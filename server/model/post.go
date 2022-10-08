@@ -12,9 +12,9 @@ type Post struct {
 	Tags     []SimpleDict `json:"tags,omitempty" gorm:"-"`
 
 	// 使用的是活动记录表中的id
-	ActivityRecordId *string         `json:"activityId,omitempty" gorm:"comment:活动id"`
-	ActivityRecord   *ActivityRecord `json:"activityRecordId,omitempty" gorm:"foreignKey:ActivityRecordId"`
-	RecipeId         *string         `json:"recipeId,omitempty" gorm:"comment:食谱id"`
+	ActivityRecordId *string         `json:"activityRecordId" gorm:"comment:活动id"`
+	ActivityRecord   *ActivityRecord `json:"activityRecord,omitempty" gorm:"foreignKey:ActivityRecordId"`
+	RecipeId         *string         `json:"recipeId" gorm:"comment:食谱id"`
 	Recipe           *Recipe         `json:"recipe,omitempty" gorm:"foreignKey:RecipeId"`
 
 	// 浏览/点赞/收藏过的用户
@@ -27,32 +27,4 @@ type Post struct {
 	CollectUsers []User `json:"-" gorm:"many2many:post_collect_users"`
 	Collected    bool   `json:"collected" gorm:"-"`
 	CollectCount int64  `json:"collectCount" gorm:"-"`
-}
-
-// PostComment 帖子评论结构体
-type PostComment struct {
-	OrmBase
-	Creator
-
-	PId     string `json:"pId" gorm:"comment:父级id"`
-	Content string `json:"content" gorm:"varchar(300);not null;comment:帖子评论文本内容"`
-
-	// 点赞过的用户
-	LikeUsers []User `json:"-" gorm:"many2many:post_comment_like_users"`
-	Liked     bool   `json:"liked" gorm:"-"`
-	LikeCount int64  `json:"likeCount" gorm:"-"`
-}
-
-// PostCommentReplay 帖子评论回复结构体
-type PostCommentReplay struct {
-	OrmBase
-	Creator
-
-	PId     string `json:"pId" gorm:"comment:父级id"`
-	Content string `json:"content" gorm:"varchar(300);not null;comment:帖子评论回复文本内容" `
-
-	// 点赞过的用户
-	LikeUsers []User `json:"-" gorm:"many2many:post_comment_replay_like_users"`
-	Liked     bool   `json:"liked" gorm:"-"`
-	LikeCount int64  `json:"likeCount" gorm:"-"`
 }

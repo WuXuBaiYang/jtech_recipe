@@ -13,7 +13,7 @@ type postReq struct {
 	Title            string   `json:"title" binding:"required,gte=6"`
 	Contents         []any    `json:"contents" binding:"required,gte=1"`
 	TagCodes         []string `json:"tagCodes" binding:"required"`
-	ActivityRecordId *string  `json:"activityId"`
+	ActivityRecordId *string  `json:"activityRecordId"`
 	RecipeId         *string  `json:"recipeId"`
 }
 
@@ -83,12 +83,17 @@ func GetPostPagination(c *gin.Context) {
 		response.FailParams(c, err.Error())
 		return
 	}
+	uId := c.Query("userId")
 	// 分页查询
 	db := common.GetDB()
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	db.Model(&model.Post{}).Count(&pagination.Total)
-	if err := db.Model(&model.Post{}).Preload("Creator").
+	postDB := db.Model(&model.Post{})
+	if len(uId) != 0 {
+		postDB.Where("creator_id = ?", uId)
+	}
+	postDB.Count(&pagination.Total)
+	if err := postDB.Preload("Creator").
 		Offset((pageIndex - 1) * pageSize).Limit(pageSize).
 		Find(&pagination.Data).Error; err != nil {
 		response.FailDef(c, -1, "帖子查询失败")
@@ -109,6 +114,8 @@ func GetPostInfo(c *gin.Context) {
 	db := common.GetDB()
 	var result model.Post
 	if err := db.Preload("Creator").
+		Preload("ActivityRecord").
+		Preload("Recipe").
 		First(&result, postId).Error; err != nil {
 		response.FailParams(c, "帖子不存在")
 		return

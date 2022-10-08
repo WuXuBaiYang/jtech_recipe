@@ -18,12 +18,16 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	userRoutes(authGroup.Group("/user"))
 	//** 通知相关 **//
 	notifyRoutes(authGroup.Group("/notification"))
+	//** 评论相关 **//
+	commentRoutes(authGroup.Group("/comment"))
+	//** 回复相关 **//
+	replayRoutes(authGroup.Group("/replay"))
 	//** 帖子相关 **//
 	postRoutes(authGroup.Group("/post"))
-	//** 帖子评论/回复相关 **//
-	postCommentReplayRoutes(authGroup.Group("/post").Group("/comment"))
 	//** 活动相关 **//
-	activityRoutes(authGroup.Group("activity"))
+	activityRoutes(authGroup.Group("/activity"))
+	//** 菜单相关 **//
+	menuRoutes(authGroup.Group("/menu"))
 	return r
 }
 
@@ -105,24 +109,28 @@ func postRoutes(group *gin.RouterGroup) {
 	group.DELETE("/collect/:postId", controller.RemovePostCollect)
 }
 
-// 帖子评论回复相关
-func postCommentReplayRoutes(group *gin.RouterGroup) {
-	// 发布帖子评论
-	group.POST("/:postId", controller.PublishPostComment)
-	// 分页查询帖子评论和简略（3条）评论回复
-	group.GET("/:postId", controller.GetPostCommentPagination)
-	// 发布帖子评论回复
-	group.POST("/replay/:commentId", controller.PublishPostCommentReplay)
-	// 分页查询帖子评论回复
-	group.GET("/replay/:commentId", controller.GetPostCommentReplayPagination)
-	// 对帖子评论点赞
+// 评论相关
+func commentRoutes(group *gin.RouterGroup) {
+	// 发布评论
+	group.POST("/:pId", controller.PublishPostComment)
+	// 分页查询评论
+	group.GET("/:pId", controller.GetPostCommentPagination)
+	// 对评论点赞
 	group.POST("/like/:commentId", controller.AddPostCommentLike)
-	// 对帖子评论取消点赞
+	// 对评论取消点赞
 	group.DELETE("/like/:commentId", controller.RemovePostCommentLike)
-	// 对帖子评论回复点赞
-	group.POST("/replay/like/:replayId", controller.AddPostCommentReplayLike)
-	// 对帖子评论回复取消点赞
-	group.DELETE("/replay/like/:replayId", controller.RemovePostCommentReplayLike)
+}
+
+// 回复相关
+func replayRoutes(group *gin.RouterGroup) {
+	// 发布评论回复
+	group.POST("/:commentId", controller.PublishPostCommentReplay)
+	// 分页评论回复
+	group.GET("/:commentId", controller.GetPostCommentReplayPagination)
+	// 对评论回复点赞
+	group.POST("/like/:replayId", controller.AddPostCommentReplayLike)
+	// 对评论回复取消点赞
+	group.DELETE("/like/:replayId", controller.RemovePostCommentReplayLike)
 }
 
 // 活动相关路由
@@ -137,4 +145,10 @@ func activityRoutes(group *gin.RouterGroup) {
 	group.GET("", controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
 	group.GET("/process", controller.GetAllActivityProcessList)
+}
+
+// 菜单相关路由
+func menuRoutes(group *gin.RouterGroup) {
+	// 创建一个菜单
+	group.POST("", controller.PublishActivity, middleware.PermissionCheck)
 }
