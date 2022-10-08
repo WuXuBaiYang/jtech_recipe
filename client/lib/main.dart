@@ -2,7 +2,6 @@ import 'package:client/common/common.dart';
 import 'package:client/manage/api_cancel.dart';
 import 'package:client/manage/cache.dart';
 import 'package:client/manage/event.dart';
-import 'package:client/manage/im.dart';
 import 'package:client/manage/notification/notification.dart';
 import 'package:client/manage/oss.dart';
 import 'package:client/manage/router.dart';

@@ -49,7 +49,7 @@ func PublishPostComment(c *gin.Context) {
 func GetPostCommentPagination(c *gin.Context) {
 	// 获取分页参数
 	var pagination model.Pagination[model.PostComment]
-	if err := c.ShouldBindJSON(&pagination); err != nil {
+	if err := c.ShouldBindQuery(&pagination); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}
@@ -151,7 +151,7 @@ func PublishPostCommentReplay(c *gin.Context) {
 func GetPostCommentReplayPagination(c *gin.Context) {
 	// 获取分页参数
 	var pagination model.Pagination[model.PostCommentReplay]
-	if err := c.ShouldBindJSON(&pagination); err != nil {
+	if err := c.ShouldBindQuery(&pagination); err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}

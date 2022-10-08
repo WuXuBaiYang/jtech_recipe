@@ -79,7 +79,7 @@ func UpdatePost(c *gin.Context) {
 func GetPostPagination(c *gin.Context) {
 	// 获取分页参数
 	var pagination model.Pagination[model.Post]
-	if err := c.ShouldBindJSON(&pagination); err != nil {
+	if err := c.ShouldBindQuery(&pagination); err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}

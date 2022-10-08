@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"regexp"
+	"time"
 )
 
 // InitValidator 初始化自定义验证方法
@@ -20,6 +21,14 @@ func InitValidator() {
 	if err := v.RegisterValidation("url", verifyUrl); err != nil {
 		panic("url校验失败")
 	}
+	// 注册小于当前日期判断失败
+	if err := v.RegisterValidation("ltToday", verifyLTToday); err != nil {
+		panic("校验小于当前时间失败")
+	}
+	// 注册大于当前日期判断失败
+	if err := v.RegisterValidation("gtToday", verifyGTToday); err != nil {
+		panic("校验大于当前时间失败")
+	}
 }
 
 // 验证是否为手机号
@@ -31,7 +40,19 @@ func verifyPhone(fl validator.FieldLevel) bool {
 
 // 验证是否为url
 func verifyUrl(fl validator.FieldLevel) bool {
-	regExp := "^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$"
+	regExp := "^(?:(http|https|ftp):\\/\\/)?((?:[\\w-]+\\.)+[a-z0-9]+)((?:\\/[^/?#]*)+)?(\\?[^#]+)?(#.+)?$"
 	ok, _ := regexp.MatchString(regExp, fl.Field().String())
 	return ok
+}
+
+// 验证是否小于当前日期
+func verifyLTToday(fl validator.FieldLevel) bool {
+	date := fl.Field().Interface().(time.Time)
+	return time.Now().After(date)
+}
+
+// 验证是否大于当前日期
+func verifyGTToday(fl validator.FieldLevel) bool {
+	date := fl.Field().Interface().(time.Time)
+	return time.Now().Before(date)
 }

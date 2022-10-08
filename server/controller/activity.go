@@ -19,7 +19,7 @@ type activityReq struct {
 
 // 活动记录请求
 type activityRecordReq struct {
-	BeginTime time.Time `json:"beginTime" binding:"required"`
+	BeginTime time.Time `json:"beginTime" binding:"required,gtToday"`
 }
 
 // PublishActivity 发布活动信息
@@ -99,7 +99,7 @@ func StartActivity(c *gin.Context) {
 		return
 	}
 	// 判断活动是否已启动
-	if err := db.Where("activity_id = ?,end_time > ?", activityId, time.Now()).
+	if err := db.Where("activity_id = ? and end_time > ?", activityId, time.Now()).
 		First(&model.ActivityRecord{}).Error; err == nil {
 		response.FailParams(c, "活动已开始，无法重复启动")
 		return

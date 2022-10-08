@@ -27,7 +27,7 @@ type userProfile struct {
 	Bio        string            `json:"bio"`
 	Profession string            `json:"profession"`
 	GenderCode string            `json:"genderCode" binding:"required"`
-	Birth      *time.Time        `json:"birth"`
+	Birth      *time.Time        `json:"birth" binding:"ltToday"`
 	Medals     []model.UserMedal `json:"medals"`
 }
 
@@ -44,12 +44,6 @@ func UpdateUserProfile(c *gin.Context) {
 	var req userProfileReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
-		return
-	}
-	// 校验参数
-	birth := req.Birth
-	if birth != nil && time.Now().Before(*birth) {
-		response.FailParams(c, "生日填写错误")
 		return
 	}
 	// 获取到当前用户信息并写入新的信息
