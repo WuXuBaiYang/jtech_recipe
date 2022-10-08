@@ -13,8 +13,8 @@ import (
 // 授权请求
 type authReq struct {
 	PhoneNumber string `json:"phoneNumber" binding:"required,phone,gte=11"`
-	Password    string `json:"password" binding:"gte=8"`
-	Code        string `json:"code" binding:"len=4"`
+	Password    string `json:"password" binding:"omitempty,gte=8"`
+	Code        string `json:"code" binding:"omitempty,len=4"`
 }
 
 // 授权响应
@@ -60,8 +60,8 @@ func Register(c *gin.Context) {
 	}
 	// 校验短信验证码
 	rdb := common.GetRDB()
-	vCode := rdb.Get(c, req.PhoneNumber).Val()
-	if vCode != req.Code {
+	vCode := rdb.Get(c, req.PhoneNumber)
+	if vCode.Err() != nil || vCode.Val() != req.Code {
 		response.FailParams(c, "短信验证码校验失败")
 		return
 	}
@@ -74,8 +74,10 @@ func Register(c *gin.Context) {
 	}
 	// 插入用户信息
 	result := model.User{
-		OrmBase:  createBase(),
-		NickName: tool.GenInitUserNickName(),
+		OrmBase:     createBase(),
+		PhoneNumber: req.PhoneNumber,
+		Password:    req.Password,
+		NickName:    tool.GenInitUserNickName(),
 	}
 	if err := db.Create(&result).Error; err != nil {
 		response.FailDef(c, -1, "用户创建失败")
@@ -115,12 +117,15 @@ func Login(c *gin.Context) {
 			response.FailParams(c, "密码错误")
 			return
 		}
-	} else {
-		vCode := rdb.Get(c, req.PhoneNumber).Val()
-		if vCode != req.Code {
+	} else if len(req.Code) != 0 {
+		vCode := rdb.Get(c, req.PhoneNumber)
+		if vCode.Err() != nil || vCode.Val() != req.Code {
 			response.FailParams(c, "短信验证码校验失败")
 			return
 		}
+	} else {
+		response.FailParams(c, "至少使用密码/验证码进行登录")
+		return
 	}
 	// 构造授权信息并返回
 	auth, authErr := createAuthInfo(c, result)
