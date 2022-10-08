@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"regexp"
+	"server/tool"
 	"time"
 )
 
@@ -28,6 +29,14 @@ func InitValidator() {
 	// 注册大于当前日期判断失败
 	if err := v.RegisterValidation("gtToday", verifyGTToday); err != nil {
 		panic("校验大于当前时间失败")
+	}
+	// 验证类型是否正确
+	if err := v.RegisterValidation("type", verifyType); err != nil {
+		panic("校验类型失败")
+	}
+	// 校验字典类型
+	if err := v.RegisterValidation("dict", verifyDict); err != nil {
+		panic("校验字典失败")
 	}
 }
 
@@ -55,4 +64,20 @@ func verifyLTToday(fl validator.FieldLevel) bool {
 func verifyGTToday(fl validator.FieldLevel) bool {
 	date := fl.Field().Interface().(time.Time)
 	return time.Now().Before(date)
+}
+
+// 验证类型是否正确
+func verifyType(fl validator.FieldLevel) bool {
+	v := fl.Field().String()
+	switch fl.Param() {
+	case "comment": // 判断评论类型
+		return tool.CommentTypeVerify(v)
+	}
+	return false
+}
+
+// 校验字典类型
+func verifyDict(fl validator.FieldLevel) bool {
+	// 等待实现
+	return true
 }

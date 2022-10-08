@@ -15,7 +15,7 @@ type Pagination[T interface{}] struct {
 
 // OrmBase gorm基类
 type OrmBase struct {
-	ID        string         `json:"id" gorm:"primarykey"`
+	ID        string         `json:"id" gorm:"primaryKey"`
 	CreatedAt time.Time      `json:"-" gorm:"comment:创建时间"`
 	UpdatedAt time.Time      `json:"updatedAt" gorm:"comment:更新时间"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index;comment:删除时间"`

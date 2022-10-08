@@ -2,17 +2,18 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"server/common"
-	"server/model"
+	"server/tool"
 )
 
 func main() {
 	//r := gin.Default()
 	//r.GET("test", testAPI)
 	//panic(r.Run(":9528"))
-	db := common.InitDB(true)
-	err := db.Where("phone_number = ?", "18600574971").First(&model.User{}).Error
-	println(err.Error())
+	//db := common.InitDB(true)
+	//err := db.Where("phone_number = ?", "18600574971").First(&model.User{}).Error
+	//println(err.Error())
+	a := tool.CommentType("aaa")
+	println(a)
 }
 
 type pagination struct {

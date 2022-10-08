@@ -6,6 +6,7 @@ type Comment struct {
 	Creator
 
 	PId     string `json:"pId" gorm:"comment:父级id"`
+	Type    string `json:"-" gorm:"comment:评论类型"`
 	Content string `json:"content" gorm:"varchar(300);not null;comment:评论文本内容"`
 
 	// 点赞过的用户

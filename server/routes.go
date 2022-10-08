@@ -112,25 +112,25 @@ func postRoutes(group *gin.RouterGroup) {
 // 评论相关
 func commentRoutes(group *gin.RouterGroup) {
 	// 发布评论
-	group.POST("/:pId", controller.PublishPostComment)
+	group.POST("", controller.PublishComment)
 	// 分页查询评论
-	group.GET("/:pId", controller.GetPostCommentPagination)
+	group.GET("", controller.GetCommentPagination)
 	// 对评论点赞
-	group.POST("/like/:commentId", controller.AddPostCommentLike)
+	group.POST("/like/:commentId", controller.AddCommentLike)
 	// 对评论取消点赞
-	group.DELETE("/like/:commentId", controller.RemovePostCommentLike)
+	group.DELETE("/like/:commentId", controller.RemoveCommentLike)
 }
 
 // 回复相关
 func replayRoutes(group *gin.RouterGroup) {
 	// 发布评论回复
-	group.POST("/:commentId", controller.PublishPostCommentReplay)
+	group.POST("", controller.PublishReplay)
 	// 分页评论回复
-	group.GET("/:commentId", controller.GetPostCommentReplayPagination)
+	group.GET("", controller.GetReplayPagination)
 	// 对评论回复点赞
-	group.POST("/like/:replayId", controller.AddPostCommentReplayLike)
+	group.POST("/like/:replayId", controller.AddReplayLike)
 	// 对评论回复取消点赞
-	group.DELETE("/like/:replayId", controller.RemovePostCommentReplayLike)
+	group.DELETE("/like/:replayId", controller.RemoveReplayLike)
 }
 
 // 活动相关路由

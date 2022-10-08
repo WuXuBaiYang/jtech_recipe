@@ -20,13 +20,6 @@ type dictItem struct {
 
 // 字典项资源
 var tableList = []dictItem{
-	{ // 索引总表
-		Fun: func() interface{} {
-			type dictIndex struct{ model.Dict }
-			return dictIndex{}
-		},
-		Res: "./res/index_info.json",
-	},
 	{ // 用户性别字典
 		Fun: func() interface{} {
 			type dictUserGender struct{ model.Dict }

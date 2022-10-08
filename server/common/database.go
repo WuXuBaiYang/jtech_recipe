@@ -16,10 +16,11 @@ var dst = []any{
 	&model.User{},
 	&model.UserMedal{},
 	&model.UserAddress{},
+	// 评论回复
+	&model.Comment{},
+	&model.Replay{},
 	// 帖子
 	&model.Post{},
-	&model.PostComment{},
-	&model.PostCommentReplay{},
 	// 消息通知
 	&model.Notify{},
 	// 活动
