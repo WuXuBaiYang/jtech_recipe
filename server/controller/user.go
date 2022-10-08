@@ -13,29 +13,29 @@ import (
 type userProfileReq struct {
 	userProfile
 
-	EvaluateCode       string   `json:"evaluateCode" validate:"required"`
-	RecipeCuisineCodes []string `json:"recipeCuisineCodes" validate:"required"`
-	RecipeTasteCodes   []string `json:"recipeTasteCodes" validate:"required"`
+	EvaluateCode       string   `json:"evaluateCode" binding:"required"`
+	RecipeCuisineCodes []string `json:"recipeCuisineCodes" binding:"required"`
+	RecipeTasteCodes   []string `json:"recipeTasteCodes" binding:"required"`
 }
 
 // 用户信息
 type userProfile struct {
 	ID         string            `json:"id"`
 	Level      int64             `json:"level"`
-	NickName   string            `json:"nickName" validate:"required,gte=1"`
+	NickName   string            `json:"nickName" binding:"required,gte=1"`
 	Avatar     string            `json:"avatar"`
 	Bio        string            `json:"bio"`
 	Profession string            `json:"profession"`
-	GenderCode string            `json:"genderCode" validate:"required"`
+	GenderCode string            `json:"genderCode" binding:"required"`
 	Birth      *time.Time        `json:"birth"`
 	Medals     []model.UserMedal `json:"medals"`
 }
 
 // 用户勋章请求
 type medalReq struct {
-	Logo       string `json:"logo" validate:"required"`
-	Name       string `json:"name" validate:"required,gte=2"`
-	RarityCode string `json:"rarityCode"  validate:"required"`
+	Logo       string `json:"logo" binding:"required"`
+	Name       string `json:"name" binding:"required,gte=2"`
+	RarityCode string `json:"rarityCode"  binding:"required"`
 }
 
 // UpdateUserProfile 修改用户信息
@@ -43,7 +43,7 @@ func UpdateUserProfile(c *gin.Context) {
 	// 获取请求体参数
 	var req userProfileReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 校验参数
@@ -154,7 +154,7 @@ func GetSubscribePagination(c *gin.Context) {
 	// 获取分页参数
 	var pagination model.Pagination[model.SimpleUser]
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 获取用户id
@@ -232,7 +232,7 @@ func AddUserMedal(c *gin.Context) {
 	// 获取请求参数
 	var req medalReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 创建并保存到数据库
@@ -255,7 +255,7 @@ func UpdateUserMedal(c *gin.Context) {
 	// 获取请求参数
 	var req medalReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	medalId := c.Param("medalId")

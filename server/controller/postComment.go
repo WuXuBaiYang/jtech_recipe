@@ -10,7 +10,7 @@ import (
 
 // 帖子的评论/回复请求体
 type commentAndReplayReq struct {
-	Content string `json:"content" validate:"required,gt=0"`
+	Content string `json:"content" binding:"required,gt=0"`
 }
 
 // PublishPostComment 发布帖子评论
@@ -18,7 +18,7 @@ func PublishPostComment(c *gin.Context) {
 	// 获取参数消息体
 	var req commentAndReplayReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	postId := c.Param("postId")
@@ -50,7 +50,7 @@ func GetPostCommentPagination(c *gin.Context) {
 	// 获取分页参数
 	var pagination model.Pagination[model.PostComment]
 	if err := c.ShouldBindJSON(&pagination); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	postId := c.Param("postId")
@@ -119,7 +119,7 @@ func PublishPostCommentReplay(c *gin.Context) {
 	// 获取请求参数
 	var req commentAndReplayReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	commentId := c.Param("commentId")

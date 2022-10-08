@@ -12,9 +12,9 @@ import (
 
 // 授权请求
 type authReq struct {
-	PhoneNumber string `json:"phoneNumber" validate:"required,phone,gte=11"`
-	Password    string `json:"-" validate:"gte=8"`
-	Code        string `json:"code" validate:"len=4"`
+	PhoneNumber string `json:"phoneNumber" binding:"required,phone,gte=11"`
+	Password    string `json:"password" binding:"gte=8"`
+	Code        string `json:"code" binding:"len=4"`
 }
 
 // 授权响应
@@ -46,7 +46,7 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 响应发送成功的结果,调试模式则返回code
-	result := tool.If[any](common.DebugMode, code, true)
+	result := tool.If[any](gin.IsDebugging(), code, true)
 	response.SuccessDef(c, result)
 }
 
@@ -55,7 +55,7 @@ func Register(c *gin.Context) {
 	// 获取请求体参数
 	var req authReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 校验短信验证码
@@ -97,7 +97,7 @@ func Login(c *gin.Context) {
 	// 获取请求体参数
 	var req authReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 判断用户是否存在

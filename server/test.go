@@ -16,8 +16,8 @@ func main() {
 }
 
 type pagination struct {
-	PageIndex int64 `form:"pageIndex" validate:"required,gte=1"`
-	PageSize  int64 `form:"pageSize" validate:"required,gte=10"`
+	PageIndex int64 `form:"pageIndex" binding:"required,gte=1"`
+	PageSize  int64 `form:"pageSize" binding:"required,gte=10"`
 	Total     int64 `json:"total"`
 }
 

@@ -11,9 +11,9 @@ import (
 
 // 消息请求
 type notifyReq struct {
-	ToUsers  []string `json:"toUsers" validate:"required,unique"`
-	TypeCode string   `json:"typeCode" validate:"required"`
-	Title    string   `json:"title" validate:"required,gte=6"`
+	ToUsers  []string `json:"toUsers" binding:"required,unique"`
+	TypeCode string   `json:"typeCode" binding:"required"`
+	Title    string   `json:"title" binding:"required,gte=6"`
 	Content  string   `json:"content"`
 	Uri      string   `json:"uri"`
 }
@@ -57,7 +57,7 @@ func PushNotify(c *gin.Context) {
 	// 获取请求参数体
 	var req notifyReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 交给方法实现消息推送和写入
@@ -73,7 +73,7 @@ func GetNotifyPagination(c *gin.Context) {
 	// 获取分页参数
 	var pagination model.Pagination[model.Notify]
 	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 分页查询

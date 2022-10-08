@@ -2,6 +2,7 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
+	"server/tool"
 )
 
 // FailDef 默认失败报文
@@ -36,8 +37,9 @@ func FailParams(context *gin.Context, message string) {
 }
 
 // FailParamsDef 请求参数异常默认值
-func FailParamsDef(context *gin.Context) {
-	FailParams(context, "参数异常")
+func FailParamsDef(context *gin.Context, err error) {
+	msg := tool.If(gin.IsDebugging(), err.Error(), "参数异常")
+	FailParams(context, msg)
 }
 
 // FailAuth 授权失效

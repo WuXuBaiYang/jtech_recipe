@@ -7,8 +7,8 @@ import (
 
 // Pagination 分页结构体
 type Pagination[T interface{}] struct {
-	PageIndex int   `json:"pageIndex" form:"pageIndex" validate:"gte=1"`
-	PageSize  int   `json:"pageSize" form:"pageSize" validate:"gte=10"`
+	PageIndex int   `json:"pageIndex" form:"pageIndex" binding:"gte=1"`
+	PageSize  int   `json:"pageSize" form:"pageSize" binding:"gte=10"`
 	Total     int64 `json:"total"`
 	Data      []T   `json:"data"`
 }

@@ -10,9 +10,9 @@ import (
 
 // 帖子请求体
 type postReq struct {
-	Title            string   `json:"title" validate:"required,gte=6"`
-	Contents         []any    `json:"contents" validate:"required,gte=1"`
-	TagCodes         []string `json:"tagCodes" validate:"required"`
+	Title            string   `json:"title" binding:"required,gte=6"`
+	Contents         []any    `json:"contents" binding:"required,gte=1"`
+	TagCodes         []string `json:"tagCodes" binding:"required"`
 	ActivityRecordId *string  `json:"activityId"`
 	RecipeId         *string  `json:"recipeId"`
 }
@@ -22,7 +22,7 @@ func PublishPost(c *gin.Context) {
 	// 接收请求的消息体
 	var req postReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 数据插入
@@ -48,7 +48,7 @@ func UpdatePost(c *gin.Context) {
 	// 获取请求参数
 	var req postReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	postId := c.Param("postId")

@@ -1,17 +1,15 @@
 package common
 
 import (
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 	"server/tool"
 	"time"
 )
 
-// DebugMode 调试状态
-const DebugMode = true
-
 // ServerHost 服务基本地址
-var ServerHost = tool.If[string](DebugMode, devServerHost, productionServerHost)
+var ServerHost = tool.If[string](gin.IsDebugging(), devServerHost, productionServerHost)
 
 // 开发地址
 const devServerHost = "127.0.0.1"
@@ -34,7 +32,7 @@ var logConfig = struct {
 	FileKey    string
 	LineKey    string
 }{
-	Filename:   tool.If(DebugMode, "C:/Users/wuxubaiyang/dev.log", "/tmp/jtech_server.log"),
+	Filename:   tool.If(gin.IsDebugging(), "C:/Users/wuxubaiyang/dev.log", "/tmp/jtech_server.log"),
 	MaxSize:    100,
 	MaxBackups: 60,
 	MaxAge:     1,
@@ -95,7 +93,7 @@ var jwtConfig = struct {
 	Issuer                string
 }{
 	Key:                   []byte("jtech_jh_server"),
-	ExpirationTime:        tool.If(DebugMode, 30*24*time.Hour, 15*time.Minute),
+	ExpirationTime:        tool.If(gin.IsDebugging(), 30*24*time.Hour, 15*time.Minute),
 	RefreshExpirationTime: 30 * 24 * time.Hour,
 	Issuer:                "jtech@127.0.0.1",
 }

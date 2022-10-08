@@ -25,13 +25,13 @@ func InitValidator() {
 // 验证是否为手机号
 func verifyPhone(fl validator.FieldLevel) bool {
 	regExp := "^1(3\\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$"
-	ok, _ := regexp.MatchString(regExp, fl.Param())
+	ok, _ := regexp.MatchString(regExp, fl.Field().String())
 	return ok
 }
 
 // 验证是否为url
 func verifyUrl(fl validator.FieldLevel) bool {
 	regExp := "^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$"
-	ok, _ := regexp.MatchString(regExp, fl.Param())
+	ok, _ := regexp.MatchString(regExp, fl.Field().String())
 	return ok
 }

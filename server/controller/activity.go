@@ -10,16 +10,16 @@ import (
 
 // 活动请求
 type activityReq struct {
-	CycleTime int64    `json:"cycleTime" validate:"required,gte=86400000"`
-	Always    bool     `json:"always" validate:"required"`
-	Title     string   `json:"title" validate:"required,gte=6"`
-	Url       string   `json:"url" validate:"required,url"`
-	TypeCodes []string `json:"typeCodes" validate:"required,unique,gte=1"`
+	CycleTime int64    `json:"cycleTime" binding:"required,gte=86400000"`
+	Always    bool     `json:"always" binding:"required"`
+	Title     string   `json:"title" binding:"required,gte=6"`
+	Url       string   `json:"url" binding:"required,url"`
+	TypeCodes []string `json:"typeCodes" binding:"required,unique,gte=1"`
 }
 
 // 活动记录请求
 type activityRecordReq struct {
-	BeginTime time.Time `json:"beginTime" validate:"required"`
+	BeginTime time.Time `json:"beginTime" binding:"required"`
 }
 
 // PublishActivity 发布活动信息
@@ -27,7 +27,7 @@ func PublishActivity(c *gin.Context) {
 	// 获取请求参数
 	var req activityReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	// 数据插入
@@ -52,7 +52,7 @@ func UpdateActivity(c *gin.Context) {
 	// 获取请求参数
 	var req activityReq
 	if err := c.BindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	activityId := c.Param("activityId")
@@ -84,7 +84,7 @@ func StartActivity(c *gin.Context) {
 	// 获取请求参数
 	var req activityRecordReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c)
+		response.FailParamsDef(c, err)
 		return
 	}
 	activityId := c.Param("activityId")

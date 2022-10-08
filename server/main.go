@@ -14,6 +14,8 @@ var ctx = context.Background()
 // lucene solr/es wukong 分词检索框架
 
 func main() {
+	// 设置调试状态
+	gin.SetMode(gin.DebugMode)
 	// 初始化日志系统
 	logger := common.InitLogger()
 	defer func(logger *zap.Logger) {
