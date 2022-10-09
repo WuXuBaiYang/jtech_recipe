@@ -18,7 +18,7 @@ type replayReq struct {
 func PublishReplay(c *gin.Context) {
 	// 获取请求参数
 	var req replayReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}

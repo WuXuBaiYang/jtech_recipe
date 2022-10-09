@@ -6,13 +6,15 @@ import (
 	"server/controller/response"
 	"server/middleware"
 	"server/model"
+	"server/tool"
+	"time"
 )
 
 // 帖子请求体
 type postReq struct {
 	Title            string   `json:"title" binding:"required,gte=6"`
 	Contents         []any    `json:"contents" binding:"required,gte=1"`
-	TagCodes         []string `json:"tagCodes" binding:"required"`
+	TagCodes         []string `json:"tagCodes" binding:"required,dict=post_tag"`
 	ActivityRecordId *string  `json:"activityRecordId"`
 	RecipeId         *string  `json:"recipeId"`
 }
@@ -21,12 +23,33 @@ type postReq struct {
 func PublishPost(c *gin.Context) {
 	// 接收请求的消息体
 	var req postReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}
-	// 数据插入
 	db := common.GetDB()
+	if req.ActivityRecordId != nil {
+		var record model.ActivityRecord
+		if err := db.Where("end_time > ?", time.Now()).
+			Preload("Activity").
+			First(&record, req.ActivityRecordId).
+			Error; err != nil {
+			response.FailParams(c, "活动不存在/已结束")
+			return
+		}
+		if !tool.IsContain(record.Activity.TypeCodes, string(model.PostActivity)) {
+			response.FailParams(c, "活动类型不允许")
+			return
+		}
+	}
+	if req.RecipeId != nil {
+		if err := db.First(&model.Recipe{},
+			req.RecipeId).Error; err != nil {
+			response.FailParams(c, "菜谱不存在")
+			return
+		}
+	}
+	// 数据插入
 	result := model.Post{
 		OrmBase:          createBase(),
 		Creator:          createCreator(c),
@@ -47,7 +70,7 @@ func PublishPost(c *gin.Context) {
 func UpdatePost(c *gin.Context) {
 	// 获取请求参数
 	var req postReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}
@@ -66,8 +89,6 @@ func UpdatePost(c *gin.Context) {
 	result.Title = req.Title
 	result.Contents = req.Contents
 	result.TagCodes = req.TagCodes
-	result.ActivityRecordId = req.ActivityRecordId
-	result.RecipeId = req.RecipeId
 	if err := db.Save(&result).Error; err != nil {
 		response.FailDef(c, -1, "帖子信息保存失败")
 		return

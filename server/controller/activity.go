@@ -14,7 +14,7 @@ type activityReq struct {
 	Always    bool     `json:"always" binding:"required"`
 	Title     string   `json:"title" binding:"required,gte=6"`
 	Url       string   `json:"url" binding:"required,url"`
-	TypeCodes []string `json:"typeCodes" binding:"required,unique,gte=1"`
+	TypeCodes []string `json:"typeCodes" binding:"required,unique,gte=1,dict=activity_type"`
 }
 
 // 活动记录请求
@@ -51,7 +51,7 @@ func PublishActivity(c *gin.Context) {
 func UpdateActivity(c *gin.Context) {
 	// 获取请求参数
 	var req activityReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}

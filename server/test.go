@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"server/tool"
+	"server/model"
 )
 
 func main() {
@@ -12,7 +12,7 @@ func main() {
 	//db := common.InitDB(true)
 	//err := db.Where("phone_number = ?", "18600574971").First(&model.User{}).Error
 	//println(err.Error())
-	a := tool.CommentType("aaa")
+	a := string(model.PostActivity)
 	println(a)
 }
 

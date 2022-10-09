@@ -6,6 +6,7 @@ import (
 	"github.com/go-redis/redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 	"server/model"
 	"server/tool"
 )
@@ -33,7 +34,7 @@ var dst = []any{
 }
 
 // InitDB 初始化数据库
-func InitDB(migrate bool) *gorm.DB {
+func InitDB() *gorm.DB {
 	// 初始化雪花算法
 	if len(tool.GenID()) == 0 {
 		panic("雪花算法初始化失败")
@@ -41,14 +42,18 @@ func InitDB(migrate bool) *gorm.DB {
 	c := dbConfig
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s",
 		c.UserName, c.Password, c.Host, c.Port, c.Database, c.Charset, c.ParseTime, c.Loc)
-	DB, err := gorm.Open(mysql.Open(dsn), c.GormConfig)
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "sys_",
+			SingularTable: true,
+		},
+	})
 	if err != nil {
 		panic("数据库连接失败：" + err.Error())
 	}
-	if migrate {
-		if err := DB.AutoMigrate(dst...); err != nil {
-			panic("数据库自动合并失败：" + err.Error())
-		}
+	if err := DB.AutoMigrate(dst...); err != nil {
+		panic("数据库自动合并失败：" + err.Error())
 	}
 	db = DB
 	return db

@@ -10,6 +10,16 @@ import (
 	"time"
 )
 
+// IsContain 判断数组中是否包含目标字段
+func IsContain(items []string, item string) bool {
+	for _, eachItem := range items {
+		if eachItem == item {
+			return true
+		}
+	}
+	return false
+}
+
 // GenInitUserNickName 根据格式生成初始化用户昵称
 func GenInitUserNickName() string {
 	return fmt.Sprintf("用户_%d", time.Now().UnixMilli())

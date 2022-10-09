@@ -26,7 +26,7 @@ type userProfile struct {
 	Avatar     string            `json:"avatar"`
 	Bio        string            `json:"bio"`
 	Profession string            `json:"profession"`
-	GenderCode string            `json:"genderCode" binding:"required"`
+	GenderCode string            `json:"genderCode" binding:"required,dict=user_gender"`
 	Birth      *time.Time        `json:"birth" binding:"ltToday"`
 	Medals     []model.UserMedal `json:"medals"`
 }
@@ -35,7 +35,7 @@ type userProfile struct {
 type medalReq struct {
 	Logo       string `json:"logo" binding:"required"`
 	Name       string `json:"name" binding:"required,gte=2"`
-	RarityCode string `json:"rarityCode"  binding:"required"`
+	RarityCode string `json:"rarityCode"  binding:"required,dict=medal_rarity"`
 }
 
 // UpdateUserProfile 修改用户信息
@@ -225,7 +225,7 @@ func GetAllUserMedalList(c *gin.Context) {
 func AddUserMedal(c *gin.Context) {
 	// 获取请求参数
 	var req medalReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}
@@ -248,7 +248,7 @@ func AddUserMedal(c *gin.Context) {
 func UpdateUserMedal(c *gin.Context) {
 	// 获取请求参数
 	var req medalReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}

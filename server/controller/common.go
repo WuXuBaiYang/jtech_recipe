@@ -169,8 +169,7 @@ func RefreshToken(c *gin.Context) {
 
 // 创建授权信息
 func createAuthInfo(c *gin.Context, user model.User) (*authRes, error) {
-	token, err := common.
-		ReleaseAccessToken(user, middleware.GetPlatform(c))
+	token, err := common.ReleaseAccessToken(user)
 	if err != nil {
 		return nil, err
 	}

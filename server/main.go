@@ -25,7 +25,7 @@ func main() {
 		}
 	}(logger)
 	// 初始化数据库
-	sqlDB, _ := common.InitDB(true).DB()
+	sqlDB, _ := common.InitDB().DB()
 	defer func(sqlDB *sql.DB) {
 		err := sqlDB.Close()
 		if err != nil {

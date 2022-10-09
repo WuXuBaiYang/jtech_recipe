@@ -17,11 +17,6 @@ func AuthCheck(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	// 判断当前平台与token中存储的平台是否保持一致
-	if claims.Platform != GetPlatform(c) {
-		response.FailParams(c, "禁止跨平台使用token")
-		return
-	}
 	// 将用户信息写入上下文
 	c.Set("userId", claims.UserId)
 	c.Next()

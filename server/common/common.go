@@ -3,7 +3,6 @@ package common
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	"server/tool"
 	"time"
 )
@@ -63,13 +62,6 @@ var dbConfig = struct {
 	Charset:   "utf8mb4",
 	ParseTime: "True",
 	Loc:       "Local",
-	GormConfig: &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
-		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   "sys_",
-			SingularTable: true,
-		},
-	},
 }
 
 // redis数据库配置

@@ -6,37 +6,36 @@ import (
 	"server/controller/response"
 	"server/middleware"
 	"server/model"
-	"server/tool"
 )
 
 // 帖子的评论请求体
 type commentReq struct {
-	PId     string `json:"pId" binding:"required,gt=0"`
-	Content string `json:"content" binding:"required,gt=0"`
-	Type    string `json:"type" binding:"required,type=comment"`
+	PId      string `json:"pId" binding:"required,gt=0"`
+	Content  string `json:"content" binding:"required,gt=0"`
+	TypeCode string `json:"typeCode" binding:"required,dict=comment_type"`
 }
 
 // PublishComment 发布评论
 func PublishComment(c *gin.Context) {
 	// 获取参数消息体
 	var req commentReq
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}
 	db := common.GetDB()
-	if err := db.First(tool.CommentType(req.Type), req.PId).
+	if err := db.First(commentType(req.TypeCode), req.PId).
 		Error; err != nil {
 		response.FailParams(c, "评论目标不存在")
 		return
 	}
 	// 数据插入
 	result := model.Comment{
-		OrmBase: createBase(),
-		Creator: createCreator(c),
-		PId:     req.PId,
-		Type:    req.Type,
-		Content: req.Content,
+		OrmBase:  createBase(),
+		Creator:  createCreator(c),
+		PId:      req.PId,
+		TypeCode: req.TypeCode,
+		Content:  req.Content,
 	}
 	if err := db.Create(&result).Error; err != nil {
 		response.FailDef(c, -1, "评论发布失败")
@@ -58,7 +57,7 @@ func GetCommentPagination(c *gin.Context) {
 		return
 	}
 	db := common.GetDB()
-	if err := db.First(tool.CommentType(req.Type), req.PId).
+	if err := db.First(commentType(req.Type), req.PId).
 		Error; err != nil {
 		response.FailParams(c, "目标不存在")
 		return
@@ -69,7 +68,8 @@ func GetCommentPagination(c *gin.Context) {
 	commentDB := db.Model(&model.Comment{}).
 		Where("p_id = ?", &req.PId)
 	commentDB.Count(&req.Total)
-	if err := commentDB.Preload("Creator").Offset((pageIndex - 1) * pageSize).
+	if err := commentDB.Preload("Creator").
+		Offset((pageIndex - 1) * pageSize).
 		Limit(pageSize).Find(&req.Data).Error; err != nil {
 		response.FailDef(c, -1, "评论查询失败")
 		return
@@ -120,4 +120,20 @@ func fillCommentInfo(c *gin.Context, items *[]model.Comment) {
 	//for i, it := range *items {
 	//	(*items)[i].Title = it.Title
 	//}
+}
+
+// 评论类型对照表
+var commentTypeMap = map[model.CommentType]interface{}{
+	model.PostComment:     &model.Post{},       // 帖子
+	model.RecipeComment:   &model.Recipe{},     // 食谱
+	model.MenuComment:     &model.RecipeMenu{}, // 菜单
+	model.ActivityComment: &model.Activity{},   // 活动
+}
+
+// 根据传入的类型获取对应的评论父类
+func commentType(v string) interface{} {
+	if v, ok := commentTypeMap[model.CommentType(v)]; ok {
+		return v
+	}
+	return &model.Post{}
 }

@@ -9,9 +9,7 @@ import (
 
 // AccessClaims 授权token中的claim
 type AccessClaims struct {
-	UserId   string
-	UserName string
-	Platform string
+	UserId string
 	jwt.RegisteredClaims
 }
 
@@ -22,11 +20,10 @@ type RefreshClaims struct {
 }
 
 // ReleaseAccessToken 发放授权token
-func ReleaseAccessToken(user model.User, platform string) (string, error) {
+func ReleaseAccessToken(user model.User) (string, error) {
 	expiresAt := time.Now().Add(jwtConfig.ExpirationTime)
 	claims := &AccessClaims{
-		UserId:   user.ID,
-		Platform: platform,
+		UserId: user.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

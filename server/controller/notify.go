@@ -12,7 +12,7 @@ import (
 // 消息请求
 type notifyReq struct {
 	ToUsers  []string `json:"toUsers" binding:"required,unique"`
-	TypeCode string   `json:"typeCode" binding:"required"`
+	TypeCode string   `json:"typeCode" binding:"required,dict=notice_type"`
 	Title    string   `json:"title" binding:"required,gte=6"`
 	Content  string   `json:"content"`
 	Uri      string   `json:"uri"`

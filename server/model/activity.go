@@ -23,3 +23,12 @@ type ActivityRecord struct {
 	ActivityId string    `json:"activityId" gorm:"not null;comment:活动id"`
 	Activity   Activity  `json:"activity" gorm:"foreignKey:ActivityId"`
 }
+
+// ActivityType 活动类型枚举
+type ActivityType string
+
+const (
+	PostActivity   ActivityType = "11"
+	MenuActivity   ActivityType = "12"
+	RecipeActivity ActivityType = "13"
+)

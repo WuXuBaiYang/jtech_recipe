@@ -3,8 +3,8 @@ package common
 import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"reflect"
 	"regexp"
-	"server/tool"
 	"time"
 )
 
@@ -30,11 +30,7 @@ func InitValidator() {
 	if err := v.RegisterValidation("gtToday", verifyGTToday); err != nil {
 		panic("校验大于当前时间失败")
 	}
-	// 验证类型是否正确
-	if err := v.RegisterValidation("type", verifyType); err != nil {
-		panic("校验类型失败")
-	}
-	// 校验字典类型
+	// 校验字典类型,传入字典表名，会自动拼接dict头
 	if err := v.RegisterValidation("dict", verifyDict); err != nil {
 		panic("校验字典失败")
 	}
@@ -66,18 +62,28 @@ func verifyGTToday(fl validator.FieldLevel) bool {
 	return time.Now().Before(date)
 }
 
-// 验证类型是否正确
-func verifyType(fl validator.FieldLevel) bool {
-	v := fl.Field().String()
-	switch fl.Param() {
-	case "comment": // 判断评论类型
-		return tool.CommentTypeVerify(v)
-	}
-	return false
-}
-
 // 校验字典类型
 func verifyDict(fl validator.FieldLevel) bool {
-	// 等待实现
-	return true
+	db := GetDB()
+	var count int64
+	var codes []string
+	k := fl.Field().Kind()
+	if k == reflect.Slice {
+		if slice, ok := fl.Field().
+			Interface().([]string); ok {
+			codes = append(codes, slice...)
+		}
+	} else if k == reflect.String {
+		c := fl.Field().String()
+		if len(c) != 0 {
+			codes = append(codes, c)
+		}
+	}
+	if len(codes) == 0 {
+		return true
+	}
+	db.Table("sys_dict_"+fl.Param()).
+		Where("code in ?", codes).
+		Count(&count)
+	return int(count) == len(codes)
 }

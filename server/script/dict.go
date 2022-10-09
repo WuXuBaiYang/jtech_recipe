@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 	"reflect"
 	"regexp"
-	"server/common"
 	"server/model"
 	"server/tool"
 	"strings"
@@ -20,6 +19,13 @@ type dictItem struct {
 
 // 字典项资源
 var tableList = []dictItem{
+	{ // 评论类型字典
+		Fun: func() interface{} {
+			type dictCommentType struct{ model.Dict }
+			return dictCommentType{}
+		},
+		Res: "./res/comment_type.json",
+	},
 	{ // 用户性别字典
 		Fun: func() interface{} {
 			type dictUserGender struct{ model.Dict }
@@ -117,10 +123,9 @@ var tableList = []dictItem{
 var reg = regexp.MustCompile("[A-Z]")
 
 // InitDict 执行字典表的初始化操作
-func InitDict() {
+func InitDict(db *gorm.DB) {
 	println("开始初始化字典表")
 	printDivider()
-	db := common.InitDB(false)
 	err := db.Transaction(func(tx *gorm.DB) error {
 		for _, item := range tableList {
 			dict := item.Fun()
@@ -137,8 +142,7 @@ func InitDict() {
 			}
 			// 加载资源文件并插入数据
 			println(fmt.Sprintf("正在向 %s 表插入数据", name))
-			if err := insertDict(tx,
-				"sys_"+name, item.Res); err != nil {
+			if err := insertDict(tx, "sys_"+name, item.Res); err != nil {
 				return err
 			}
 			printDivider()
