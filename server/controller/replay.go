@@ -14,8 +14,8 @@ type replayReq struct {
 	Content string `json:"content" binding:"required,gt=0"`
 }
 
-// PublishReplay 发布回复
-func PublishReplay(c *gin.Context) {
+// CreateReplay 发布回复
+func CreateReplay(c *gin.Context) {
 	// 获取请求参数
 	var req replayReq
 	if err := c.ShouldBindJSON(&req); err != nil {

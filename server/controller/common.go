@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
@@ -199,4 +200,22 @@ func createCreator(c *gin.Context) model.Creator {
 	return model.Creator{
 		CreatorId: middleware.GetCurrUId(c),
 	}
+}
+
+// 检查活动是否符合条件
+func checkActivityRecord(activityRecordId *string, activityType model.ActivityType) error {
+	if activityRecordId != nil && len(*activityRecordId) != 0 {
+		db := common.GetDB()
+		var record model.ActivityRecord
+		if err := db.Where("end_time > ?", time.Now()).
+			Preload("Activity").
+			First(&record, activityRecordId).
+			Error; err != nil {
+			return errors.New("活动不存在/已结束")
+		}
+		if !tool.IsContain(record.Activity.TypeCodes, string(activityType)) {
+			return errors.New("活动类型不允许")
+		}
+	}
+	return nil
 }

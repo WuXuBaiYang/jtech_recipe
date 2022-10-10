@@ -15,8 +15,8 @@ type commentReq struct {
 	TypeCode string `json:"typeCode" binding:"required,dict=comment_type"`
 }
 
-// PublishComment 发布评论
-func PublishComment(c *gin.Context) {
+// CreateComment 发布评论
+func CreateComment(c *gin.Context) {
 	// 获取参数消息体
 	var req commentReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -124,10 +124,10 @@ func fillCommentInfo(c *gin.Context, items *[]model.Comment) {
 
 // 评论类型对照表
 var commentTypeMap = map[model.CommentType]interface{}{
-	model.PostComment:     &model.Post{},       // 帖子
-	model.RecipeComment:   &model.Recipe{},     // 食谱
-	model.MenuComment:     &model.RecipeMenu{}, // 菜单
-	model.ActivityComment: &model.Activity{},   // 活动
+	model.PostComment:     &model.Post{},     // 帖子
+	model.RecipeComment:   &model.Recipe{},   // 食谱
+	model.MenuComment:     &model.Menu{},     // 菜单
+	model.ActivityComment: &model.Activity{}, // 活动
 }
 
 // 根据传入的类型获取对应的评论父类

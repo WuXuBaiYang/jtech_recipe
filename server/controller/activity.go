@@ -22,8 +22,8 @@ type activityRecordReq struct {
 	BeginTime time.Time `json:"beginTime" binding:"required,gtToday"`
 }
 
-// PublishActivity 发布活动信息
-func PublishActivity(c *gin.Context) {
+// CreateActivity 发布活动信息
+func CreateActivity(c *gin.Context) {
 	// 获取请求参数
 	var req activityReq
 	if err := c.ShouldBindJSON(&req); err != nil {

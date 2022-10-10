@@ -6,8 +6,6 @@ import (
 	"server/controller/response"
 	"server/middleware"
 	"server/model"
-	"server/tool"
-	"time"
 )
 
 // 帖子请求体
@@ -19,29 +17,20 @@ type postReq struct {
 	RecipeId         *string  `json:"recipeId"`
 }
 
-// PublishPost 发布帖子
-func PublishPost(c *gin.Context) {
+// CreatePost 发布帖子
+func CreatePost(c *gin.Context) {
 	// 接收请求的消息体
 	var req postReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
 		return
 	}
-	db := common.GetDB()
-	if req.ActivityRecordId != nil {
-		var record model.ActivityRecord
-		if err := db.Where("end_time > ?", time.Now()).
-			Preload("Activity").
-			First(&record, req.ActivityRecordId).
-			Error; err != nil {
-			response.FailParams(c, "活动不存在/已结束")
-			return
-		}
-		if !tool.IsContain(record.Activity.TypeCodes, string(model.PostActivity)) {
-			response.FailParams(c, "活动类型不允许")
-			return
-		}
+	if err := checkActivityRecord(req.ActivityRecordId,
+		model.PostActivity); err != nil {
+		response.FailParams(c, err.Error())
+		return
 	}
+	db := common.GetDB()
 	if req.RecipeId != nil {
 		if err := db.First(&model.Recipe{},
 			req.RecipeId).Error; err != nil {
@@ -90,7 +79,7 @@ func UpdatePost(c *gin.Context) {
 	result.Contents = req.Contents
 	result.TagCodes = req.TagCodes
 	if err := db.Save(&result).Error; err != nil {
-		response.FailDef(c, -1, "帖子信息保存失败")
+		response.FailDef(c, -1, "帖子保存失败")
 		return
 	}
 	response.SuccessDef(c, result)
@@ -99,29 +88,31 @@ func UpdatePost(c *gin.Context) {
 // GetPostPagination 获取帖子分页列表
 func GetPostPagination(c *gin.Context) {
 	// 获取分页参数
-	var pagination model.Pagination[model.Post]
-	if err := c.ShouldBindQuery(&pagination); err != nil {
+	var req = struct {
+		model.Pagination[model.Post]
+		UserId string `form:"userId"`
+	}{}
+	if err := c.ShouldBindQuery(&req); err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
-	uId := c.Query("userId")
 	// 分页查询
 	db := common.GetDB()
-	pageIndex := pagination.PageIndex
-	pageSize := pagination.PageSize
+	pageIndex := req.PageIndex
+	pageSize := req.PageSize
 	postDB := db.Model(&model.Post{})
-	if len(uId) != 0 {
-		postDB.Where("creator_id = ?", uId)
+	if len(req.UserId) != 0 {
+		postDB.Where("creator_id = ?", req.UserId)
 	}
-	postDB.Count(&pagination.Total)
+	postDB.Count(&req.Total)
 	if err := postDB.Preload("Creator").
 		Offset((pageIndex - 1) * pageSize).Limit(pageSize).
-		Find(&pagination.Data).Error; err != nil {
+		Find(&req.Data).Error; err != nil {
 		response.FailDef(c, -1, "帖子查询失败")
 		return
 	}
-	fillPostInfo(c, &pagination.Data)
-	response.SuccessDef(c, pagination)
+	fillPostInfo(c, &req.Data)
+	response.SuccessDef(c, req.Pagination)
 }
 
 // GetPostInfo 获取帖子详情

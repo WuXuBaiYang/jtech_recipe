@@ -90,7 +90,7 @@ func notifyRoutes(group *gin.RouterGroup) {
 // 帖子相关路由
 func postRoutes(group *gin.RouterGroup) {
 	// 发布帖子
-	group.POST("", controller.PublishPost)
+	group.POST("", controller.CreatePost)
 	// 编辑帖子
 	group.PUT("/:postId", controller.UpdatePost)
 	// 获取帖子分页列表
@@ -112,7 +112,7 @@ func postRoutes(group *gin.RouterGroup) {
 // 评论相关
 func commentRoutes(group *gin.RouterGroup) {
 	// 发布评论
-	group.POST("", controller.PublishComment)
+	group.POST("", controller.CreateComment)
 	// 分页查询评论
 	group.GET("", controller.GetCommentPagination)
 	// 对评论点赞
@@ -124,7 +124,7 @@ func commentRoutes(group *gin.RouterGroup) {
 // 回复相关
 func replayRoutes(group *gin.RouterGroup) {
 	// 发布评论回复
-	group.POST("", controller.PublishReplay)
+	group.POST("", controller.CreateReplay)
 	// 分页评论回复
 	group.GET("", controller.GetReplayPagination)
 	// 对评论回复点赞
@@ -136,7 +136,7 @@ func replayRoutes(group *gin.RouterGroup) {
 // 活动相关路由
 func activityRoutes(group *gin.RouterGroup) {
 	// 发布一个活动
-	group.POST("", controller.PublishActivity, middleware.PermissionCheck)
+	group.POST("", controller.CreateActivity, middleware.PermissionCheck)
 	// 编辑一个活动
 	group.PUT("/:activityId", controller.UpdateActivity, middleware.PermissionCheck)
 	// 开始一个活动
@@ -150,5 +150,11 @@ func activityRoutes(group *gin.RouterGroup) {
 // 菜单相关路由
 func menuRoutes(group *gin.RouterGroup) {
 	// 创建一个菜单
-	group.POST("", controller.PublishActivity, middleware.PermissionCheck)
+	group.POST("", controller.CreateMenu)
+	// 编辑一个菜单
+	group.PUT("/:menuId", controller.UpdateMenu)
+	// 分页获取菜单列表
+	group.GET("", controller.GetMenuPagination)
+	// 获取菜单详情
+	group.GET("/:menuId", controller.GetMenuInfo)
 }

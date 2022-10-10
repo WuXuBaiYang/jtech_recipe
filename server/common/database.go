@@ -30,7 +30,7 @@ var dst = []any{
 	// 食谱
 	&model.Recipe{},
 	// 菜单
-	&model.RecipeMenu{},
+	&model.Menu{},
 }
 
 // InitDB 初始化数据库
