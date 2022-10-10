@@ -151,6 +151,8 @@ func activityRoutes(group *gin.RouterGroup) {
 func menuRoutes(group *gin.RouterGroup) {
 	// 创建一个菜单
 	group.POST("", controller.CreateMenu)
+	// 创建分支菜单
+	group.POST("/fork/:menuId", controller.ForkMenu)
 	// 编辑一个菜单
 	group.PUT("/:menuId", controller.UpdateMenu)
 	// 分页获取菜单列表

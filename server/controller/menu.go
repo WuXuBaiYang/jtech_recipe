@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 )
 
@@ -41,6 +42,32 @@ func CreateMenu(c *gin.Context) {
 	response.SuccessDef(c, result)
 }
 
+// ForkMenu 创建分支菜单（复制其他菜单并创建）
+func ForkMenu(c *gin.Context) {
+	// 获取请求数据
+	menuId := c.Param("menuId")
+	if len(menuId) == 0 {
+		response.FailParams(c, "菜单id不能为空")
+		return
+	}
+	db := common.GetDB()
+	var result model.Menu
+	if err := db.First(&result, menuId).Error; err != nil {
+		response.FailParams(c, "菜单不存在")
+		return
+	}
+	// 数据插入
+	result.OrmBase = createBase()
+	result.Creator = createCreator(c)
+	result.OriginId = &menuId
+	result.ActivityRecordId = nil
+	if err := db.Save(&result).Error; err != nil {
+		response.FailDef(c, -1, "菜单创建失败")
+		return
+	}
+	response.SuccessDef(c, result)
+}
+
 // UpdateMenu 编辑菜单
 func UpdateMenu(c *gin.Context) {
 	// 接收请求体
@@ -58,6 +85,10 @@ func UpdateMenu(c *gin.Context) {
 	var result model.Menu
 	if err := db.First(&result, menuId).Error; err != nil {
 		response.FailParams(c, "菜单不存在")
+		return
+	}
+	if result.CreatorId != middleware.GetCurrUId(c) {
+		response.FailParams(c, "您不是该菜单的所有者")
 		return
 	}
 	// 数据插入
@@ -109,6 +140,8 @@ func GetMenuInfo(c *gin.Context) {
 	db := common.GetDB()
 	var result model.Menu
 	if err := db.Preload("Creator").
+		Preload("ActivityRecord").
+		Preload("OriginMenu").
 		First(&result, menuId).Error; err != nil {
 		response.FailParams(c, "菜单不存在")
 		return

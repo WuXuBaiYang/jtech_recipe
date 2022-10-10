@@ -74,6 +74,10 @@ func UpdatePost(c *gin.Context) {
 		response.FailParams(c, "帖子不存在")
 		return
 	}
+	if result.CreatorId != middleware.GetCurrUId(c) {
+		response.FailParams(c, "您不是该帖子的所有者")
+		return
+	}
 	// 更新已有数据
 	result.Title = req.Title
 	result.Contents = req.Contents
