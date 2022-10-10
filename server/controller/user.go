@@ -14,8 +14,8 @@ type userProfileReq struct {
 	userProfile
 
 	EvaluateCode       string   `json:"evaluateCode" binding:"required"`
-	RecipeCuisineCodes []string `json:"recipeCuisineCodes" binding:"required"`
-	RecipeTasteCodes   []string `json:"recipeTasteCodes" binding:"required"`
+	RecipeCuisineCodes []string `json:"recipeCuisineCodes" binding:"required,unique,dict=recipe_cuisine"`
+	RecipeTasteCodes   []string `json:"recipeTasteCodes" binding:"required,unique,dict=recipe_taste"`
 }
 
 // 用户信息
@@ -107,7 +107,7 @@ func SubscribeUser(c *gin.Context) {
 		return
 	}
 	var subUser model.User
-	if err := db.First(&subUser, subUId).Error; err != nil {
+	if hasNoRecord(&subUser, subUId) {
 		response.FailParams(c, "用户不存在")
 		return
 	}
@@ -130,7 +130,7 @@ func UnSubscribeUser(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var subUser model.User
-	if err := db.First(&subUser, subUId).Error; err != nil {
+	if hasNoRecord(&subUser, subUId) {
 		response.FailParams(c, "用户不存在")
 		return
 	}
@@ -160,125 +160,12 @@ func GetSubscribePagination(c *gin.Context) {
 	db := common.GetDB()
 	pageIndex := pagination.PageIndex
 	pageSize := pagination.PageSize
-	target := model.User{OrmBase: model.OrmBase{ID: uId}}
-	pagination.Total = db.Model(&target).Association("Subscribes").Count()
-	if err := db.Model(&target).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
+	user := model.User{OrmBase: model.OrmBase{ID: uId}}
+	pagination.Total = db.Model(&user).Association("Subscribes").Count()
+	if err := db.Model(&user).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
 		Association("Subscribes").Find(&pagination.Data); err != nil {
 		response.FailDef(c, -1, "数据查询失败")
 		return
 	}
 	response.SuccessDef(c, pagination)
-}
-
-// 分页获取用户帖子操作列表
-func getUserPostPagination(c *gin.Context, columnName string, errMessage string) {
-	// 获取分页参数
-	var pagination model.Pagination[model.Post]
-	if err := c.ShouldBindQuery(&pagination); err != nil {
-		response.FailParams(c, err.Error())
-		return
-	}
-	// 获取用户id
-	uId := c.Param("userId")
-	if len(uId) == 0 {
-		uId = middleware.GetCurrUId(c)
-	}
-	// 分页查询
-	db := common.GetDB()
-	pageIndex := pagination.PageIndex
-	pageSize := pagination.PageSize
-	target := model.User{OrmBase: model.OrmBase{ID: uId}}
-	pagination.Total = db.Model(&target).Association(columnName).Count()
-	if err := db.Model(&target).Offset((pageIndex - 1) * pageSize).Limit(pageSize).
-		Association(columnName).Find(&pagination.Data); err != nil {
-		response.FailDef(c, -1, errMessage)
-		return
-	}
-	fillPostInfo(c, &pagination.Data)
-	response.SuccessDef(c, pagination)
-}
-
-// GetUserViewPostPagination 分页获取用户浏览过的帖子列表
-func GetUserViewPostPagination(c *gin.Context) {
-	getUserPostPagination(c, "ViewPosts", "用户浏览帖子列表获取失败")
-}
-
-// GetUserLikePostPagination 分页获取用户点赞过的帖子列表
-func GetUserLikePostPagination(c *gin.Context) {
-	getUserPostPagination(c, "LikePosts", "用户点赞帖子列表获取失败")
-}
-
-// GetUserCollectPagination 分页获取用户收藏的帖子列表
-func GetUserCollectPagination(c *gin.Context) {
-	getUserPostPagination(c, "CollectPosts", "用户收藏帖子列表获取失败")
-}
-
-// GetAllUserMedalList 获取全部勋章列表
-func GetAllUserMedalList(c *gin.Context) {
-	db := common.GetDB()
-	var result []model.UserMedal
-	db.Find(&result)
-	response.SuccessDef(c, result)
-}
-
-// AddUserMedal 添加勋章
-func AddUserMedal(c *gin.Context) {
-	// 获取请求参数
-	var req medalReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c, err)
-		return
-	}
-	// 创建并保存到数据库
-	db := common.GetDB()
-	result := model.UserMedal{
-		OrmBase:    createBase(),
-		Logo:       req.Logo,
-		Name:       req.Name,
-		RarityCode: req.RarityCode,
-	}
-	if err := db.Create(&result).Error; err != nil {
-		response.FailDef(c, -1, "勋章创建失败")
-		return
-	}
-	response.SuccessDef(c, result)
-}
-
-// UpdateUserMedal 更新勋章信息
-func UpdateUserMedal(c *gin.Context) {
-	// 获取请求参数
-	var req medalReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.FailParamsDef(c, err)
-		return
-	}
-	medalId := c.Param("medalId")
-	if len(medalId) == 0 {
-		response.FailParams(c, "勋章id不能为空")
-		return
-	}
-	db := common.GetDB()
-	var result model.UserMedal
-	if err := db.First(&result, medalId).Error; err != nil {
-		response.FailParams(c, "勋章id不能为空")
-		return
-	}
-	// 更新已有数据
-	result.Name = req.Name
-	result.Logo = req.Logo
-	result.RarityCode = req.RarityCode
-	if err := db.Save(&result).Error; err != nil {
-		response.FailDef(c, -1, "勋章信息保存失败")
-		return
-	}
-	response.SuccessDef(c, result)
-}
-
-// 获取用户勋章
-func loadUserMedals(uId string, medals *[]model.UserMedal) error {
-	db := common.GetDB()
-	err := db.Model(&model.User{
-		OrmBase: model.OrmBase{ID: uId},
-	}).Association("Medals").Find(medals)
-	return err
 }

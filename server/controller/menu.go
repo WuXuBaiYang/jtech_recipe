@@ -22,8 +22,9 @@ func CreateMenu(c *gin.Context) {
 		response.FailParamsDef(c, err)
 		return
 	}
-	if err := checkActivityRecord(req.ActivityRecordId,
-		model.MenuActivity); err != nil {
+	record, err := checkActivityRecord(req.ActivityRecordId,
+		model.MenuActivity)
+	if err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
@@ -39,6 +40,8 @@ func CreateMenu(c *gin.Context) {
 		response.FailDef(c, -1, "菜单创建失败")
 		return
 	}
+	fillMenuInfo(c, false, &result)
+	result.ActivityRecord = record
 	response.SuccessDef(c, result)
 }
 
@@ -52,19 +55,22 @@ func ForkMenu(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var result model.Menu
-	if err := db.First(&result, menuId).Error; err != nil {
+	if hasNoRecord(&result, menuId) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
+	originMenu := result
 	// 数据插入
 	result.OrmBase = createBase()
 	result.Creator = createCreator(c)
 	result.OriginId = &menuId
+	result.OriginMenu = &originMenu
 	result.ActivityRecordId = nil
 	if err := db.Save(&result).Error; err != nil {
 		response.FailDef(c, -1, "菜单创建失败")
 		return
 	}
+	fillMenuInfo(c, false, &result)
 	response.SuccessDef(c, result)
 }
 
@@ -83,7 +89,9 @@ func UpdateMenu(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var result model.Menu
-	if err := db.First(&result, menuId).Error; err != nil {
+	if err := db.Preload("ActivityRecord").
+		Preload("OriginMenu").
+		First(&result, menuId).Error; err != nil {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
@@ -97,6 +105,7 @@ func UpdateMenu(c *gin.Context) {
 		response.FailDef(c, -1, "菜单保存失败")
 		return
 	}
+	fillMenuInfo(c, false, &result)
 	response.SuccessDef(c, result)
 }
 
@@ -104,7 +113,7 @@ func UpdateMenu(c *gin.Context) {
 func GetMenuPagination(c *gin.Context) {
 	// 获取分页参数
 	var req = struct {
-		model.Pagination[model.Menu]
+		model.Pagination[*model.Menu]
 		UserId string `form:"userId"`
 	}{}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -126,6 +135,7 @@ func GetMenuPagination(c *gin.Context) {
 		response.FailDef(c, -1, "菜单查询失败")
 		return
 	}
+	fillMenuInfo(c, true, req.Data...)
 	response.SuccessDef(c, req.Pagination)
 }
 
@@ -146,5 +156,11 @@ func GetMenuInfo(c *gin.Context) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
+	fillMenuInfo(c, false, &result)
 	response.SuccessDef(c, result)
+}
+
+// 填充菜单信息
+func fillMenuInfo(c *gin.Context, simple bool, items ...*model.Menu) {
+	/// 待实现
 }

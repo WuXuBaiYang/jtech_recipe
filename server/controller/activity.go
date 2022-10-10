@@ -62,7 +62,7 @@ func UpdateActivity(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var result model.Activity
-	if err := db.First(&result, activityId).Error; err != nil {
+	if hasNoRecord(&result, activityId) {
 		response.FailParams(c, "活动不存在")
 		return
 	}
@@ -94,7 +94,7 @@ func StartActivity(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var activity model.Activity
-	if err := db.First(&activity, activityId).Error; err != nil {
+	if hasNoRecord(&activity, activityId) {
 		response.FailParams(c, "活动不存在")
 		return
 	}

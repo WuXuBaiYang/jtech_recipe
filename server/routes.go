@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/controller"
 	"server/middleware"
+	"server/model"
 )
 
 // CollectRoutes 统一注册路由方法
@@ -16,20 +17,20 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	authRoutes(group)
 	//** 用户相关 **//
 	userRoutes(authGroup.Group("/user"))
-	//** 通知相关 **//
-	notifyRoutes(authGroup.Group("/notification"))
-	//** 评论相关 **//
-	commentRoutes(authGroup.Group("/comment"))
-	//** 回复相关 **//
-	replayRoutes(authGroup.Group("/replay"))
 	//** 帖子相关 **//
 	postRoutes(authGroup.Group("/post"))
-	//** 活动相关 **//
-	activityRoutes(authGroup.Group("/activity"))
 	//** 菜单相关 **//
 	menuRoutes(authGroup.Group("/menu"))
 	//** 食谱相关 **//
 	recipeRoutes(authGroup.Group("/recipe"))
+	//** 评论相关 **//
+	commentRoutes(authGroup.Group("/comment"))
+	//** 回复相关 **//
+	replayRoutes(authGroup.Group("/replay"))
+	//** 活动相关 **//
+	activityRoutes(authGroup.Group("/activity"))
+	//** 通知相关 **//
+	notifyRoutes(authGroup.Group("/notification"))
 	return r
 }
 
@@ -61,32 +62,24 @@ func userRoutes(group *gin.RouterGroup) {
 	group.GET("/info", controller.GetUserProfile)
 	// 编辑当前用户信息
 	group.PUT("/info", controller.UpdateUserProfile)
-	// 分页获取用户点赞帖子列表
-	group.GET("/common/like", controller.GetUserLikePostPagination)
-	// 分页获取目标用户点赞帖子列表
-	group.GET("/common/like/:userId", controller.GetUserLikePostPagination)
-	// 分页获取用户浏览帖子列表
-	group.GET("/common/view", controller.GetUserViewPostPagination)
-	// 分页获取目标用户浏览帖子列表
-	group.GET("/common/view/:userId", controller.GetUserViewPostPagination)
-	// 分页获取用户收藏帖子列表
-	group.GET("/common/collect", controller.GetUserCollectPagination)
-	// 分页获取目标用户收藏帖子列表
-	group.GET("/common/collect/:userId", controller.GetUserCollectPagination)
+	// 分页获取帖子点赞列表
+	group.GET("/post/like", controller.GetUserLikePostPagination)
+	// 分页获取菜单点赞列表
+	group.GET("/menu/like", controller.GetUserLikeMenuPagination)
+	// 分页获取食谱点赞列表
+	group.GET("/recipe/like", controller.GetUserLikeRecipePagination)
+	// 分页获取帖子收藏列表
+	group.GET("/post/collect", controller.GetUserCollectPostPagination)
+	// 分页获取菜单收藏列表
+	group.GET("/menu/collect", controller.GetUserCollectMenuPagination)
+	// 分页获取食谱收藏列表
+	group.GET("/recipe/collect", controller.GetUserCollectRecipePagination)
 	// 获取全部勋章列表
 	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
 	group.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck)
 	// 更新勋章信息[权限]
 	group.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck)
-}
-
-// 通知相关路由
-func notifyRoutes(group *gin.RouterGroup) {
-	// 分页获取通知列表
-	group.GET("", controller.GetNotifyPagination)
-	// 发送消息通知[权限]
-	group.POST("", controller.PushNotify, middleware.PermissionCheck)
 }
 
 // 帖子相关路由
@@ -99,16 +92,56 @@ func postRoutes(group *gin.RouterGroup) {
 	group.GET("", controller.GetPostPagination)
 	// 获取帖子详情信息
 	group.GET("/:postId", controller.GetPostInfo)
-	// 对帖子浏览
-	group.POST("/view/:postId", controller.AddPostView)
 	// 对帖子点赞
-	group.POST("/like/:postId", controller.AddPostLike)
+	group.POST("/like/:targetId", controller.OperateLike[model.Post](true))
 	// 对帖子取消点赞
-	group.DELETE("/like/:postId", controller.RemovePostLike)
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Post](false))
 	// 对帖子收藏
-	group.POST("/collect/:postId", controller.AddPostCollect)
+	group.POST("/collect/:targetId", controller.OperateCollect[model.Post](true))
 	// 对帖子取消收藏
-	group.DELETE("/collect/:postId", controller.RemovePostCollect)
+	group.DELETE("/collect/:targetId", controller.OperateCollect[model.Post](false))
+}
+
+// 菜单相关路由
+func menuRoutes(group *gin.RouterGroup) {
+	// 创建一个菜单
+	group.POST("", controller.CreateMenu)
+	// 创建分支菜单
+	group.POST("/fork/:menuId", controller.ForkMenu)
+	// 编辑一个菜单
+	group.PUT("/:menuId", controller.UpdateMenu)
+	// 分页获取菜单列表
+	group.GET("", controller.GetMenuPagination)
+	// 获取菜单详情
+	group.GET("/:menuId", controller.GetMenuInfo)
+	// 对菜单点赞
+	group.POST("/like/:targetId", controller.OperateLike[model.Menu](true))
+	// 对菜单取消点赞
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Menu](false))
+	// 对菜单收藏
+	group.POST("/collect/:targetId", controller.OperateCollect[model.Menu](true))
+	// 对菜单取消收藏
+	group.DELETE("/collect/:targetId", controller.OperateCollect[model.Menu](false))
+}
+
+// 食谱相关路由
+func recipeRoutes(group *gin.RouterGroup) {
+	// 创建一个食谱
+	group.POST("", controller.CreateRecipe)
+	// 编辑一个食谱
+	group.PUT("/:recipeId", controller.UpdateRecipe)
+	// 分页获取食谱列表
+	group.GET("", controller.GetRecipePagination)
+	// 获取食谱详情
+	group.GET("/:recipeId", controller.GetRecipeInfo)
+	// 对食谱点赞
+	group.POST("/like/:targetId", controller.OperateLike[model.Recipe](true))
+	// 对食谱取消点赞
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Recipe](false))
+	// 对食谱收藏
+	group.POST("/collect/:targetId", controller.OperateCollect[model.Recipe](true))
+	// 对食谱取消收藏
+	group.DELETE("/collect/:targetId", controller.OperateCollect[model.Recipe](false))
 }
 
 // 评论相关
@@ -118,9 +151,9 @@ func commentRoutes(group *gin.RouterGroup) {
 	// 分页查询评论
 	group.GET("", controller.GetCommentPagination)
 	// 对评论点赞
-	group.POST("/like/:commentId", controller.AddCommentLike)
+	group.POST("/like/:targetId", controller.OperateLike[model.Comment](true))
 	// 对评论取消点赞
-	group.DELETE("/like/:commentId", controller.RemoveCommentLike)
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Comment](false))
 }
 
 // 回复相关
@@ -130,9 +163,9 @@ func replayRoutes(group *gin.RouterGroup) {
 	// 分页评论回复
 	group.GET("", controller.GetReplayPagination)
 	// 对评论回复点赞
-	group.POST("/like/:replayId", controller.AddReplayLike)
+	group.POST("/like/:targetId", controller.OperateLike[model.Replay](true))
 	// 对评论回复取消点赞
-	group.DELETE("/like/:replayId", controller.RemoveReplayLike)
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Replay](false))
 }
 
 // 活动相关路由
@@ -149,28 +182,10 @@ func activityRoutes(group *gin.RouterGroup) {
 	group.GET("/process", controller.GetAllActivityProcessList)
 }
 
-// 菜单相关路由
-func menuRoutes(group *gin.RouterGroup) {
-	// 创建一个菜单
-	group.POST("", controller.CreateMenu)
-	// 创建分支菜单
-	group.POST("/fork/:menuId", controller.ForkMenu)
-	// 编辑一个菜单
-	group.PUT("/:menuId", controller.UpdateMenu)
-	// 分页获取菜单列表
-	group.GET("", controller.GetMenuPagination)
-	// 获取菜单详情
-	group.GET("/:menuId", controller.GetMenuInfo)
-}
-
-// 食谱相关路由
-func recipeRoutes(group *gin.RouterGroup) {
-	// 创建一个食谱
-	group.POST("", controller.CreateRecipe)
-	// 编辑一个食谱
-	group.PUT("/:recipeId", controller.UpdateRecipe)
-	// 分页获取食谱列表
-	group.GET("", controller.GetRecipePagination)
-	// 获取食谱详情
-	group.GET("/:recipeId", controller.GetRecipeInfo)
+// 通知相关路由
+func notifyRoutes(group *gin.RouterGroup) {
+	// 分页获取通知列表
+	group.GET("", controller.GetNotifyPagination)
+	// 发送消息通知[权限]
+	group.POST("", controller.PushNotify, middleware.PermissionCheck)
 }

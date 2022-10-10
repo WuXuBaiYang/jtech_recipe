@@ -203,19 +203,76 @@ func createCreator(c *gin.Context) model.Creator {
 }
 
 // 检查活动是否符合条件
-func checkActivityRecord(activityRecordId *string, activityType model.ActivityType) error {
+func checkActivityRecord(activityRecordId *string, activityType model.ActivityType) (*model.ActivityRecord, error) {
+	db := common.GetDB()
+	var record model.ActivityRecord
 	if activityRecordId != nil && len(*activityRecordId) != 0 {
-		db := common.GetDB()
-		var record model.ActivityRecord
 		if err := db.Where("end_time > ?", time.Now()).
 			Preload("Activity").
 			First(&record, activityRecordId).
 			Error; err != nil {
-			return errors.New("活动不存在/已结束")
+			return nil, errors.New("活动不存在/已结束")
 		}
 		if !tool.IsContain(record.Activity.TypeCodes, string(activityType)) {
-			return errors.New("活动类型不允许")
+			return nil, errors.New("活动类型不允许")
 		}
 	}
-	return nil
+	return &record, nil
+}
+
+// 对对象操作
+func operateTarget[T interface{}](c *gin.Context, append bool, columnName string, errMessage string) {
+	// 获取请求参数
+	targetId := c.Param("targetId")
+	if len(targetId) == 0 {
+		response.FailParams(c, "id不能为空")
+		return
+	}
+	db := common.GetDB()
+	var target T
+	if hasNoRecord(&target, targetId) {
+		response.FailParams(c, "目标不存在")
+		return
+	}
+	// 操作用户列表
+	user := model.User{OrmBase: model.OrmBase{
+		ID: middleware.GetCurrUId(c)}}
+	subDB := db.Model(&target).Association(columnName)
+	if append && subDB.Append(&user) != nil {
+		response.FailDef(c, -1, errMessage)
+		return
+	} else if !append && subDB.Delete(&user) != nil {
+		response.FailDef(c, -1, errMessage)
+		return
+	}
+	response.SuccessDef(c, true)
+}
+
+// OperateLike 点赞操作
+func OperateLike[T interface{}](append bool) gin.HandlerFunc {
+	columnName := "LikeUsers"
+	errMessage := "点赞操作失败"
+	return func(c *gin.Context) {
+		operateTarget[T](c, append, columnName, errMessage)
+	}
+}
+
+// OperateCollect 收藏操作
+func OperateCollect[T interface{}](append bool) gin.HandlerFunc {
+	columnName := "CollectUsers"
+	errMessage := "收藏操作失败"
+	return func(c *gin.Context) {
+		operateTarget[T](c, append, columnName, errMessage)
+	}
+}
+
+// 检查记录是否不存在
+func hasNoRecord(target interface{}, id string) bool {
+	var count int64
+	db := common.GetDB()
+	db.Model(&target).
+		Where("id = ?", id).
+		Count(&count).
+		First(&target)
+	return count == 0
 }

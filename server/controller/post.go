@@ -12,7 +12,7 @@ import (
 type postReq struct {
 	Title            string   `json:"title" binding:"required,gte=6"`
 	Contents         []any    `json:"contents" binding:"required,gte=1"`
-	TagCodes         []string `json:"tagCodes" binding:"required,dict=post_tag"`
+	TagCodes         []string `json:"tagCodes" binding:"required,unique,dict=post_tag"`
 	ActivityRecordId *string  `json:"activityRecordId"`
 	RecipeId         *string  `json:"recipeId"`
 }
@@ -25,15 +25,16 @@ func CreatePost(c *gin.Context) {
 		response.FailParamsDef(c, err)
 		return
 	}
-	if err := checkActivityRecord(req.ActivityRecordId,
-		model.PostActivity); err != nil {
+	record, err := checkActivityRecord(req.ActivityRecordId,
+		model.PostActivity)
+	if err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
 	db := common.GetDB()
-	if req.RecipeId != nil {
-		if err := db.First(&model.Recipe{},
-			req.RecipeId).Error; err != nil {
+	var recipe *model.Recipe
+	if req.RecipeId != nil && len(*req.RecipeId) != 0 {
+		if hasNoRecord(&recipe, *req.RecipeId) {
 			response.FailParams(c, "菜谱不存在")
 			return
 		}
@@ -52,6 +53,9 @@ func CreatePost(c *gin.Context) {
 		response.FailDef(c, -1, "帖子创建失败")
 		return
 	}
+	fillPostInfo(c, &result)
+	result.ActivityRecord = record
+	result.Recipe = recipe
 	response.SuccessDef(c, result)
 }
 
@@ -70,7 +74,9 @@ func UpdatePost(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var result model.Post
-	if err := db.First(&result, postId).Error; err != nil {
+	if err := db.Preload("ActivityRecord").
+		Preload("Recipe").First(&result, postId).
+		Error; err != nil {
 		response.FailParams(c, "帖子不存在")
 		return
 	}
@@ -86,6 +92,7 @@ func UpdatePost(c *gin.Context) {
 		response.FailDef(c, -1, "帖子保存失败")
 		return
 	}
+	fillPostInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
@@ -93,7 +100,7 @@ func UpdatePost(c *gin.Context) {
 func GetPostPagination(c *gin.Context) {
 	// 获取分页参数
 	var req = struct {
-		model.Pagination[model.Post]
+		model.Pagination[*model.Post]
 		UserId string `form:"userId"`
 	}{}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -115,7 +122,7 @@ func GetPostPagination(c *gin.Context) {
 		response.FailDef(c, -1, "帖子查询失败")
 		return
 	}
-	fillPostInfo(c, &req.Data)
+	fillPostInfo(c, req.Data...)
 	response.SuccessDef(c, req.Pagination)
 }
 
@@ -137,74 +144,11 @@ func GetPostInfo(c *gin.Context) {
 		return
 	}
 	// 填充数据并返回
-	fillPostDetailInfo(c, &result)
+	fillPostInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
-// OperatePost 对帖子操作（浏览/点赞/取消点赞/收藏/取消收藏）
-func operatePost(c *gin.Context, append bool, columnName string, errMessage string) {
-	// 获取请求参数
-	postId := c.Param("postId")
-	if len(postId) == 0 {
-		response.FailParams(c, "帖子id不能为空")
-		return
-	}
-	db := common.GetDB()
-	var result model.Post
-	if err := db.First(&result, postId).Error; err != nil {
-		response.FailParams(c, "帖子不存在")
-		return
-	}
-	// 将当前用户添加到关系列表中
-	user := middleware.GetCurrUser(c)
-	postDB := db.Model(&result).Association(columnName)
-	if append && postDB.Append(user) != nil {
-		response.FailDef(c, -1, errMessage)
-		return
-	} else if !append && postDB.Delete(user) != nil {
-		response.FailDef(c, -1, errMessage)
-		return
-	}
-	response.SuccessDef(c, true)
-}
-
-// AddPostView 对帖子浏览
-func AddPostView(c *gin.Context) {
-	operatePost(c, true, "ViewUsers", "帖子浏览失败")
-}
-
-// AddPostLike 对帖子点赞
-func AddPostLike(c *gin.Context) {
-	operatePost(c, true, "LikeUsers", "帖子点赞失败")
-}
-
-// RemovePostLike 对帖子取消点赞
-func RemovePostLike(c *gin.Context) {
-	operatePost(c, false, "LikeUsers", "帖子取消点赞失败")
-}
-
-// AddPostCollect 对帖子收藏
-func AddPostCollect(c *gin.Context) {
-	operatePost(c, true, "CollectUsers", "帖子收藏失败")
-}
-
-// RemovePostCollect 对帖子取消收藏
-func RemovePostCollect(c *gin.Context) {
-	operatePost(c, false, "CollectUsers", "帖子取消收藏失败")
-}
-
 // 填充帖子信息
-func fillPostInfo(c *gin.Context, items *[]model.Post) {
-	/// 帖子的标签功能，有待思考实现方式
-	//for i, it := range *items {
-	//	(*items)[i].Title = it.Title
-	//}
-}
-
-// 填充帖子详细信息
-func fillPostDetailInfo(c *gin.Context, post *model.Post) {
-	/// 帖子的标签功能，有待思考实现方式
-	//for i, it := range *items {
-	//	(*items)[i].Title = it.Title
-	//}
+func fillPostInfo(c *gin.Context, items ...*model.Post) {
+	/// 待实现
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
-	"server/middleware"
 	"server/model"
 )
 
@@ -23,13 +22,12 @@ func CreateComment(c *gin.Context) {
 		response.FailParamsDef(c, err)
 		return
 	}
-	db := common.GetDB()
-	if err := db.First(commentType(req.TypeCode), req.PId).
-		Error; err != nil {
-		response.FailParams(c, "评论目标不存在")
+	if hasNoRecord(commentType(req.TypeCode), req.PId) {
+		response.FailParams(c, "评论对象不存在")
 		return
 	}
 	// 数据插入
+	db := common.GetDB()
 	result := model.Comment{
 		OrmBase:  createBase(),
 		Creator:  createCreator(c),
@@ -47,9 +45,9 @@ func CreateComment(c *gin.Context) {
 // GetCommentPagination 分页获取评论列表
 func GetCommentPagination(c *gin.Context) {
 	var req = struct {
-		model.Pagination[model.Comment]
-		PId  string `form:"pId" binding:"required,gt=0"`
-		Type string `form:"type" binding:"required,type=comment"`
+		model.Pagination[*model.Comment]
+		PId      string `form:"pId" binding:"required,gt=0"`
+		TypeCode string `form:"typeCode" binding:"required,dict=comment_type"`
 	}{}
 	// 获取请求参数
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -57,8 +55,7 @@ func GetCommentPagination(c *gin.Context) {
 		return
 	}
 	db := common.GetDB()
-	if err := db.First(commentType(req.Type), req.PId).
-		Error; err != nil {
+	if hasNoRecord(commentType(req.TypeCode), req.PId) {
 		response.FailParams(c, "目标不存在")
 		return
 	}
@@ -74,66 +71,25 @@ func GetCommentPagination(c *gin.Context) {
 		response.FailDef(c, -1, "评论查询失败")
 		return
 	}
-	fillCommentInfo(c, &req.Data)
+	fillCommentInfo(c, req.Data...)
 	response.SuccessDef(c, req.Pagination)
-}
-
-// OperateComment 对评论操作（点赞/取消点赞）
-func OperateComment(c *gin.Context, append bool, columnName string, errMessage string) {
-	// 获取请求参数
-	commentId := c.Param("commentId")
-	if len(commentId) == 0 {
-		response.FailParams(c, "评论id不能为空")
-		return
-	}
-	db := common.GetDB()
-	var comment model.Comment
-	if err := db.First(&comment, commentId).Error; err != nil {
-		response.FailParams(c, "评论不存在")
-		return
-	}
-	// 将当前用户添加到点赞列表中
-	user := middleware.GetCurrUser(c)
-	commentDB := db.Model(&comment).Association(columnName)
-	if append && commentDB.Append(user) != nil {
-		response.FailDef(c, -1, errMessage)
-		return
-	} else if !append && commentDB.Delete(user) != nil {
-		response.FailDef(c, -1, errMessage)
-		return
-	}
-	response.SuccessDef(c, true)
-}
-
-// AddCommentLike 对评论点赞
-func AddCommentLike(c *gin.Context) {
-	OperateComment(c, true, "LikeUsers", "评论点赞失败")
-}
-
-// RemoveCommentLike 对评论取消点赞
-func RemoveCommentLike(c *gin.Context) {
-	OperateComment(c, false, "LikeUsers", "评论取消点赞失败")
-}
-
-// 填充帖子评论信息
-func fillCommentInfo(c *gin.Context, items *[]model.Comment) {
-	//for i, it := range *items {
-	//	(*items)[i].Title = it.Title
-	//}
-}
-
-// 评论类型对照表
-var commentTypeMap = map[model.CommentType]interface{}{
-	model.PostComment:     &model.Post{},     // 帖子
-	model.RecipeComment:   &model.Recipe{},   // 食谱
-	model.MenuComment:     &model.Menu{},     // 菜单
-	model.ActivityComment: &model.Activity{}, // 活动
 }
 
 // 根据传入的类型获取对应的评论父类
 func commentType(v string) interface{} {
-	if v, ok := commentTypeMap[model.CommentType(v)]; ok {
-		return v
+	switch v {
+	case string(model.RecipeComment):
+		return &model.Recipe{}
+	case string(model.MenuComment):
+		return &model.Menu{}
+	case string(model.ActivityComment):
+		return &model.Activity{}
+	default:
+		return &model.Post{}
 	}
-	return &model.Post{}
+}
+
+// 填充帖子评论信息
+func fillCommentInfo(c *gin.Context, items ...*model.Comment) {
+	// 待实现
 }

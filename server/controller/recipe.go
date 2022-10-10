@@ -16,11 +16,11 @@ type recipeReq struct {
 	Time                 int64    `json:"time" binding:"required,gte=60000"`
 	Rating               float32  `json:"rating" binding:"required,min=0,max=1"`
 	Steps                []any    `json:"steps" binding:"required,gte=1"`
-	CuisineCodes         []string `json:"cuisineCodes" binding:"dict=recipe_cuisine"`
-	TasteCodes           []string `json:"tasteCodes"  binding:"dict=recipe_taste"`
-	IngredientsMainCodes []string `json:"ingredientsMainCodes" binding:"required,gte=1,dict=recipe_ingredients_main"`
-	IngredientsSubCodes  []string `json:"ingredientsSubCodes" binding:"dict=recipe_ingredients_sub"`
-	TagCodes             []string `json:"tagCodes" binding:"dict=recipe_tag"`
+	CuisineCodes         []string `json:"cuisineCodes" binding:"unique,dict=recipe_cuisine"`
+	TasteCodes           []string `json:"tasteCodes"  binding:"unique,dict=recipe_taste"`
+	IngredientsMainCodes []string `json:"ingredientsMainCodes" binding:"required,unique,gte=1,dict=recipe_ingredients_main"`
+	IngredientsSubCodes  []string `json:"ingredientsSubCodes" binding:"unique,dict=recipe_ingredients_sub"`
+	TagCodes             []string `json:"tagCodes" binding:"unique,dict=recipe_tag"`
 	ActivityRecordId     *string  `json:"activityRecordId"`
 }
 
@@ -32,8 +32,9 @@ func CreateRecipe(c *gin.Context) {
 		response.FailParamsDef(c, err)
 		return
 	}
-	if err := checkActivityRecord(req.ActivityRecordId,
-		model.RecipeActivity); err != nil {
+	record, err := checkActivityRecord(req.ActivityRecordId,
+		model.RecipeActivity)
+	if err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
@@ -59,7 +60,8 @@ func CreateRecipe(c *gin.Context) {
 		response.FailDef(c, -1, "食谱创建失败")
 		return
 	}
-	fillRecipeInfo(&result)
+	fillRecipeInfo(c, &result)
+	result.ActivityRecord = record
 	response.SuccessDef(c, result)
 }
 
@@ -78,7 +80,8 @@ func UpdateRecipe(c *gin.Context) {
 	}
 	db := common.GetDB()
 	var result model.Recipe
-	if err := db.First(&result, recipeId).Error; err != nil {
+	if err := db.Preload("ActivityRecord").
+		First(&result, recipeId).Error; err != nil {
 		response.FailParams(c, "食谱不存在")
 		return
 	}
@@ -103,6 +106,7 @@ func UpdateRecipe(c *gin.Context) {
 		response.FailDef(c, -1, "食谱保存失败")
 		return
 	}
+	fillRecipeInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
@@ -110,7 +114,7 @@ func UpdateRecipe(c *gin.Context) {
 func GetRecipePagination(c *gin.Context) {
 	// 获取分页参数
 	var req = struct {
-		model.Pagination[model.Recipe]
+		model.Pagination[*model.Recipe]
 		UserId string `form:"userId"`
 	}{}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -132,6 +136,7 @@ func GetRecipePagination(c *gin.Context) {
 		response.FailDef(c, -1, "食谱查询失败")
 		return
 	}
+	fillRecipeInfo(c, req.Data...)
 	response.SuccessDef(c, req.Pagination)
 }
 
@@ -151,11 +156,11 @@ func GetRecipeInfo(c *gin.Context) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
-	fillRecipeInfo(&result)
+	fillRecipeInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
-// 填充食谱对象
-func fillRecipeInfo(recipe *model.Recipe) {
+// 填充食谱信息
+func fillRecipeInfo(c *gin.Context, items ...*model.Recipe) {
 	// 待实现
 }

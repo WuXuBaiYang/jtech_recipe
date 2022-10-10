@@ -25,13 +25,17 @@ type User struct {
 	Level     int64 `json:"level" gorm:"not null;comment:用户当前等级"`
 	LevelExp  int64 `json:"levelExp" gorm:"not null;当前等级已获得经验"`
 	UpdateExp int64 `json:"updateExp" gorm:"not null;升级所需经验"`
-
 	// 关注列表
 	Subscribes []User `json:"-" gorm:"many2many:user_subscribes;comment:用户订阅列表"`
-	// 浏览/点赞/收藏过的帖子
-	ViewPosts    []Post `json:"-" gorm:"many2many:post_view_users"`
+	// 点赞/收藏过的帖子
 	LikePosts    []Post `json:"-" gorm:"many2many:post_like_users"`
 	CollectPosts []Post `json:"-" gorm:"many2many:post_collect_users"`
+	// 点赞/收藏过的菜单
+	LikeMenus    []Menu `json:"-" gorm:"many2many:menu_like_users"`
+	CollectMenus []Menu `json:"-" gorm:"many2many:menu_collect_users"`
+	// 点赞/收藏过的食谱
+	LikeRecipes    []Recipe `json:"-" gorm:"many2many:recipe_like_users"`
+	CollectRecipes []Recipe `json:"-" gorm:"many2many:recipe_collect_users"`
 }
 
 // SimpleUser 简易用户结构体

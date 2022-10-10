@@ -23,4 +23,12 @@ type Recipe struct {
 	Tags                 []SimpleDict    `json:"tags" gorm:"-"`
 	ActivityRecordId     *string         `json:"activityRecordId" gorm:"comment:活动id"`
 	ActivityRecord       *ActivityRecord `json:"activityRecord,omitempty" gorm:"foreignKey:ActivityRecordId"`
+
+	// 点赞/收藏过的用户
+	LikeUsers    []User `json:"-" gorm:"many2many:recipe_like_users"`
+	Liked        bool   `json:"liked" gorm:"-"`
+	LikeCount    int64  `json:"likeCount" gorm:"-"`
+	CollectUsers []User `json:"-" gorm:"many2many:recipe_collect_users"`
+	Collected    bool   `json:"collected" gorm:"-"`
+	CollectCount int64  `json:"collectCount" gorm:"-"`
 }
