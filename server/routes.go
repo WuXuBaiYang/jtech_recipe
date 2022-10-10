@@ -28,6 +28,8 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	activityRoutes(authGroup.Group("/activity"))
 	//** 菜单相关 **//
 	menuRoutes(authGroup.Group("/menu"))
+	//** 食谱相关 **//
+	recipeRoutes(authGroup.Group("/recipe"))
 	return r
 }
 
@@ -159,4 +161,16 @@ func menuRoutes(group *gin.RouterGroup) {
 	group.GET("", controller.GetMenuPagination)
 	// 获取菜单详情
 	group.GET("/:menuId", controller.GetMenuInfo)
+}
+
+// 食谱相关路由
+func recipeRoutes(group *gin.RouterGroup) {
+	// 创建一个食谱
+	group.POST("", controller.CreateRecipe)
+	// 编辑一个食谱
+	group.PUT("/:recipeId", controller.UpdateRecipe)
+	// 分页获取食谱列表
+	group.GET("", controller.GetRecipePagination)
+	// 获取食谱详情
+	group.GET("/:recipeId", controller.GetRecipeInfo)
 }
