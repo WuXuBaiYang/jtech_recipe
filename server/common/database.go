@@ -69,7 +69,7 @@ func GetDB() *gorm.DB {
 // InitRDB 初始化redis数据库
 func InitRDB(ctx context.Context) []*redis.Client {
 	rdbList := []*redis.Client{
-		GetSmsRDB(), GetAuthRDB(),
+		GetBaseRDB(),
 	}
 	for _, it := range rdbList {
 		if _, err := it.Ping(ctx).Result(); err != nil {
@@ -97,12 +97,7 @@ func getRDB(i int) *redis.Client {
 	return client
 }
 
-// GetSmsRDB 获取验证码redis数据库
-func GetSmsRDB() *redis.Client {
+// GetBaseRDB 获取redis数据库
+func GetBaseRDB() *redis.Client {
 	return getRDB(0)
-}
-
-// GetAuthRDB 获取授权校验redis数据库
-func GetAuthRDB() *redis.Client {
-	return getRDB(1)
 }

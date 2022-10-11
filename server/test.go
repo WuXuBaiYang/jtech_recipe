@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
-	"server/model"
+	"server/common"
 )
+
+var c = context.Background()
 
 func main() {
 	//r := gin.Default()
@@ -12,8 +15,11 @@ func main() {
 	//db := common.InitDB(true)
 	//err := db.Where("phone_number = ?", "18600574971").First(&model.User{}).Error
 	//println(err.Error())
-	a := string(model.PostActivity)
-	println(a)
+	common.InitRDB(c)
+	rdb := common.GetBaseRDB()
+	cmd := rdb.ZScan(c, "refresh_key", 0, "[1579388899333517312*]", 100)
+	result, _, _ := cmd.Result()
+	println(result)
 }
 
 type pagination struct {

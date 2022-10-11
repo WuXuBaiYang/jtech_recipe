@@ -7,8 +7,19 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 )
+
+// JoinV 将字符串数组合并
+func JoinV(values ...string) string {
+	return strings.Join(values, ",")
+}
+
+// SplitV 拆分字符串数组
+func SplitV(value string) []string {
+	return strings.Split(value, ",")
+}
 
 // IsContain 判断数组中是否包含目标字段
 func IsContain(items []string, item string) bool {

@@ -40,7 +40,7 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 写入redis
-	rdb := common.GetSmsRDB()
+	rdb := common.GetBaseRDB()
 	if err := rdb.Set(c, phone, code,
 		common.SMSExpirationTime).Err(); err != nil {
 		response.FailDef(c, -1, "短信发送失败")
@@ -60,7 +60,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	// 校验短信验证码
-	rdb := common.GetSmsRDB()
+	rdb := common.GetBaseRDB()
 	vCode := rdb.Get(c, req.PhoneNumber)
 	if vCode.Err() != nil || vCode.Val() != req.Code {
 		response.FailParams(c, "短信验证码校验失败")
@@ -118,7 +118,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 存在密码则验证密码，否则验证校验码
-	smsRDB := common.GetSmsRDB()
+	smsRDB := common.GetBaseRDB()
 	if len(req.Password) != 0 {
 		if result.Password != req.Password {
 			response.FailParams(c, "密码错误")
@@ -147,11 +147,6 @@ func Login(c *gin.Context) {
 
 // RefreshToken 刷新过期token
 func RefreshToken(c *gin.Context) {
-	claims, err := middleware.GetAccessTokenClaim(c)
-	if err != nil {
-		response.FailParams(c, "授权信息无效")
-		return
-	}
 	rClaims, rErr := middleware.GetRefreshTokenClaim(c)
 	if rErr != nil {
 		response.FailParams(c, "授权信息无效")
@@ -165,7 +160,7 @@ func RefreshToken(c *gin.Context) {
 	// 重新生成授权信息并返回
 	db := common.GetDB()
 	var user model.User
-	db.Find(&user, claims.UserId)
+	db.Find(&user, rClaims.UserId)
 	auth, authErr := createAuthInfo(c, user)
 	if authErr != nil {
 		response.FailDef(c, -1, "授权失败")
