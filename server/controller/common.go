@@ -192,14 +192,15 @@ func ForcedOffline(c *gin.Context) {
 func BlockOut(c *gin.Context) {
 	// 获取请求体
 	var req = struct {
-		UserList []string `json:"userList" binding:"required,gte=1"`
+		UserList    []string `json:"userList" binding:"required,gte=1"`
+		ExpiresTime float64  `json:"expiresTime"`
 	}{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
 	// 写入封锁记录
-	if cmd := common.BlockOutUser(c,
+	if cmd := common.BlockOutUser(c, req.ExpiresTime,
 		req.UserList...); cmd.Err() != nil {
 		response.FailDef(c, -1, "封锁记录写入失败")
 		return

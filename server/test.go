@@ -17,9 +17,8 @@ func main() {
 	//println(err.Error())
 	common.InitRDB(c)
 	rdb := common.GetBaseRDB()
-	cmd := rdb.ZScan(c, "refresh_key", 0, "[1579388899333517312*]", 100)
-	result, _, _ := cmd.Result()
-	println(result)
+	cmd := rdb.ZMScore(c, "refresh_key", "1111111", "444")
+	println(cmd.Val())
 }
 
 type pagination struct {

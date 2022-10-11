@@ -7,18 +7,20 @@ import (
 	"github.com/go-redis/redis/v9"
 	"github.com/golang-jwt/jwt/v4"
 	"server/model"
-	"server/tool"
 	"time"
 )
 
-// blockOutKey 账号封锁存储标记
-const blockOutKey = "block_out_key"
+// 账号封锁存储标记
+const blockOutUserKey = "block_out_user"
+
+// 在线用户存储标记
+const onlineUserKey = "online_user"
 
 // 授权存储key
-const accessKey = "access_key"
+const accessTokenKey = "access_token"
 
 // 刷新存储key
-const refreshKey = "refresh_key"
+const refreshTokenKey = "refresh_token"
 
 // AccessClaims 授权token中的claim
 type AccessClaims struct {
@@ -48,9 +50,11 @@ func ReleaseAccessToken(c context.Context, user model.User) (string, error) {
 	token, err := ReleaseToken(claims)
 	if len(token) != 0 {
 		rdb := GetBaseRDB()
-		rdb.ZAdd(c, accessKey, redis.Z{
+		rdb.Set(c, accessTokenKey+user.ID,
+			token, jwtConfig.ExpirationTime)
+		rdb.ZAdd(c, onlineUserKey, redis.Z{
 			Score:  float64(expiresAt.UnixMilli()),
-			Member: tool.JoinV(user.ID, token),
+			Member: user.ID,
 		})
 	}
 	return token, err
@@ -72,10 +76,8 @@ func ReleaseRefreshToken(c context.Context, user model.User, target string) (str
 	token, err := ReleaseToken(claims)
 	if len(token) != 0 {
 		rdb := GetBaseRDB()
-		rdb.ZAdd(c, refreshKey, redis.Z{
-			Score:  float64(expiresAt.UnixMilli()),
-			Member: tool.JoinV(user.ID, token),
-		})
+		rdb.Set(c, refreshTokenKey+user.ID,
+			token, jwtConfig.RefreshExpirationTime)
 	}
 	return token, err
 }
@@ -87,12 +89,11 @@ func ParseAccessToken(c context.Context, tokenString string) (*jwt.Token, *Acces
 		func(token *jwt.Token) (interface{}, error) {
 			return jwtConfig.Key, nil
 		})
-	if token != nil {
+	if err == nil {
 		rdb := GetBaseRDB()
-		cmd := rdb.ZRank(c, accessKey,
-			tool.JoinV(claims.UserId, tokenString))
-		if cmd.Err() != nil && cmd.String() != tokenString {
-			ClearRDBToken(c, claims.UserId)
+		key := accessTokenKey + claims.UserId
+		if n, err := rdb.Exists(c, key).
+			Result(); err != nil || n <= 0 {
 			return nil, nil, errors.New("token无效")
 		}
 	}
@@ -106,12 +107,11 @@ func ParseRefreshToken(c context.Context, tokenString string) (*jwt.Token, *Refr
 		func(token *jwt.Token) (interface{}, error) {
 			return jwtConfig.Key, nil
 		})
-	if token != nil {
+	if err == nil {
 		rdb := GetBaseRDB()
-		cmd := rdb.ZRank(c, refreshKey,
-			tool.JoinV(claims.UserId, tokenString))
-		if cmd.Err() != nil && cmd.String() != tokenString {
-			ClearRDBToken(c, claims.UserId)
+		key := refreshTokenKey + claims.UserId
+		if n, err := rdb.Exists(c, key).
+			Result(); err != nil || n <= 0 {
 			return nil, nil, errors.New("刷新token无效")
 		}
 	}
@@ -131,23 +131,32 @@ func ReleaseToken(claims jwt.Claims) (string, error) {
 
 // ClearRDBToken 清除授权token和刷新token
 func ClearRDBToken(c context.Context, ids ...string) *redis.IntCmd {
-	//return rdb.Del(c, keys...)
-	return nil
+	rdb := GetBaseRDB()
+	var keys []string
+	for _, id := range ids {
+		keys = append(keys, accessTokenKey+id,
+			refreshTokenKey+id)
+	}
+	rdb.ZRem(c, onlineUserKey, ids)
+	return rdb.Del(c, keys...)
 }
 
 // BlockOutUser 写入账号封锁记录
-func BlockOutUser(c context.Context, ids ...string) *redis.IntCmd {
+func BlockOutUser(c context.Context, expires float64, ids ...string) *redis.IntCmd {
 	rdb := GetBaseRDB()
 	var members []redis.Z
 	for _, id := range ids {
-		members = append(members, redis.Z{Member: id})
+		members = append(members, redis.Z{
+			Score:  expires,
+			Member: id,
+		})
 	}
-	return rdb.ZAdd(c, blockOutKey, members...)
+	return rdb.ZAdd(c, blockOutUserKey, members...)
 }
 
 // CheckBlockOut 检查账号是否已封锁
 func CheckBlockOut(c context.Context, id string) bool {
 	rdb := GetBaseRDB()
-	cmd := rdb.ZRank(c, blockOutKey, id)
+	cmd := rdb.ZRank(c, blockOutUserKey, id)
 	return cmd.Err() == nil
 }
