@@ -113,7 +113,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 检查该账户是否已被封锁
-	if common.CheckBlockOut(c, result.ID) {
+	if result.Blocked {
 		response.FailAuth(c, "该账号已被封锁")
 		return
 	}
@@ -192,21 +192,49 @@ func ForcedOffline(c *gin.Context) {
 func BlockOut(c *gin.Context) {
 	// 获取请求体
 	var req = struct {
-		UserList    []string `json:"userList" binding:"required,gte=1"`
-		ExpiresTime float64  `json:"expiresTime"`
+		UserList []string `json:"userList" binding:"required,gte=1"`
 	}{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParams(c, err.Error())
 		return
 	}
 	// 写入封锁记录
-	if cmd := common.BlockOutUser(c, req.ExpiresTime,
-		req.UserList...); cmd.Err() != nil {
-		response.FailDef(c, -1, "封锁记录写入失败")
+	db := common.GetDB()
+	if err := db.Model(&model.User{}).
+		Where("id in ?", req.UserList).
+		UpdateColumn("blocked", true).
+		Error; err != nil {
+		response.FailDef(c, -1, "状态更新失败")
 		return
 	}
 	// 清除被封锁的token
-	common.ClearRDBToken(c, req.UserList...)
+	if cmd := common.ClearRDBToken(c,
+		req.UserList...); cmd.Err() != nil {
+		response.FailDef(c, -1, "授权清除失败")
+		return
+	}
+	response.SuccessDef(c, true)
+}
+
+// UnBlockOut 解除用户封锁
+func UnBlockOut(c *gin.Context) {
+	// 获取请求体
+	var req = struct {
+		UserList []string `json:"userList" binding:"required,gte=1"`
+	}{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailParams(c, err.Error())
+		return
+	}
+	// 写入封锁记录
+	db := common.GetDB()
+	if err := db.Model(&model.User{}).
+		Where("id in ?", req.UserList).
+		UpdateColumn("blocked", false).
+		Error; err != nil {
+		response.FailDef(c, -1, "状态更新失败")
+		return
+	}
 	response.SuccessDef(c, true)
 }
 

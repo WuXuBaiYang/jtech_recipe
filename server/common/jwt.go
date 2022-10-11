@@ -10,9 +10,6 @@ import (
 	"time"
 )
 
-// 账号封锁存储标记
-const blockOutUserKey = "block_out_user"
-
 // 在线用户存储标记
 const onlineUserKey = "online_user"
 
@@ -139,24 +136,4 @@ func ClearRDBToken(c context.Context, ids ...string) *redis.IntCmd {
 	}
 	rdb.ZRem(c, onlineUserKey, ids)
 	return rdb.Del(c, keys...)
-}
-
-// BlockOutUser 写入账号封锁记录
-func BlockOutUser(c context.Context, expires float64, ids ...string) *redis.IntCmd {
-	rdb := GetBaseRDB()
-	var members []redis.Z
-	for _, id := range ids {
-		members = append(members, redis.Z{
-			Score:  expires,
-			Member: id,
-		})
-	}
-	return rdb.ZAdd(c, blockOutUserKey, members...)
-}
-
-// CheckBlockOut 检查账号是否已封锁
-func CheckBlockOut(c context.Context, id string) bool {
-	rdb := GetBaseRDB()
-	cmd := rdb.ZRank(c, blockOutUserKey, id)
-	return cmd.Err() == nil
 }

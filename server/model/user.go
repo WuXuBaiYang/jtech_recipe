@@ -8,6 +8,7 @@ type User struct {
 	// 基础信息/敏感内容
 	PhoneNumber string `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
 	Password    string `json:"-" gorm:"varchar(120);not null;comment:密码（登录密码）"`
+	Blocked     bool   `json:"-" gorm:"comment:是否被封锁"`
 	// 用户详细信息
 	NickName   string      `json:"nickName" gorm:"varchar(40);comment:昵称"`
 	Avatar     string      `json:"avatar" gorm:"varchar(80);comment:头像（只存储oss的key/id）"`

@@ -48,6 +48,8 @@ func authRoutes(group *gin.RouterGroup) {
 	group.POST("/forceOffline", middleware.PermissionCheck, controller.ForcedOffline)
 	// 封锁用户
 	group.POST("/blockOut", middleware.PermissionCheck, controller.BlockOut)
+	// 解除用户封锁
+	group.POST("/unBlockOut", middleware.PermissionCheck, controller.UnBlockOut)
 }
 
 // 用户相关路由

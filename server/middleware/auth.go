@@ -17,11 +17,6 @@ func AuthCheck(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	// 检查用户是否已被封锁
-	if common.CheckBlockOut(c, claims.UserId) {
-		response.FailAuth(c, "该账号已被封锁")
-		return
-	}
 	// 将用户信息写入上下文
 	c.Set("userId", claims.UserId)
 	c.Next()
