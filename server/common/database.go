@@ -67,22 +67,42 @@ func GetDB() *gorm.DB {
 }
 
 // InitRDB 初始化redis数据库
-func InitRDB(ctx context.Context) *redis.Client {
-	c := rdbConfig
-	rdb = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", c.Addr, c.Port),
-		Password: c.Password,
-		DB:       c.DB,
-	})
-	if _, err := rdb.Ping(ctx).Result(); err != nil {
-		panic("redis数据库初始化失败：" + err.Error())
+func InitRDB(ctx context.Context) []*redis.Client {
+	rdbList := []*redis.Client{
+		GetSmsRDB(), GetAuthRDB(),
 	}
-	return rdb
+	for _, it := range rdbList {
+		if _, err := it.Ping(ctx).Result(); err != nil {
+			panic("redis数据库初始化失败：" + err.Error())
+		}
+	}
+	return rdbList
 }
 
-var rdb *redis.Client
+// 缓存redis数据库
+var rdbClientMap = map[int]*redis.Client{}
 
-// GetRDB 获取redis默认数据库
-func GetRDB() *redis.Client {
-	return rdb
+// GetRDB 根据下标获取redis数据库
+func getRDB(i int) *redis.Client {
+	client, ok := rdbClientMap[i]
+	if !ok {
+		cfg := rdbConfig
+		client = redis.NewClient(&redis.Options{
+			Addr:     fmt.Sprintf("%s:%d", cfg.Addr, cfg.Port),
+			Password: cfg.Password,
+			DB:       i,
+		})
+		rdbClientMap[i] = client
+	}
+	return client
+}
+
+// GetSmsRDB 获取验证码redis数据库
+func GetSmsRDB() *redis.Client {
+	return getRDB(0)
+}
+
+// GetAuthRDB 获取授权校验redis数据库
+func GetAuthRDB() *redis.Client {
+	return getRDB(1)
 }

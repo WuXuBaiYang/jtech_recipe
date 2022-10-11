@@ -44,6 +44,8 @@ func authRoutes(group *gin.RouterGroup) {
 	group.POST("/login", controller.Login)
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken)
+	// 用户强制下线
+	group.POST("/forceOffline", middleware.PermissionCheck, controller.ForcedOffline)
 }
 
 // 用户相关路由
@@ -77,9 +79,9 @@ func userRoutes(group *gin.RouterGroup) {
 	// 获取全部勋章列表
 	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
-	group.POST("/medal", controller.AddUserMedal, middleware.PermissionCheck)
+	group.POST("/medal", middleware.PermissionCheck, controller.AddUserMedal)
 	// 更新勋章信息[权限]
-	group.PUT("/medal/:medalId", controller.UpdateUserMedal, middleware.PermissionCheck)
+	group.PUT("/medal/:medalId", middleware.PermissionCheck, controller.UpdateUserMedal)
 }
 
 // 帖子相关路由
@@ -171,11 +173,11 @@ func replayRoutes(group *gin.RouterGroup) {
 // 活动相关路由
 func activityRoutes(group *gin.RouterGroup) {
 	// 发布一个活动
-	group.POST("", controller.CreateActivity, middleware.PermissionCheck)
+	group.POST("", middleware.PermissionCheck, controller.CreateActivity)
 	// 编辑一个活动
-	group.PUT("/:activityId", controller.UpdateActivity, middleware.PermissionCheck)
+	group.PUT("/:activityId", middleware.PermissionCheck, controller.UpdateActivity)
 	// 开始一个活动
-	group.POST("/start/:activityId", controller.StartActivity, middleware.PermissionCheck)
+	group.POST("/start/:activityId", middleware.PermissionCheck, controller.StartActivity)
 	// 获取全部活动列表
 	group.GET("", controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
@@ -187,5 +189,5 @@ func notifyRoutes(group *gin.RouterGroup) {
 	// 分页获取通知列表
 	group.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
-	group.POST("", controller.PushNotify, middleware.PermissionCheck)
+	group.POST("", middleware.PermissionCheck, controller.PushNotify)
 }

@@ -69,12 +69,10 @@ var rdbConfig = struct {
 	Addr     string
 	Port     int
 	Password string
-	DB       int
 }{
 	Addr:     ServerHost,
 	Port:     6379,
 	Password: "X0RrnycFiMt8ab",
-	DB:       0,
 }
 
 // jwt授权配置信息

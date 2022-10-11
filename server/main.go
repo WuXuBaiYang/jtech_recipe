@@ -33,13 +33,15 @@ func main() {
 		}
 	}(sqlDB)
 	// 初始化redis数据库
-	rdb := common.InitRDB(ctx)
-	defer func(rdb *redis.Client) {
-		err := rdb.Close()
-		if err != nil {
-			panic("redis数据库关闭失败" + err.Error())
+	rdbList := common.InitRDB(ctx)
+	defer func(clients []*redis.Client) {
+		for _, it := range clients {
+			err := it.Close()
+			if err != nil {
+				panic("redis数据库关闭失败" + err.Error())
+			}
 		}
-	}(rdb)
+	}(rdbList)
 	// 创建默认路由引擎
 	r := gin.Default()
 	// 注册验证方法

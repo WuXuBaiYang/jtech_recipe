@@ -40,7 +40,7 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 写入redis
-	rdb := common.GetRDB()
+	rdb := common.GetSmsRDB()
 	if err := rdb.Set(c, phone, code,
 		common.SMSExpirationTime).Err(); err != nil {
 		response.FailDef(c, -1, "短信发送失败")
@@ -60,7 +60,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	// 校验短信验证码
-	rdb := common.GetRDB()
+	rdb := common.GetSmsRDB()
 	vCode := rdb.Get(c, req.PhoneNumber)
 	if vCode.Err() != nil || vCode.Val() != req.Code {
 		response.FailParams(c, "短信验证码校验失败")
@@ -92,6 +92,7 @@ func Register(c *gin.Context) {
 	}
 	// 删除使用过的短信验证码
 	rdb.Del(c, req.PhoneNumber)
+	// 写入用户授权信息
 	response.SuccessDef(c, auth)
 }
 
@@ -112,7 +113,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 存在密码则验证密码，否则验证校验码
-	rdb := common.GetRDB()
+	rdb := common.GetSmsRDB()
 	if len(req.Password) != 0 {
 		if result.Password != req.Password {
 			response.FailParams(c, "密码错误")
@@ -168,14 +169,33 @@ func RefreshToken(c *gin.Context) {
 	response.SuccessDef(c, auth)
 }
 
+// ForcedOffline 用户强制下线
+func ForcedOffline(c *gin.Context) {
+	// 获取请求体
+	var req = struct {
+		UserList []string `json:"userList" binding:"required,gte=1"`
+	}{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailParams(c, err.Error())
+		return
+	}
+	// 删除授权凭据
+	if cmd := common.ClearRDBToken(c,
+		req.UserList...); cmd.Err() != nil {
+		response.FailDef(c, -1, "强制下线失败")
+		return
+	}
+	response.SuccessDef(c, true)
+}
+
 // 创建授权信息
 func createAuthInfo(c *gin.Context, user model.User) (*authRes, error) {
-	token, err := common.ReleaseAccessToken(user)
+	token, err := common.ReleaseAccessToken(c, user)
 	if err != nil {
 		return nil, err
 	}
 	refreshToken, rErr := common.
-		ReleaseRefreshToken(user, tool.MD5(token))
+		ReleaseRefreshToken(c, user, tool.MD5(token))
 	if rErr != nil {
 		return nil, rErr
 	}
@@ -272,7 +292,6 @@ func hasNoRecord(target interface{}, id string) bool {
 	db := common.GetDB()
 	db.Model(&target).
 		Where("id = ?", id).
-		Count(&count).
-		First(&target)
+		Count(&count).First(&target)
 	return count == 0
 }

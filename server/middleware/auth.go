@@ -33,7 +33,7 @@ func GetAccessTokenClaim(c *gin.Context) (*common.AccessClaims, error) {
 	if len(tokenString) == 0 || !strings.HasPrefix(tokenString, "Bearer ") {
 		return nil, errors.New("token不存在/格式错误")
 	}
-	token, claims, err := common.ParseAccessToken(tokenString[7:])
+	token, claims, err := common.ParseAccessToken(c, tokenString[7:])
 	if err != nil || !token.Valid {
 		return nil, errors.New("token校验失败")
 	}
@@ -51,7 +51,7 @@ func GetRefreshTokenClaim(c *gin.Context) (*common.RefreshClaims, error) {
 	if len(tokenString) == 0 {
 		return nil, errors.New("refreshToken不存在")
 	}
-	token, claims, err := common.ParseRefreshToken(tokenString)
+	token, claims, err := common.ParseRefreshToken(c, tokenString)
 	if err != nil || !token.Valid {
 		return nil, errors.New("refreshToken校验失败")
 	}
