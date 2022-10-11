@@ -46,6 +46,8 @@ func authRoutes(group *gin.RouterGroup) {
 	group.POST("/refreshToken", controller.RefreshToken)
 	// 用户强制下线
 	group.POST("/forceOffline", middleware.PermissionCheck, controller.ForcedOffline)
+	// 封锁用户
+	group.POST("/blockOut", middleware.PermissionCheck, controller.BlockOut)
 }
 
 // 用户相关路由

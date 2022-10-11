@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+// BlockOutKey 账号封锁存储标记
+const BlockOutKey = "_block_out_key"
+
 // 授权存储key
 const accessKey = "_access_key"
 
@@ -128,4 +131,21 @@ func ClearRDBToken(c context.Context, ids ...string) *redis.IntCmd {
 			id+accessKey, id+refreshKey)
 	}
 	return rdb.Del(c, keys...)
+}
+
+// BlockOutUser 写入账号封锁记录
+func BlockOutUser(c context.Context, ids ...string) *redis.StatusCmd {
+	rdb := GetAuthRDB()
+	var kvSet []string
+	for _, id := range ids {
+		kvSet = append(kvSet, id+BlockOutKey, id)
+	}
+	return rdb.MSet(c, kvSet)
+}
+
+// CheckBlockOut 检查账号是否已封锁
+func CheckBlockOut(c context.Context, id string) bool {
+	rdb := GetAuthRDB()
+	cmd := rdb.Get(c, id+BlockOutKey)
+	return cmd.Err() == nil
 }

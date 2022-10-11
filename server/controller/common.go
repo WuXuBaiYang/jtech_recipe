@@ -112,15 +112,20 @@ func Login(c *gin.Context) {
 		response.FailParams(c, "用户不存在")
 		return
 	}
+	// 检查该账户是否已被封锁
+	if common.CheckBlockOut(c, result.ID) {
+		response.FailAuth(c, "该账号已被封锁")
+		return
+	}
 	// 存在密码则验证密码，否则验证校验码
-	rdb := common.GetSmsRDB()
+	smsRDB := common.GetSmsRDB()
 	if len(req.Password) != 0 {
 		if result.Password != req.Password {
 			response.FailParams(c, "密码错误")
 			return
 		}
 	} else if len(req.Code) != 0 {
-		vCode := rdb.Get(c, req.PhoneNumber)
+		vCode := smsRDB.Get(c, req.PhoneNumber)
 		if vCode.Err() != nil || vCode.Val() != req.Code {
 			response.FailParams(c, "短信验证码校验失败")
 			return
@@ -136,7 +141,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 删除使用过的短信验证码
-	rdb.Del(c, req.PhoneNumber)
+	smsRDB.Del(c, req.PhoneNumber)
 	response.SuccessDef(c, auth)
 }
 
@@ -185,6 +190,27 @@ func ForcedOffline(c *gin.Context) {
 		response.FailDef(c, -1, "强制下线失败")
 		return
 	}
+	response.SuccessDef(c, true)
+}
+
+// BlockOut 用户封锁
+func BlockOut(c *gin.Context) {
+	// 获取请求体
+	var req = struct {
+		UserList []string `json:"userList" binding:"required,gte=1"`
+	}{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailParams(c, err.Error())
+		return
+	}
+	// 写入封锁记录
+	if cmd := common.BlockOutUser(c,
+		req.UserList...); cmd.Err() != nil {
+		response.FailDef(c, -1, "封锁记录写入失败")
+		return
+	}
+	// 清除被封锁的token
+	common.ClearRDBToken(c, req.UserList...)
 	response.SuccessDef(c, true)
 }
 
