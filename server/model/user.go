@@ -6,9 +6,10 @@ import "time"
 type User struct {
 	OrmBase
 	// 基础信息/敏感内容
-	PhoneNumber string `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
-	Password    string `json:"-" gorm:"varchar(120);not null;comment:密码（登录密码）"`
-	Blocked     bool   `json:"-" gorm:"comment:是否被封锁"`
+	PhoneNumber string          `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
+	Password    string          `json:"-" gorm:"varchar(120);not null;comment:密码（登录密码）"`
+	Blocked     bool            `json:"-" gorm:"comment:是否被封锁"`
+	Permission  PermissionLevel `json:"permission" gorm:"comment:权限等级"`
 	// 用户详细信息
 	NickName   string      `json:"nickName" gorm:"varchar(40);comment:昵称"`
 	Avatar     string      `json:"avatar" gorm:"varchar(80);comment:头像（只存储oss的key/id）"`
@@ -74,3 +75,17 @@ type UserMedal struct {
 	Name       string `json:"name" gorm:"unique;not null;comment:勋章名称"`
 	RarityCode string `json:"rarityCode" gorm:"not null;comment:勋章稀有度字典码"`
 }
+
+// PermissionLevel 权限等级
+type PermissionLevel int64
+
+const (
+	// GeneralUser 普通用户
+	GeneralUser PermissionLevel = 1
+	// OMUser 运维
+	OMUser PermissionLevel = 99
+	// DevUser 开发者
+	DevUser PermissionLevel = 999
+	// AdminUser 管理员
+	AdminUser PermissionLevel = 9999
+)

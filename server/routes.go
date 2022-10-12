@@ -7,6 +7,21 @@ import (
 	"server/model"
 )
 
+// 完整权限列表
+var fullPermissionList = []model.PermissionLevel{
+	model.OMUser, model.DevUser, model.AdminUser,
+}
+
+// 获取om和管理员权限列表
+var managePermissionList = []model.PermissionLevel{
+	model.OMUser, model.AdminUser,
+}
+
+// 获取最高权限列表
+var highPermissionList = []model.PermissionLevel{
+	model.AdminUser,
+}
+
 // CollectRoutes 统一注册路由方法
 func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 根节点，使用api版本区分 **//
@@ -45,11 +60,14 @@ func authRoutes(group *gin.RouterGroup) {
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken)
 	// 用户强制下线
-	group.POST("/forceOffline", middleware.PermissionCheck, controller.ForcedOffline)
+	group.POST("/forceOffline", middleware.
+		PermissionCheck(highPermissionList), controller.ForcedOffline)
 	// 封锁用户
-	group.POST("/blockOut", middleware.PermissionCheck, controller.BlockOut)
+	group.POST("/blockOut", middleware.
+		PermissionCheck(highPermissionList), controller.BlockOut)
 	// 解除用户封锁
-	group.POST("/unBlockOut", middleware.PermissionCheck, controller.UnBlockOut)
+	group.POST("/unBlockOut", middleware.
+		PermissionCheck(highPermissionList), controller.UnBlockOut)
 }
 
 // 用户相关路由
@@ -83,9 +101,11 @@ func userRoutes(group *gin.RouterGroup) {
 	// 获取全部勋章列表
 	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
-	group.POST("/medal", middleware.PermissionCheck, controller.AddUserMedal)
+	group.POST("/medal", middleware.
+		PermissionCheck(managePermissionList), controller.AddUserMedal)
 	// 更新勋章信息[权限]
-	group.PUT("/medal/:medalId", middleware.PermissionCheck, controller.UpdateUserMedal)
+	group.PUT("/medal/:medalId", middleware.
+		PermissionCheck(managePermissionList), controller.UpdateUserMedal)
 }
 
 // 帖子相关路由
@@ -177,11 +197,14 @@ func replayRoutes(group *gin.RouterGroup) {
 // 活动相关路由
 func activityRoutes(group *gin.RouterGroup) {
 	// 发布一个活动
-	group.POST("", middleware.PermissionCheck, controller.CreateActivity)
+	group.POST("", middleware.
+		PermissionCheck(managePermissionList), controller.CreateActivity)
 	// 编辑一个活动
-	group.PUT("/:activityId", middleware.PermissionCheck, controller.UpdateActivity)
+	group.PUT("/:activityId", middleware.
+		PermissionCheck(managePermissionList), controller.UpdateActivity)
 	// 开始一个活动
-	group.POST("/start/:activityId", middleware.PermissionCheck, controller.StartActivity)
+	group.POST("/start/:activityId", middleware.
+		PermissionCheck(managePermissionList), controller.StartActivity)
 	// 获取全部活动列表
 	group.GET("", controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
@@ -193,5 +216,6 @@ func notifyRoutes(group *gin.RouterGroup) {
 	// 分页获取通知列表
 	group.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
-	group.POST("", middleware.PermissionCheck, controller.PushNotify)
+	group.POST("", middleware.
+		PermissionCheck(fullPermissionList), controller.PushNotify)
 }

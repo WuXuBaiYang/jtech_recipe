@@ -78,6 +78,8 @@ func GetCommentPagination(c *gin.Context) {
 // 根据传入的类型获取对应的评论父类
 func commentType(v string) interface{} {
 	switch v {
+	case string(model.PostComment):
+		return &model.Post{}
 	case string(model.RecipeComment):
 		return &model.Recipe{}
 	case string(model.MenuComment):
