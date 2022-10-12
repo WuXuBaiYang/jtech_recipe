@@ -126,6 +126,10 @@ func postRoutes(group *gin.RouterGroup) {
 	group.POST("/collect/:targetId", controller.OperateCollect[model.Post](true))
 	// 对帖子取消收藏
 	group.DELETE("/collect/:targetId", controller.OperateCollect[model.Post](false))
+	// 发布评论
+	group.POST("/comment", controller.CreateComment[model.Post](model.PostComment))
+	// 分页查询评论
+	group.GET("/comment", controller.GetCommentPagination[model.Post](model.PostComment))
 }
 
 // 菜单相关路由
@@ -148,6 +152,10 @@ func menuRoutes(group *gin.RouterGroup) {
 	group.POST("/collect/:targetId", controller.OperateCollect[model.Menu](true))
 	// 对菜单取消收藏
 	group.DELETE("/collect/:targetId", controller.OperateCollect[model.Menu](false))
+	// 发布评论
+	group.POST("/comment", controller.CreateComment[model.Menu](model.MenuComment))
+	// 分页查询评论
+	group.GET("/comment", controller.GetCommentPagination[model.Menu](model.MenuComment))
 }
 
 // 食谱相关路由
@@ -168,30 +176,10 @@ func recipeRoutes(group *gin.RouterGroup) {
 	group.POST("/collect/:targetId", controller.OperateCollect[model.Recipe](true))
 	// 对食谱取消收藏
 	group.DELETE("/collect/:targetId", controller.OperateCollect[model.Recipe](false))
-}
-
-// 评论相关
-func commentRoutes(group *gin.RouterGroup) {
 	// 发布评论
-	group.POST("", controller.CreateComment)
+	group.POST("/comment", controller.CreateComment[model.Recipe](model.RecipeComment))
 	// 分页查询评论
-	group.GET("", controller.GetCommentPagination)
-	// 对评论点赞
-	group.POST("/like/:targetId", controller.OperateLike[model.Comment](true))
-	// 对评论取消点赞
-	group.DELETE("/like/:targetId", controller.OperateLike[model.Comment](false))
-}
-
-// 回复相关
-func replayRoutes(group *gin.RouterGroup) {
-	// 发布评论回复
-	group.POST("", controller.CreateReplay)
-	// 分页评论回复
-	group.GET("", controller.GetReplayPagination)
-	// 对评论回复点赞
-	group.POST("/like/:targetId", controller.OperateLike[model.Replay](true))
-	// 对评论回复取消点赞
-	group.DELETE("/like/:targetId", controller.OperateLike[model.Replay](false))
+	group.GET("/comment", controller.GetCommentPagination[model.Recipe](model.RecipeComment))
 }
 
 // 活动相关路由
@@ -209,6 +197,30 @@ func activityRoutes(group *gin.RouterGroup) {
 	group.GET("", controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
 	group.GET("/process", controller.GetAllActivityProcessList)
+	// 发布评论
+	group.POST("/comment", controller.CreateComment[model.Activity](model.ActivityComment))
+	// 分页查询评论
+	group.GET("/comment", controller.GetCommentPagination[model.Activity](model.ActivityComment))
+}
+
+// 评论相关
+func commentRoutes(group *gin.RouterGroup) {
+	// 对评论点赞
+	group.POST("/like/:targetId", controller.OperateLike[model.Comment](true))
+	// 对评论取消点赞
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Comment](false))
+}
+
+// 回复相关
+func replayRoutes(group *gin.RouterGroup) {
+	// 发布评论回复
+	group.POST("", controller.CreateReplay)
+	// 分页评论回复
+	group.GET("", controller.GetReplayPagination)
+	// 对评论回复点赞
+	group.POST("/like/:targetId", controller.OperateLike[model.Replay](true))
+	// 对评论回复取消点赞
+	group.DELETE("/like/:targetId", controller.OperateLike[model.Replay](false))
 }
 
 // 通知相关路由
