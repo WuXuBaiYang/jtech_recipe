@@ -14,3 +14,12 @@ type SimpleDict struct {
 	Tag   string `json:"tag" gorm:"not null;comment:标签"`
 	Info  string `json:"info" gorm:"comment:字典存储信息"`
 }
+
+// DictType 字典类型枚举
+type DictType string
+
+const (
+	PostTagDict        DictType = "sys_dict_post_tag"
+	RecipeTagDict      DictType = "sys_dict_recipe_tag"
+	UserAddressTagDict DictType = "sys_dict_user_address_tag"
+)

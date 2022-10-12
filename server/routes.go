@@ -106,6 +106,10 @@ func userRoutes(group *gin.RouterGroup) {
 	// 更新勋章信息[权限]
 	group.PUT("/medal/:medalId", middleware.
 		PermissionCheck(managePermissionList), controller.UpdateUserMedal)
+	// 添加用户地址标签
+	group.POST("/tag/address", controller.AddDict(model.UserAddressTagDict))
+	// 分页查询用户地址标签
+	group.GET("/tag/address", controller.GetUserAddressDictPagination)
 }
 
 // 帖子相关路由
@@ -130,6 +134,10 @@ func postRoutes(group *gin.RouterGroup) {
 	group.POST("/comment", controller.CreateComment[model.Post](model.PostComment))
 	// 分页查询评论
 	group.GET("/comment", controller.GetCommentPagination[model.Post](model.PostComment))
+	// 添加帖子标签
+	group.POST("/tag", controller.AddDict(model.PostTagDict))
+	// 分页查询帖子标签
+	group.GET("/tag", controller.GetDictPagination(model.PostTagDict))
 }
 
 // 菜单相关路由
@@ -180,6 +188,10 @@ func recipeRoutes(group *gin.RouterGroup) {
 	group.POST("/comment", controller.CreateComment[model.Recipe](model.RecipeComment))
 	// 分页查询评论
 	group.GET("/comment", controller.GetCommentPagination[model.Recipe](model.RecipeComment))
+	// 添加食谱标签
+	group.POST("/tag", controller.AddDict(model.RecipeTagDict))
+	// 分页查询食谱标签
+	group.GET("/tag", controller.GetDictPagination(model.RecipeTagDict))
 }
 
 // 活动相关路由
