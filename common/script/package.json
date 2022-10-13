@@ -1,0 +1,9 @@
+{
+  "name": "script",
+  "version": "1.0.0",
+  "dependencies": {
+    "biguint-format": "^1.0.2",
+    "flake-idgen": "^1.4.0",
+    "mysql": "^2.18.1"
+  }
+}
