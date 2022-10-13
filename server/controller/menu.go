@@ -40,7 +40,7 @@ func CreateMenu(c *gin.Context) {
 		response.FailDef(c, -1, "菜单创建失败")
 		return
 	}
-	fillMenuInfo(c, false, &result)
+	fillMenuInfo(c, &result)
 	result.ActivityRecord = record
 	response.SuccessDef(c, result)
 }
@@ -70,7 +70,7 @@ func ForkMenu(c *gin.Context) {
 		response.FailDef(c, -1, "菜单创建失败")
 		return
 	}
-	fillMenuInfo(c, false, &result)
+	fillMenuInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
@@ -105,7 +105,7 @@ func UpdateMenu(c *gin.Context) {
 		response.FailDef(c, -1, "菜单保存失败")
 		return
 	}
-	fillMenuInfo(c, false, &result)
+	fillMenuInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
@@ -135,7 +135,7 @@ func GetMenuPagination(c *gin.Context) {
 		response.FailDef(c, -1, "菜单查询失败")
 		return
 	}
-	fillMenuInfo(c, true, req.Data...)
+	fillMenuInfo(c, req.Data...)
 	response.SuccessDef(c, req.Pagination)
 }
 
@@ -156,11 +156,34 @@ func GetMenuInfo(c *gin.Context) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
-	fillMenuInfo(c, false, &result)
+	fillMenuInfo(c, &result)
 	response.SuccessDef(c, result)
 }
 
 // 填充菜单信息
-func fillMenuInfo(c *gin.Context, simple bool, items ...*model.Menu) {
-	/// 待实现
+func fillMenuInfo(c *gin.Context, items ...*model.Menu) {
+	userId := middleware.GetCurrUId(c)
+	db := common.GetDB()
+	var ids []string
+	for _, it := range items {
+		ids = append(ids, it.ID)
+	}
+	var operates []struct {
+		Liked        bool
+		LikeCount    int64
+		Collected    bool
+		CollectCount int64
+	}
+	db.Raw("select (?) as 'LikeCount',(?) as 'Liked',(?) as 'CollectCount',(?) as 'Collected' from (?) as p where p.id in ?",
+		db.Raw("select count(*) from sys_menu_like_users where menu_id = p.id"),
+		db.Raw("select count(*) from sys_menu_like_users where menu_id = p.id and user_id = ?", userId),
+		db.Raw("select count(*) from sys_menu_collect_users where menu_id = p.id"),
+		db.Raw("select count(*) from sys_menu_collect_users where menu_id = p.id and user_id = ?", userId),
+		db.Model(&model.Menu{}), ids).Scan(&operates)
+	for i, it := range operates {
+		items[i].LikeCount = it.LikeCount
+		items[i].Liked = it.Liked
+		items[i].CollectCount = it.CollectCount
+		items[i].Collected = it.Collected
+	}
 }

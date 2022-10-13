@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 )
 
@@ -81,5 +82,22 @@ func GetCommentPagination[T interface{}](commentType model.CommentType) gin.Hand
 
 // 填充帖子评论信息
 func fillCommentInfo(c *gin.Context, items ...*model.Comment) {
-	// 待实现
+	userId := middleware.GetCurrUId(c)
+	db := common.GetDB()
+	var ids []string
+	for _, it := range items {
+		ids = append(ids, it.ID)
+	}
+	var operates []struct {
+		Liked     bool
+		LikeCount int64
+	}
+	db.Raw("select (?) as 'LikeCount',(?) as 'Liked' from (?) as p where p.id in ?",
+		db.Raw("select count(*) from sys_comment_like_users where comment_id = p.id"),
+		db.Raw("select count(*) from sys_comment_like_users where comment_id = p.id and user_id = ?", userId),
+		db.Model(&model.Comment{}), ids).Scan(&operates)
+	for i, it := range operates {
+		items[i].LikeCount = it.LikeCount
+		items[i].Liked = it.Liked
+	}
 }

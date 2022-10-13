@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"server/common"
 )
 
 var c = context.Background()
@@ -15,10 +14,6 @@ func main() {
 	//db := common.InitDB(true)
 	//err := db.Where("phone_number = ?", "18600574971").First(&model.User{}).Error
 	//println(err.Error())
-	common.InitRDB(c)
-	rdb := common.GetBaseRDB()
-	cmd := rdb.ZMScore(c, "refresh_key", "1111111", "444")
-	println(cmd.Val())
 }
 
 type pagination struct {

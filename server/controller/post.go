@@ -150,5 +150,28 @@ func GetPostInfo(c *gin.Context) {
 
 // 填充帖子信息
 func fillPostInfo(c *gin.Context, items ...*model.Post) {
-	/// 待实现
+	userId := middleware.GetCurrUId(c)
+	db := common.GetDB()
+	var ids []string
+	for _, it := range items {
+		ids = append(ids, it.ID)
+	}
+	var operates []struct {
+		Liked        bool
+		LikeCount    int64
+		Collected    bool
+		CollectCount int64
+	}
+	db.Raw("select (?) as 'LikeCount',(?) as 'Liked',(?) as 'CollectCount',(?) as 'Collected' from (?) as p where p.id in ?",
+		db.Raw("select count(*) from sys_post_like_users where post_id = p.id"),
+		db.Raw("select count(*) from sys_post_like_users where post_id = p.id and user_id = ?", userId),
+		db.Raw("select count(*) from sys_post_collect_users where post_id = p.id"),
+		db.Raw("select count(*) from sys_post_collect_users where post_id = p.id and user_id = ?", userId),
+		db.Model(&model.Post{}), ids).Scan(&operates)
+	for i, it := range operates {
+		items[i].LikeCount = it.LikeCount
+		items[i].Liked = it.Liked
+		items[i].CollectCount = it.CollectCount
+		items[i].Collected = it.Collected
+	}
 }

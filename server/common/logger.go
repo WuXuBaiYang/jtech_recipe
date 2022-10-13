@@ -8,7 +8,7 @@ import (
 	"runtime"
 )
 
-var logger *zap.Logger
+var log *zap.Logger
 
 // InitLogger 日志初始化
 func InitLogger() *zap.Logger {
@@ -20,8 +20,8 @@ func InitLogger() *zap.Logger {
 		zapcore.NewCore(encoder, fileWriteSyncer, zapcore.InfoLevel),
 	}
 	core := zapcore.NewTee(tee...)
-	logger = zap.New(core)
-	return logger
+	log = zap.New(core)
+	return log
 }
 
 // 日志分隔
@@ -41,28 +41,28 @@ func getFileLogWriter() (writeSyncer zapcore.WriteSyncer) {
 func LogInfo(message string, fields ...zap.Field) {
 	callerFields := getCallerInfoForLog()
 	fields = append(fields, callerFields...)
-	logger.Info(message, fields...)
+	log.Info(message, fields...)
 }
 
 // LogDebug debug日志
 func LogDebug(message string, fields ...zap.Field) {
 	callerFields := getCallerInfoForLog()
 	fields = append(fields, callerFields...)
-	logger.Debug(message, fields...)
+	log.Debug(message, fields...)
 }
 
 // LogError error日志
 func LogError(message string, fields ...zap.Field) {
 	callerFields := getCallerInfoForLog()
 	fields = append(fields, callerFields...)
-	logger.Error(message, fields...)
+	log.Error(message, fields...)
 }
 
 // LogWarn warn日志
 func LogWarn(message string, fields ...zap.Field) {
 	callerFields := getCallerInfoForLog()
 	fields = append(fields, callerFields...)
-	logger.Warn(message, fields...)
+	log.Warn(message, fields...)
 }
 
 // 获取日志格式

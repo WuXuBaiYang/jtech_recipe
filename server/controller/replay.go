@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
+	"server/middleware"
 	"server/model"
 )
 
@@ -73,5 +74,22 @@ func GetReplayPagination(c *gin.Context) {
 
 // 填充回复信息
 func fillReplayInfo(c *gin.Context, items ...*model.Replay) {
-	// 待实现
+	userId := middleware.GetCurrUId(c)
+	db := common.GetDB()
+	var ids []string
+	for _, it := range items {
+		ids = append(ids, it.ID)
+	}
+	var operates []struct {
+		Liked     bool
+		LikeCount int64
+	}
+	db.Raw("select (?) as 'LikeCount',(?) as 'Liked' from (?) as p where p.id in ?",
+		db.Raw("select count(*) from sys_replay_like_users where replay_id = p.id"),
+		db.Raw("select count(*) from sys_replay_like_users where replay_id = p.id and user_id = ?", userId),
+		db.Model(&model.Replay{}), ids).Scan(&operates)
+	for i, it := range operates {
+		items[i].LikeCount = it.LikeCount
+		items[i].Liked = it.Liked
+	}
 }

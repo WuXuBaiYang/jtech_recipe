@@ -6,6 +6,7 @@ import (
 	"github.com/go-redis/redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"server/model"
 	"server/tool"
@@ -44,6 +45,7 @@ func InitDB() *gorm.DB {
 		c.UserName, c.Password, c.Host, c.Port, c.Database, c.Charset, c.ParseTime, c.Loc)
 	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
+		Logger:                                   logger.Default.LogMode(logger.Info),
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   "sys_",
 			SingularTable: true,
