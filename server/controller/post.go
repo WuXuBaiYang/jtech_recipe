@@ -53,7 +53,6 @@ func CreatePost(c *gin.Context) {
 		response.FailDef(c, -1, "帖子创建失败")
 		return
 	}
-	fillPostInfo(c, &result)
 	result.ActivityRecord = record
 	result.Recipe = recipe
 	response.SuccessDef(c, result)

@@ -5,6 +5,7 @@ import (
 	"server/common"
 	"server/controller/response"
 	"server/model"
+	"server/tool"
 	"time"
 )
 
@@ -124,7 +125,8 @@ func GetAllActivityList(c *gin.Context) {
 	db := common.GetDB()
 	var result []model.Activity
 	db.Find(&result)
-	response.SuccessDef(c, result)
+	response.SuccessDef(c, tool.If(
+		result != nil, result, []model.Activity{}))
 }
 
 // GetAllActivityProcessList 获取所有进行中的活动列表

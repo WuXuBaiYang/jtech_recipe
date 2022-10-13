@@ -40,7 +40,6 @@ func CreateMenu(c *gin.Context) {
 		response.FailDef(c, -1, "菜单创建失败")
 		return
 	}
-	fillMenuInfo(c, &result)
 	result.ActivityRecord = record
 	response.SuccessDef(c, result)
 }

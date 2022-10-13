@@ -62,7 +62,7 @@ type UserAddress struct {
 	AddressCodes  []string    `json:"addressCodes" gorm:"type:json;serializer:json;comment:住址字典码集合"`
 	AddressDetail string      `json:"addressDetail" gorm:"varchar(300);not null;comment:详细地址"`
 	TagCode       string      `json:"tagCode" gorm:"comment:标签字典码"`
-	Tag           *SimpleDict `json:"tag" gorm:"-"`
+	Tag           *SimpleDict `json:"tag,omitempty" gorm:"-"`
 	Default       bool        `json:"default" gorm:"not null;comment:是否为默认收货地址"`
 	Order         int64       `json:"order" gorm:"not null;comment:排序"`
 }

@@ -60,7 +60,6 @@ func CreateRecipe(c *gin.Context) {
 		response.FailDef(c, -1, "食谱创建失败")
 		return
 	}
-	fillRecipeInfo(c, &result)
 	result.ActivityRecord = record
 	response.SuccessDef(c, result)
 }

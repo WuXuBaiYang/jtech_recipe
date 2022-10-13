@@ -110,6 +110,18 @@ func userRoutes(group *gin.RouterGroup) {
 	group.POST("/tag/address", controller.AddDict(model.UserAddressTagDict))
 	// 分页查询用户地址标签
 	group.GET("/tag/address", controller.GetUserAddressDictPagination)
+	// 添加收货地址
+	group.POST("/address", controller.AddUserAddress)
+	// 更新收货地址信息
+	group.PUT("/address/:addressId", controller.UpdateUserAddress)
+	// 修改收货地址为默认地址
+	group.PUT("/address/:addressId/default", controller.UpdateUserAddressDefault)
+	// 修改收货地址排序
+	group.PUT("/address/:addressId/order", controller.UpdateUserAddressOrder)
+	// 获取我的全部收货地址列表
+	group.GET("/address", controller.GetAllUserAddress)
+	// 获取我的收货地址详情
+	group.GET("/address/:addressId", controller.GetUserAddressInfo)
 }
 
 // 帖子相关路由
