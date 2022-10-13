@@ -156,6 +156,10 @@ func GetRecipeInfo(c *gin.Context) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
+	// 补充食谱的标签
+	db.Table("sys_dict_recipe_tag").
+		Where("code in ?", result.TagCodes).
+		Find(&result.Tags)
 	fillRecipeInfo(c, &result)
 	response.SuccessDef(c, result)
 }

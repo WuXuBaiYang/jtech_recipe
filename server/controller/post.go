@@ -143,6 +143,10 @@ func GetPostInfo(c *gin.Context) {
 		response.FailParams(c, "帖子不存在")
 		return
 	}
+	// 填充帖子标签字典
+	db.Table("sys_dict_post_tag").
+		Where("code in ?", result.TagCodes).
+		Find(&result.Tags)
 	// 填充数据并返回
 	fillPostInfo(c, &result)
 	response.SuccessDef(c, result)

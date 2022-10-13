@@ -31,13 +31,6 @@ type userProfile struct {
 	Medals     []model.UserMedal `json:"medals"`
 }
 
-// 用户勋章请求
-type medalReq struct {
-	Logo       string `json:"logo" binding:"required"`
-	Name       string `json:"name" binding:"required,gte=2"`
-	RarityCode string `json:"rarityCode"  binding:"required,dict=medal_rarity"`
-}
-
 // UpdateUserProfile 修改用户信息
 func UpdateUserProfile(c *gin.Context) {
 	// 获取请求体参数

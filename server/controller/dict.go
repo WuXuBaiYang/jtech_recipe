@@ -40,7 +40,6 @@ func AddDict(dictType model.DictType) gin.HandlerFunc {
 				SimpleDict: model.SimpleDict{
 					Code: code,
 					Tag:  it.Tag,
-					Info: it.Info,
 				},
 			})
 		}

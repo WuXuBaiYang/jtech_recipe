@@ -7,6 +7,13 @@ import (
 	"server/model"
 )
 
+// 用户勋章请求
+type medalReq struct {
+	Logo       string `json:"logo" binding:"required"`
+	Name       string `json:"name" binding:"required,gte=2"`
+	RarityCode string `json:"rarityCode"  binding:"required,dict=medal_rarity"`
+}
+
 // GetAllUserMedalList 获取全部勋章列表
 func GetAllUserMedalList(c *gin.Context) {
 	db := common.GetDB()
