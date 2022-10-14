@@ -1,7 +1,6 @@
 import 'package:client/common/api/request.dart';
 import 'package:client/common/common.dart';
 import 'package:client/manage/auth.dart';
-import 'package:client/manage/im.dart';
 import 'package:client/model/model.dart';
 import 'package:client/tool/tool.dart';
 
@@ -29,8 +28,6 @@ class AuthAPI extends BaseJAPI {
       (v) => Future.wait([
         // 设置授权信息
         authManage.setupAuthInfo(v),
-        // 登录到im
-        imManage.loginIM(),
       ]).then((_) => v),
     );
   }
@@ -51,8 +48,6 @@ class AuthAPI extends BaseJAPI {
       (v) => Future.wait([
         // 设置授权信息
         authManage.setupAuthInfo(v),
-        // 登录到im
-        imManage.loginIM(),
       ]).then((_) => v),
     );
   }

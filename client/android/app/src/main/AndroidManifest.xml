@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jtech.im.client">
+    package="com.jtech.recipe.client">
    <application
         android:label="client"
         android:name="${applicationName}"

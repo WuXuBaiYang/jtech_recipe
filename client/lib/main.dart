@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<ThemeEvent>(
       stream: eventManage.on<ThemeEvent>(),
       builder: (c, snap) => MaterialApp(
-        title: "JTech IM",
+        title: "JTech Recipe",
         navigatorKey: routerManage.navigateKey,
         debugShowCheckedModeBanner: debugMode,
         theme: snap.data?.themeData,

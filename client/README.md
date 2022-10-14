@@ -1,6 +1,6 @@
 # client
 
-JTech im client
+JTech recipe client
 
 ## Getting Started
 
