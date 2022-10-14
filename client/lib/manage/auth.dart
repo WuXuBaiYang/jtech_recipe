@@ -43,7 +43,7 @@ class AuthManage extends BaseManage {
   }
 
   // 获取用户id
-  num get userId {
+  String get userId {
     if (!authorized) throw Exception("请在授权之后调用");
     return _auth!.user.id;
   }

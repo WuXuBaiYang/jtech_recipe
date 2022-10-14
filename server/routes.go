@@ -218,7 +218,8 @@ func activityRoutes(group *gin.RouterGroup) {
 	group.POST("/start/:activityId", middleware.
 		PermissionCheck(managePermissionList), controller.StartActivity)
 	// 获取全部活动列表
-	group.GET("", controller.GetAllActivityList)
+	group.GET("", middleware.
+		PermissionCheck(managePermissionList), controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
 	group.GET("/process", controller.GetAllActivityProcessList)
 	// 发布评论

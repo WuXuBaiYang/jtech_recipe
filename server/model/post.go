@@ -9,7 +9,7 @@ type Post struct {
 	Contents []any  `json:"contents" gorm:"type:json;serializer:json;not null;comment:帖子内容"`
 
 	TagCodes         []string        `json:"tagCodes" gorm:"type:json;serializer:json;comment:标签值集合"`
-	Tags             []SimpleDict    `json:"tags,omitempty" gorm:"-"`
+	Tags             []SimpleDict    `json:"tags" gorm:"-"`
 	ActivityRecordId *string         `json:"activityRecordId" gorm:"comment:活动id"`
 	ActivityRecord   *ActivityRecord `json:"activityRecord,omitempty" gorm:"foreignKey:ActivityRecordId"`
 	RecipeId         *string         `json:"recipeId" gorm:"comment:食谱id"`

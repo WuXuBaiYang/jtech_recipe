@@ -14,14 +14,16 @@ import 'base.dart';
 class AuthAPI extends BaseJAPI {
   // 注册
   Future<AuthModel> register({
-    required String userName,
+    required String phoneNumber,
     required String password,
+    required String code,
   }) {
     return handleResponseData(
       post("/register",
           requestModel: RequestModel.body(data: {
-            "userName": userName,
-            "password": _signPassword(userName, password),
+            "phoneNumber": phoneNumber,
+            "password": _signPassword(phoneNumber, password),
+            "code": code,
           })),
       handle: (it) => AuthModel.from(it),
     ).then(
@@ -34,14 +36,16 @@ class AuthAPI extends BaseJAPI {
 
   // 登录
   Future<AuthModel> login({
-    required String userName,
-    required String password,
+    required String phoneNumber,
+    String password = "",
+    String code = "",
   }) {
     return handleResponseData(
       post("/login",
           requestModel: RequestModel.body(data: {
-            "userName": userName,
-            "password": _signPassword(userName, password),
+            "phoneNumber": phoneNumber,
+            "password": _signPassword(phoneNumber, password),
+            "code": code,
           })),
       handle: (it) => AuthModel.from(it),
     ).then(

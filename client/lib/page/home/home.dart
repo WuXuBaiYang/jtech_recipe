@@ -1,4 +1,3 @@
-import 'package:client/manage/theme.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -31,7 +30,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.device_hub),
         onPressed: () async {
-          themeManage.switchTheme(ThemeType.light,useMaterial3: true);
+          // await authApi.login(phoneNumber: "18600574972", password: "123456789");
         },
       ),
     );

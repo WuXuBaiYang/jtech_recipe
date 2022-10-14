@@ -99,7 +99,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text("还没写呢，看什么看"),
+        child: Text("还没写，看什么看"),
       ),
     );
   }

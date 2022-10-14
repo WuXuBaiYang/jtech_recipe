@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:client/main.dart';
 import 'package:client/page/home/home.dart';
+import 'package:client/page/login.dart';
 import 'package:client/tool/file.dart';
 import 'package:flutter/widgets.dart';
 
@@ -18,7 +19,7 @@ class Common {
   static const String _baseUrlDev = "http://192.168.16.50:9527/api";
 
   // api正式地址
-  static const String _baseUrlRelease = "http://$remoteHost:9527/api";
+  static const String _baseUrlRelease = "https://$remoteHost:9527/api";
 
   // 远程域名
   // static const String remoteHost = "api.jtech.live";
@@ -37,10 +38,14 @@ class RoutePath {
   // 创建路由表
   static Map<String, WidgetBuilder> get routes => {
         home: (c) => const HomePage(),
+        login: (c) => const LoginPage(),
       };
 
   // 首页
   static const String home = "/home";
+
+  // 登录页
+  static const String login = "/login";
 }
 
 /*

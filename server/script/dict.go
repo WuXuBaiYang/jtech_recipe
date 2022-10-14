@@ -194,8 +194,8 @@ func json2Dict(pCode string, result []dict) []model.Dict {
 				PCode: pCode,
 				Code:  code,
 				Tag:   name,
-				Info:  "",
 			},
+			Info: "",
 		})
 		children := it.Children
 		if children != nil {

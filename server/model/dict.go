@@ -5,6 +5,7 @@ type Dict struct {
 	OrmBase
 	Creator
 	SimpleDict
+	Info string `json:"info" gorm:"not null;comment:描述信息"`
 }
 
 // SimpleDict 字典项报文结构体

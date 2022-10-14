@@ -1,38 +1,27 @@
 import 'package:client/common/model.dart';
 import 'package:client/model/activity.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/recipe.dart';
-import 'package:client/model/tag.dart';
 
 /*
-* 帖子信息
+* 菜单信息
 * @author wuxubaiyang
 * @Time 2022/10/14 15:16
 */
-class PostModel extends BaseModel with BasePart, CreatorPart {
-  // 帖子标题
-  final String title;
-
+class MenuModel extends BaseModel with BasePart, CreatorPart {
   // 内容集合
-  final List<ContentItem> contents;
+  final List<MenuContentItem> contents;
 
-  // 标签代码集合
-  final List<String> tagCodes;
+  // 来源id
+  final String? originId;
 
-  // 标签集合
-  final List<TagModel> tags;
+  // 来源菜单
+  late MenuModel? originMenu;
 
   // 活动记录id
   final String? activityRecordId;
 
   // 活动记录信息
   late ActivityRecordModel? activityRecord;
-
-  // 食谱id
-  final String? recipeId;
-
-  // 食谱信息
-  late RecipeModel? recipe;
 
   // 是否点赞
   final bool liked;
@@ -46,28 +35,23 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
   // 收藏数量
   final num collectCount;
 
-  PostModel.from(obj)
-      : title = obj?["title"] ?? "",
-        contents = (obj?["contents"] ?? [])
-            .map<ContentItem>((e) => ContentItem.from(e))
+  MenuModel.from(obj)
+      : contents = (obj?["contents"] ?? [])
+            .map<MenuContentItem>((e) => MenuContentItem.from(e))
             .toList(),
-        tagCodes = (obj?["tagCodes"] ?? []).map<String>((e) => "$e").toList(),
-        tags = (obj?["tags"] ?? [])
-            .map<TagModel>((e) => TagModel.from(e))
-            .toList(),
+        originId = obj?["originId"],
         activityRecordId = obj?["activityRecordId"],
-        recipeId = obj?["recipeId"],
         liked = obj?["liked"] ?? false,
         likeCount = obj?["likeCount"] ?? 0,
         collected = obj?["collected"] ?? false,
         collectCount = obj?["collectCount"] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
+    if (obj?["originMenu"] != null) {
+      originMenu = MenuModel.from(obj?["originMenu"] ?? {});
+    }
     if (obj?["activityRecord"] != null) {
       activityRecord = ActivityRecordModel.from(obj?["activityRecord"] ?? {});
-    }
-    if (obj?["recipe"] != null) {
-      recipe = RecipeModel.from(obj?["recipe"] ?? {});
     }
   }
 
@@ -75,14 +59,11 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "title": title,
         "contents": contents.map((e) => e.to()).toList(),
-        "tagCodes": tagCodes,
-        "tags": tags.map((e) => e.to()).toList(),
+        "originId": originId,
+        "originMenu": originMenu?.to(),
         "activityRecordId": activityRecordId,
         "activityRecord": activityRecord?.to(),
-        "recipeId": recipeId,
-        "recipe": recipe?.to(),
         "liked": liked,
         "likeCount": likeCount,
         "collected": collected,
@@ -91,12 +72,12 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
 }
 
 /*
-* 帖子内容结构
+* 菜单内容结构
 * @author wuxubaiyang
 * @Time 2022/10/14 15:17
 */
-class ContentItem extends BaseModel {
-  ContentItem.from(obj);
+class MenuContentItem extends BaseModel {
+  MenuContentItem.from(obj);
 
   @override
   Map<String, dynamic> to() => {};

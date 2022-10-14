@@ -9,7 +9,7 @@ type User struct {
 	PhoneNumber string          `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
 	Password    string          `json:"-" gorm:"varchar(120);not null;comment:密码（登录密码）"`
 	Blocked     bool            `json:"-" gorm:"comment:是否被封锁"`
-	Permission  PermissionLevel `json:"permission" gorm:"comment:权限等级"`
+	Permission  PermissionLevel `json:"-" gorm:"comment:权限等级"`
 	// 用户详细信息
 	NickName   string      `json:"nickName" gorm:"varchar(40);comment:昵称"`
 	Avatar     string      `json:"avatar" gorm:"varchar(80);comment:头像（只存储oss的key/id）"`
@@ -17,7 +17,7 @@ type User struct {
 	Profession string      `json:"profession" gorm:"varchar(40);comment:职业"`
 	GenderCode string      `json:"genderCode" gorm:"comment:性别字典码"`
 	Birth      *time.Time  `json:"birth" gorm:"comment:生日"`
-	Medals     []UserMedal `json:"medals,omitempty" gorm:"many2many:user_has_medals;comment:已获得的勋章列表"`
+	Medals     []UserMedal `json:"medals" gorm:"many2many:user_has_medals;comment:已获得的勋章列表"`
 	// 用户配置相关
 	EvaluateCode       string   `json:"evaluateCode" gorm:"not null;comment:自我评价字典码"`
 	RecipeCuisineCodes []string `json:"recipeCuisineCodes" gorm:"type:json;serializer:json;comment:偏好食谱菜系字典码集合"`
