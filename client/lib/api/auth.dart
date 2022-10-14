@@ -56,6 +56,13 @@ class AuthAPI extends BaseJAPI {
     );
   }
 
+  // 获取短信验证码
+  Future<bool> sendSMS({required String phoneNumber}) {
+    return handleResponseData(
+      post("/sms/$phoneNumber"),
+    );
+  }
+
   // 刷新token
   Future<AuthModel> refreshToken() {
     return handleResponseData(
@@ -73,8 +80,10 @@ class AuthAPI extends BaseJAPI {
   }
 
   // 明文密码签名加密
-  String _signPassword(String userName, String password) =>
-      Tool.md5("$userName：${Common.salt}_${password}_${Common.salt}");
+  String _signPassword(String phoneNumber, String password) {
+    if (phoneNumber.isEmpty || password.isEmpty) return "";
+    return Tool.md5("$phoneNumber：${Common.salt}_${password}_${Common.salt}");
+  }
 }
 
 // 单例调用

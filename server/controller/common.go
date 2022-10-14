@@ -34,7 +34,7 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 发送短信验证码
-	code := tool.GenSMSCode(4)
+	code := tool.If(gin.IsDebugging(), phone[len(phone)-4:], tool.GenSMSCode(4))
 	if err := common.SendSMSVerify(phone, code); err != nil {
 		response.FailDef(c, -1, "短信发送失败")
 		return
@@ -47,8 +47,7 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 响应发送成功的结果,调试模式则返回code
-	result := tool.If[any](gin.IsDebugging(), code, true)
-	response.SuccessDef(c, result)
+	response.SuccessDef(c, true)
 }
 
 // Register 用户注册接口
