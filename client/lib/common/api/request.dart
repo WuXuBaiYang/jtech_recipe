@@ -4,7 +4,7 @@ import 'package:http_parser/http_parser.dart';
 
 /*
 * 请求对象实体
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 14:20
 */
 class RequestModel extends BaseModel {
@@ -70,7 +70,7 @@ class RequestModel extends BaseModel {
 
 /*
 * 请求实体表单构造对象
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 14:25
 */
 class RequestFormBuilder extends RequestModel {
@@ -132,7 +132,7 @@ class RequestFormBuilder extends RequestModel {
 
 /*
 * 表单附件对象
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 14:29
 */
 class RequestFileItem {

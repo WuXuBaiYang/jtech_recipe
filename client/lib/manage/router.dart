@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 /*
 * 路由管理类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 14:19
 */
 class RouterManage extends BaseManage {

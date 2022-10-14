@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 
 /*
 * 日志工具方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 16:26
 */
 class LogTool {

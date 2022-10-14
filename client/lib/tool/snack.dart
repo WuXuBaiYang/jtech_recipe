@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /*
 * snack消息提示工具方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/18 15:34
 */
 class SnackTool {

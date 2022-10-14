@@ -1,4 +1,4 @@
-import 'package:client/api/auth.dart';
+import 'package:client/manage/theme.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -31,12 +31,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.device_hub),
         onPressed: () async {
-          // await authApi
-          //     .login(userName: "wuxubaiyang", password: "123456")
-          //     .then((value) => null);
-          // userApi.getSubscribeList(pageIndex: 1, pageSize: 15).then((value) {
-          //   print("object");
-          // });
+          themeManage.switchTheme(ThemeType.light,useMaterial3: true);
         },
       ),
     );

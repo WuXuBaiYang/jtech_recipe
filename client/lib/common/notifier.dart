@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 /*
 * 数据变化监听
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/31 15:27
 */
 class ValueChangeNotifier<V> extends ChangeNotifier
@@ -34,7 +34,7 @@ class ValueChangeNotifier<V> extends ChangeNotifier
 
 /*
 * 集合数据变化监听
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/31 15:27
 */
 class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
@@ -109,7 +109,7 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
 
 /*
 * 表数据变化监听
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/31 15:27
 */
 class MapValueChangeNotifier<K, V> extends ValueChangeNotifier<Map<K, V>> {

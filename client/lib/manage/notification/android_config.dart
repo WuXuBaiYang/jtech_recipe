@@ -2,7 +2,7 @@ import 'package:client/common/model.dart';
 
 /*
 * 安卓通知相关字段
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 10:46
 */
 class AndroidNotificationConfig extends BaseModel {

@@ -11,7 +11,7 @@ typedef OnResponseHandle = ResponseModel Function(Response? response);
 
 /*
 * 接口方法基类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 15:05
 */
 abstract class BaseAPI {

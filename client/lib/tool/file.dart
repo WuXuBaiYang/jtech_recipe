@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 /*
 * 文件操作工具方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 16:11
 */
 class FileTool {
@@ -118,7 +118,7 @@ extension FileDirExtension on FileDir {
 
 /*
 * 扩展文件方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 16:23
 */
 extension FileExtension on File {

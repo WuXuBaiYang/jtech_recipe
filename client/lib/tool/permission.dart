@@ -9,7 +9,7 @@ typedef OnPermissionCheckFail = void Function(
 
 /*
 * 权限管理工具方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/18 13:48
 */
 class PermissionTool {
@@ -357,7 +357,7 @@ class PermissionTool {
 
 /*
 * 权限请求实体
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/18 13:49
 */
 class PermissionRequest extends BaseModel {
@@ -524,7 +524,7 @@ class PermissionRequest extends BaseModel {
 
 /*
 * 权限请求结果
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/18 13:49
 */
 class PermissionResult extends BaseModel {

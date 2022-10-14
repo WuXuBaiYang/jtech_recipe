@@ -4,7 +4,7 @@ import 'package:client/common/model.dart';
 
 /*
 * 消息总线管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 14:14
 */
 class EventManage extends BaseManage {
@@ -39,7 +39,7 @@ final eventManage = EventManage();
 
 /*
 * 消息总线对象基类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 14:15
 */
 abstract class EventModel extends BaseModel {

@@ -5,6 +5,7 @@ import 'package:client/manage/event.dart';
 import 'package:client/manage/notification/notification.dart';
 import 'package:client/manage/oss.dart';
 import 'package:client/manage/router.dart';
+import 'package:client/manage/theme.dart';
 import 'package:client/model/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -89,8 +90,8 @@ class _SplashPageState extends State<SplashPage> {
       await authManage.init();
       // oss服务
       await ossManage.init();
-      // 启动im服务
-      // await imManage.init();
+      // 初始化样式管理
+      await themeManage.init();
     }).then(_goNextPage).onError(_onInitError);
   }
 

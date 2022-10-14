@@ -13,7 +13,7 @@ typedef OnNotificationSelect = Future Function(String? payload);
 
 /*
 * 本地通知管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 10:46
 */
 class NotificationManage extends BaseManage {

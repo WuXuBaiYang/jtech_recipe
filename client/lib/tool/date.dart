@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 /*
 * 日期工具方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 15:02
 */
 class DateTool {
@@ -41,7 +41,7 @@ class DateTool {
 
 /*
 * duration方法扩展
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 15:32
 */
 extension DurationExtension on Duration {
@@ -109,7 +109,7 @@ extension DurationExtension on Duration {
 
 /*
 * 日期格式化模型
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 15:25
 */
 class DatePattern {
@@ -155,7 +155,7 @@ class DatePattern {
 
 /*
 * 时长格式化模型
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 15:36
 */
 class DurationPattern {
