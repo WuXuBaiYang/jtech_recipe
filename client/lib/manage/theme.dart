@@ -66,16 +66,10 @@ extension ThemeTypeExtension on ThemeType {
         ThemeType.light: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
-          inputDecorationTheme: const InputDecorationTheme(
-            isDense: true,
-          ),
         ),
         ThemeType.dark: ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
-          inputDecorationTheme: const InputDecorationTheme(
-            isDense: true,
-          ),
         ),
       }[this];
 }

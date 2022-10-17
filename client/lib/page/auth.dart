@@ -1,5 +1,6 @@
 import 'package:client/tool/tool.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /*
 * 授权页
@@ -19,57 +20,39 @@ class AuthPage extends StatefulWidget {
 * @Time 2022/9/8 15:02
 */
 class _AuthPageState extends State<AuthPage> {
-  // 分页控制器
-  final pageController = PageController();
+  // 表单key
+  final formKey = GlobalKey<FormState>();
 
   // 手机号输入框控制器
   final phoneController = TextEditingController();
 
-  // 密码输入框控制器
-  final passwordController = TextEditingController();
-
   // 验证码输入框控制器
   final smsCodeController = TextEditingController();
 
-  // 分页组件保存
-  late List<Widget> pageChildren = [
-    _buildLoginPage(),
-    _buildRegisterPage(),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  // 密码输入框控制器
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: pageController,
-        children: [
-          _buildLoginPage(),
-          _buildRegisterPage(),
-        ],
-        // pageChildren,
-      ),
-    );
-  }
-
-  // 构建登录分页
-  Widget _buildLoginPage() {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(35),
         alignment: Alignment.center,
         child: Form(
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: phoneController,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.phone),
+                ),
                 validator: (v) {
                   if (v == null || v.isEmpty) {
                     return "手机号不能为空";
@@ -79,22 +62,47 @@ class _AuthPageState extends State<AuthPage> {
                   }
                   return null;
                 },
+              ),
+              TextFormField(
+                controller: smsCodeController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                decoration: const InputDecoration(prefixIcon: Icon(Icons.sms)),
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return "短信验证码不能为空";
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: passwordController,
+                keyboardType: TextInputType.visiblePassword,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                ],
                 decoration: const InputDecoration(
-                  label: Text("手机号"),
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.password),
                 ),
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return "密码不能为空";
+                  }
+                  return null;
+                },
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  // 构建注册分页
-  Widget _buildRegisterPage() {
-    return Scaffold(
-      body: Text("aaa"),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.done),
+        onPressed: () {
+          formKey.currentState?.validate();
+        },
+      ),
     );
   }
 }
