@@ -98,6 +98,19 @@ class UserModel extends BaseModel with BasePart {
         "levelExp": levelExp,
         "updateExp": updateExp,
       };
+
+  // 精简参数为信息修改所需
+  Map<String, dynamic> toUserUpdateInfo() => {
+        "nickName": nickName,
+        "avatar": avatar,
+        "bio": bio,
+        "profession": profession,
+        "genderCode": genderCode,
+        "birth": birth.toString(),
+        "evaluateCode": evaluateCode,
+        "recipeCuisineCodes": recipeCuisineCodes,
+        "recipeTasteCodes": recipeTasteCodes,
+      };
 }
 
 /*

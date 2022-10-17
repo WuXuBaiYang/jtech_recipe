@@ -37,4 +37,10 @@ class TagModel extends BaseModel with BasePart, CreatorPart {
         "tag": tag,
         "info": info,
       };
+
+  // 导出添加标签信息结构
+  Map<String, dynamic> toAddInfo() => {
+        "tag": tag,
+        "info": info,
+      };
 }

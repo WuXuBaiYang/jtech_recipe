@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:client/main.dart';
 import 'package:client/page/home/home.dart';
 import 'package:client/page/login.dart';
-import 'package:client/tool/file.dart';
 import 'package:flutter/widgets.dart';
 
 /*
@@ -22,8 +19,7 @@ class Common {
   static const String _baseUrlRelease = "https://$remoteHost:9527/api";
 
   // 远程域名
-  // static const String remoteHost = "api.jtech.live";
-  static const String remoteHost = "35.73.34.38";
+  static const String remoteHost = "";
 
   // 加密盐
   static const String salt = "p5bDTyO6McoYeH";
@@ -58,7 +54,7 @@ class OSSConfig {
   static String endPoint = debugMode ? _endPointDev : _endPointRelease;
 
   // 开发版地址
-  static const String _endPointDev = Common.remoteHost;
+  static const String _endPointDev = "192.168.16.50";
 
   // 正式版地址
   static const String _endPointRelease = "";
@@ -74,38 +70,6 @@ class OSSConfig {
 
   // 密钥
   static const secretKey = r"SV46qm1zsumsyz870q6nXytHTLOoyxZp";
-}
-
-/*
-* IM配置信息
-* @author wuxubaiyang
-* @Time 2022/9/9 19:17
-*/
-class IMConfig {
-  // 平台
-  static int get platformCode {
-    if (Platform.isAndroid) return 2;
-    if (Platform.isIOS) return 1;
-    return 0;
-  }
-
-  // api地址
-  static const String apiAddr = "http://${Common.remoteHost}:10002";
-
-  // ws地址
-  static const String wsAddr = "ws://${Common.remoteHost}:10003";
-
-  // 数据存储路径
-  static Future<String?> get dataDir => FileTool.getDirPath(
-        FileDirPath.imDocumentPath,
-        root: FileDir.applicationDocuments,
-      );
-
-  // oss类型
-  static const String objectStorage = "minio";
-
-  // 日志等级
-  static int get logLevel => debugMode ? 6 : 1;
 }
 
 /*

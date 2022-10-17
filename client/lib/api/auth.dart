@@ -25,7 +25,7 @@ class AuthAPI extends BaseJAPI {
             "password": _signPassword(phoneNumber, password),
             "code": code,
           })),
-      handle: (it) => AuthModel.from(it),
+      handle: (e) => AuthModel.from(e),
     ).then(
       (v) => Future.wait([
         // 设置授权信息
@@ -47,7 +47,7 @@ class AuthAPI extends BaseJAPI {
             "password": _signPassword(phoneNumber, password),
             "code": code,
           })),
-      handle: (it) => AuthModel.from(it),
+      handle: (e) => AuthModel.from(e),
     ).then(
       (v) => Future.wait([
         // 设置授权信息
@@ -70,7 +70,7 @@ class AuthAPI extends BaseJAPI {
           requestModel: RequestModel.create(headers: {
             "RefreshToken": authManage.refreshToken,
           })),
-      handle: (it) => AuthModel.from(it),
+      handle: (e) => AuthModel.from(e),
     ).then(
       (v) => Future.wait([
         // 设置授权信息

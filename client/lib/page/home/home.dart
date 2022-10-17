@@ -1,4 +1,4 @@
-import 'package:client/api/auth.dart';
+import 'package:client/api/user.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -31,10 +31,9 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.device_hub),
         onPressed: () async {
-          // authApi.sendSMS(phoneNumber: "18600574971").then((value) {
-          //   print("object");
-          // });
-          // await authApi.login(phoneNumber: "18600574972", password: "123456789");
+          userApi.loadUserAddressTags().then((value) {
+            print("object");
+          });
         },
       ),
     );
