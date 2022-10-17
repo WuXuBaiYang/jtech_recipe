@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.device_hub),
         onPressed: () async {
-          userApi.loadUserAddressTags().then((value) {
+          userApi.loadLikePosts().then((value) {
             print("object");
           });
         },

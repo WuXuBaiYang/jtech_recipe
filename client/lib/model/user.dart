@@ -142,6 +142,13 @@ class MedalModel extends BaseModel with BasePart {
         "name": name,
         "rarityCode": rarityCode,
       };
+
+  // 创建更新信息结构
+  Map<String, dynamic> toUpdateInfo() => {
+        "logo": logo,
+        "name": name,
+        "rarityCode": rarityCode,
+      };
 }
 
 /*

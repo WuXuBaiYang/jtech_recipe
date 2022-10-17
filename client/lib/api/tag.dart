@@ -1,8 +1,6 @@
 import 'package:client/common/api/request.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/tag.dart';
-import 'package:client/model/user.dart';
-
 import 'base.dart';
 
 /*

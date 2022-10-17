@@ -1,6 +1,9 @@
 import 'package:client/api/tag.dart';
 import 'package:client/common/api/request.dart';
+import 'package:client/model/menu.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/post.dart';
+import 'package:client/model/recipe.dart';
 import 'package:client/model/tag.dart';
 import 'package:client/model/user.dart';
 
@@ -119,6 +122,164 @@ class UserAPI extends BaseJAPI {
     return handleResponseListData(
       get("/user/address"),
       handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 获取收货地址详情
+  Future<UserAddressModel> loadUserAddressInfo({
+    required String addressId,
+  }) {
+    return handleResponseData(
+      get("/user/address/$addressId"),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 获取我的帖子点赞列表
+  Future<PaginationModel<PostModel>> loadLikePosts({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get("/user/post/like",
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => PostModel.from(e),
+    );
+  }
+
+  // 获取我的帖子收藏列表
+  Future<PaginationModel<PostModel>> loadCollectPosts({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get("/user/post/collect",
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => PostModel.from(e),
+    );
+  }
+
+  // 获取我的菜单点赞列表
+  Future<PaginationModel<MenuModel>> loadLikeMenus({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get("/user/menu/like",
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => MenuModel.from(e),
+    );
+  }
+
+  // 获取我的菜单收藏列表
+  Future<PaginationModel<MenuModel>> loadCollectMenus({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get("/user/menu/collect",
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => MenuModel.from(e),
+    );
+  }
+
+  // 获取我的食谱点赞列表
+  Future<PaginationModel<RecipeModel>> loadLikeRecipe({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get("/user/recipe/like",
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => RecipeModel.from(e),
+    );
+  }
+
+  // 获取我的食谱收藏列表
+  Future<PaginationModel<RecipeModel>> loadCollectRecipe({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get("/user/recipe/collect",
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => RecipeModel.from(e),
+    );
+  }
+
+  // 关注用户
+  Future<bool> subscribeUser({
+    required String userId,
+  }) {
+    return handleResponseData(
+      post("/user/subscribe/$userId"),
+    );
+  }
+
+  // 取消关注用户
+  Future<bool> unSubscribeUser({
+    required String userId,
+  }) {
+    return handleResponseData(
+      delete("/user/subscribe/$userId"),
+    );
+  }
+
+  // 获取用户关注列表
+  Future<PaginationModel<UserModel>> loadSubscribeUsers({
+    int pageIndex = 1,
+    int pageSize = 15,
+    String? userId,
+  }) {
+    var path = "/user/subscribe";
+    if (userId != null) path = "$path/$userId";
+    return handleResponsePaginationData(
+      get(path,
+          requestModel: RequestModel.query(
+            parameters: {
+              "pageIndex": pageIndex,
+              "pageSize": pageSize,
+            },
+          )),
+      handle: (e) => UserModel.from(e),
+    );
+  }
+
+  // 获取全部勋章
+  Future<List<MedalModel>> loadAllMedals() {
+    return handleResponseListData(
+      get("/user/medal"),
+      handle: (e) => MedalModel.from(e),
     );
   }
 }
