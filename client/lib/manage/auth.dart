@@ -60,6 +60,16 @@ class AuthManage extends BaseManage {
     }
     return _auth = auth;
   }
+
+  // 注销授权信息
+  Future<bool> clearAuthInfo() async {
+    var result = true;
+    if (_auth != null) {
+      result = await cacheManage.remove(authInfoCacheKey);
+      if (result) _auth = null;
+    }
+    return result;
+  }
 }
 
 // 单例调用

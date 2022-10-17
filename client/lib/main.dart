@@ -106,8 +106,13 @@ class _SplashPageState extends State<SplashPage> {
 
   // 跳转到下一页
   void _goNextPage(v) {
-    // 跳转首页
-    routerManage.pushNamed(RoutePath.home);
+    if (authManage.authorized) {
+      // 已授权则跳转到首页
+      routerManage.pushReplacementNamed(RoutePath.home);
+    } else {
+      // 未授权跳转到授权页
+      routerManage.pushReplacementNamed(RoutePath.auth);
+    }
   }
 
   // 初始化失败

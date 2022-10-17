@@ -67,6 +67,15 @@ class Tool {
     var packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
   }
+
+  // 手机号校验正则
+  static final _verifyPhoneRegExp = RegExp(r'^1(3'
+      r'\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$');
+
+  // 校验手机号
+  static bool verifyPhone(String phone) {
+    return _verifyPhoneRegExp.hasMatch(phone);
+  }
 }
 
 // 更新全局样式
