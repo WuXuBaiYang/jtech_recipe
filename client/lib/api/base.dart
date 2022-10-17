@@ -3,8 +3,10 @@ import 'package:client/common/api/base.dart';
 import 'package:client/common/api/request.dart';
 import 'package:client/common/api/response.dart';
 import 'package:client/common/common.dart';
+import 'package:client/common/model.dart';
 import 'package:client/manage/auth.dart';
 import 'package:client/manage/router.dart';
+import 'package:client/model/model.dart';
 import 'package:dio/dio.dart';
 
 // 数据结构解析回调
@@ -98,6 +100,35 @@ class BaseJAPI extends BaseAPI {
       }
       throw Exception(resp.message);
     });
+  }
+
+  // 处理集合结构的报文
+  Future<List<T>> handleResponseListData<T>(
+    Future<ResponseModel> future, {
+    required OnModelParse<T> handle,
+  }) {
+    return handleResponseData<List<T>>(
+      future,
+      handle: (e) => (e ?? [])
+          .map<T>(
+            (it) => handle(it),
+          )
+          .toList(),
+    );
+  }
+
+  // 处理分页结构的报文
+  Future<PaginationModel<T>> handleResponsePaginationData<T extends BaseModel>(
+    Future<ResponseModel> future, {
+    required OnModelParse<T> handle,
+  }) {
+    return handleResponseData<PaginationModel<T>>(
+      future,
+      handle: (e) => PaginationModel<T>.from(
+        e,
+        itemParse: handle,
+      ),
+    );
   }
 
   @override

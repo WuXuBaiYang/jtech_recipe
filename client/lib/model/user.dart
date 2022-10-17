@@ -203,4 +203,14 @@ class UserAddressModel extends BaseModel with BasePart, CreatorPart {
         "default": isDefault,
         "order": order,
       };
+
+  Map<String, dynamic> toUpdateInfo() => {
+        "receiver": receiver,
+        "contact": contact,
+        "addressCodes": addressCodes,
+        "addressDetail": addressDetail,
+        "tagCode": tagCode,
+        "default": isDefault,
+        "order": order,
+      };
 }

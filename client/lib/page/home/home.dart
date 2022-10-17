@@ -1,4 +1,5 @@
 import 'package:client/api/user.dart';
+import 'package:client/model/tag.dart';
 import 'package:flutter/material.dart';
 
 /*

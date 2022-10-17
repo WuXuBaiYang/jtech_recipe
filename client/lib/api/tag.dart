@@ -16,18 +16,14 @@ class TagAPI extends BaseJAPI {
     required String path,
     required List<TagModel> tags,
   }) {
-    return handleResponseData(
+    return handleResponseListData(
       post(path,
           requestModel: RequestModel.body(
             data: {
               "dictList": tags.map((e) => e.toAddInfo()).toList(),
             },
           )),
-      handle: (e) => (e ?? [])
-          .map<TagModel>(
-            (e) => TagModel.from(e),
-          )
-          .toList(),
+      handle: (e) => TagModel.from(e),
     );
   }
 
@@ -37,16 +33,13 @@ class TagAPI extends BaseJAPI {
     int pageIndex = 1,
     int pageSize = 15,
   }) {
-    return handleResponseData(
+    return handleResponsePaginationData(
         get(path,
             requestModel: RequestModel.query(parameters: {
               "pageIndex": pageIndex,
               "pageSize": pageSize,
             })),
-        handle: (e) => PaginationModel.from(
-              e,
-              itemParse: (it) => TagModel.from(it),
-            ));
+        handle: (e) => TagModel.from(e));
   }
 }
 

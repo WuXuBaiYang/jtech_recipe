@@ -58,6 +58,69 @@ class UserAPI extends BaseJAPI {
       pageSize: pageSize,
     );
   }
+
+  // 添加收货地址
+  Future<UserAddressModel> addUserAddress({
+    required UserAddressModel model,
+  }) {
+    return handleResponseData(
+      post(
+        "/user/address",
+        requestModel: RequestModel.body(
+          data: model.toUpdateInfo(),
+        ),
+      ),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 更新收货地址
+  Future<UserAddressModel> updateUserAddress({
+    required String addressId,
+    required UserAddressModel model,
+  }) {
+    return handleResponseData(
+      post(
+        "/user/address/$addressId",
+        requestModel: RequestModel.body(
+          data: model.toUpdateInfo(),
+        ),
+      ),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 修改收货地址为默认
+  Future<bool> updateUserAddressDefault({
+    required String addressId,
+  }) {
+    return handleResponseData(
+      put("/user/address/$addressId/default"),
+    );
+  }
+
+  // 修改收货地址排序
+  Future<bool> updateUserAddressOrder({
+    required String addressId,
+    required int order,
+  }) {
+    return handleResponseData(
+      put("/user/address/$addressId/order",
+          requestModel: RequestModel.body(
+            data: {
+              "order": order,
+            },
+          )),
+    );
+  }
+
+  // 获取全部收货地址
+  Future<List<UserAddressModel>> loadAllUserAddress() {
+    return handleResponseListData(
+      get("/user/address"),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
 }
 
 // 单例调用
