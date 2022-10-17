@@ -100,7 +100,7 @@ class UserModel extends BaseModel with BasePart {
       };
 
   // 精简参数为信息修改所需
-  Map<String, dynamic> toUserUpdateInfo() => {
+  Map<String, dynamic> toUpdateInfo() => {
         "nickName": nickName,
         "avatar": avatar,
         "bio": bio,

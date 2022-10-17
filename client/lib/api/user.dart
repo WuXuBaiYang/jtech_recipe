@@ -34,7 +34,7 @@ class UserAPI extends BaseJAPI {
     return handleResponseData(
       put("/user/info",
           requestModel: RequestModel.body(
-            data: model.toUserUpdateInfo(),
+            data: model.toUpdateInfo(),
           )),
       handle: (e) => UserModel.from(e),
     );

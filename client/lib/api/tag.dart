@@ -4,7 +4,7 @@ import 'package:client/model/tag.dart';
 import 'base.dart';
 
 /*
-* 用户接口
+* 标签接口
 * @author wuxubaiyang
 * @Time 2022/9/12 18:48
 */
@@ -30,12 +30,14 @@ class TagAPI extends BaseJAPI {
     required String path,
     int pageIndex = 1,
     int pageSize = 15,
+    String? userId,
   }) {
     return handleResponsePaginationData(
         get(path,
             requestModel: RequestModel.query(parameters: {
               "pageIndex": pageIndex,
               "pageSize": pageSize,
+              if (userId != null) "userId": userId,
             })),
         handle: (e) => TagModel.from(e));
   }

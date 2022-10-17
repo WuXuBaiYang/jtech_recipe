@@ -88,6 +88,15 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
         "collected": collected,
         "collectCount": collectCount,
       };
+
+  // 整理更新结构
+  Map<String, dynamic> toUpdateInfo() => {
+        "title": title,
+        "contents": contents.map((e) => e.to()).toList(),
+        "tagCodes": tagCodes,
+        "activityRecordId": activityRecordId,
+        "recipeId": recipeId,
+      };
 }
 
 /*
