@@ -20,6 +20,7 @@ type DictType string
 
 const (
 	PostTagDict        DictType = "sys_dict_post_tag"
+	MenuTagDict        DictType = "sys_dict_menu_tag"
 	RecipeTagDict      DictType = "sys_dict_recipe_tag"
 	UserAddressTagDict DictType = "sys_dict_user_address_tag"
 )

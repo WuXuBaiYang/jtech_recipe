@@ -155,6 +155,10 @@ func GetMenuInfo(c *gin.Context) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
+	// 填充菜单标签字典
+	db.Table("sys_dict_menu_tag").
+		Where("code in ?", result.TagCodes).
+		Find(&result.Tags)
 	fillMenuInfo(c, &result)
 	response.SuccessDef(c, result)
 }

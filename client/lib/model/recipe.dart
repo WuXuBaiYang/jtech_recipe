@@ -122,6 +122,22 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
         "collected": collected,
         "collectCount": collectCount,
       };
+
+  // 编辑结构体
+  Map<String, dynamic> toUpdateInfo() => {
+        "title": title,
+        "desc": desc,
+        "images": images,
+        "time": time,
+        "rating": rating,
+        "steps": steps.map((e) => e.to()).toList(),
+        "cuisineCodes": cuisineCodes,
+        "tasteCodes": tasteCodes,
+        "ingredientsMainCodes": ingredientsMainCodes,
+        "ingredientsSubCodes": ingredientsSubCodes,
+        "tagCodes": tagCodes,
+        "activityRecordId": activityRecordId,
+      };
 }
 
 /*

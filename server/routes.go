@@ -176,6 +176,10 @@ func menuRoutes(group *gin.RouterGroup) {
 	group.POST("/comment", controller.CreateComment[model.Menu](model.MenuComment))
 	// 分页查询评论
 	group.GET("/comment", controller.GetCommentPagination[model.Menu](model.MenuComment))
+	// 添加菜单标签
+	group.POST("/tag", controller.AddDict(model.MenuTagDict))
+	// 分页查询菜单标签
+	group.GET("/tag", controller.GetDictPagination(model.MenuTagDict))
 }
 
 // 食谱相关路由

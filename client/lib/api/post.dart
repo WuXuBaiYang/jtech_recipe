@@ -1,3 +1,4 @@
+import 'package:client/api/comment.dart';
 import 'package:client/api/tag.dart';
 import 'package:client/common/api/request.dart';
 import 'package:client/model/comment.dart';
@@ -28,10 +29,10 @@ class PostAPI extends BaseJAPI {
   // 编辑帖子
   Future<PostModel> updatePost({
     required PostModel model,
-    required String userId,
+    required String postId,
   }) {
     return handleResponseData(
-      put("/post/$userId",
+      put("/post/$postId",
           requestModel: RequestModel.body(
             data: model.toUpdateInfo(),
           )),
@@ -73,15 +74,10 @@ class PostAPI extends BaseJAPI {
     required String postId,
     required String content,
   }) {
-    return handleResponseData(
-      post("/post/comment",
-          requestModel: RequestModel.body(
-            data: {
-              "content": content,
-              "pId": postId,
-            },
-          )),
-      handle: (e) => CommentModel.from(e),
+    return commentApi.createComment(
+      path: "/post/comment",
+      pId: postId,
+      content: content,
     );
   }
 
@@ -91,16 +87,11 @@ class PostAPI extends BaseJAPI {
     int pageIndex = 1,
     int pageSize = 15,
   }) {
-    return handleResponsePaginationData(
-      get("/post/comment",
-          requestModel: RequestModel.query(
-            parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              "pId": postId,
-            },
-          )),
-      handle: (e) => CommentModel.from(e),
+    return commentApi.loadComments(
+      path: "/post/comment",
+      pId: postId,
+      pageIndex: pageIndex,
+      pageSize: pageSize,
     );
   }
 

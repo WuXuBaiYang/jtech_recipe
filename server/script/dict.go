@@ -68,6 +68,13 @@ var tableList = []dictItem{
 		},
 		Res: "./res/post_tag.json",
 	},
+	{ // 菜单标签
+		Fun: func() interface{} {
+			type dictMenuTag struct{ model.Dict }
+			return dictMenuTag{}
+		},
+		Res: "./res/menu_tag.json",
+	},
 	{ // 省市区三级联动
 		Fun: func() interface{} {
 			type dictAddress struct{ model.Dict }

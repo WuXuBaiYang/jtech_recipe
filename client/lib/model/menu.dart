@@ -69,6 +69,12 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
         "collected": collected,
         "collectCount": collectCount,
       };
+
+  // 创建更新结构
+  Map<String, dynamic> toUpdateInfo() => {
+        "contents": contents.map((e) => e.to()).toList(),
+        "activityRecordId": activityRecordId,
+      };
 }
 
 /*
