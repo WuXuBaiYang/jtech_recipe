@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 */
 class ThemeEvent extends EventModel {
   // 全局样式
-  final ThemeData? themeData;
+  final ThemeData themeData;
 
   const ThemeEvent({required this.themeData});
 }

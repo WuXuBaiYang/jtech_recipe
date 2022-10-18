@@ -22,7 +22,7 @@ class TagModel extends BaseModel with BasePart, CreatorPart {
   TagModel.from(obj)
       : pCode = obj?["pCode"] ?? "",
         code = obj?["code"] ?? "",
-        tag = obj?["tag"] ?? "",
+        tag = obj?["tag"] ?? obj?["name"] ?? "",
         info = obj?["info"] ?? "" {
     initBasePart(obj);
     initCreatorPart(obj);

@@ -1,6 +1,8 @@
-import 'package:client/api/user.dart';
+import 'dart:convert';
+
 import 'package:client/model/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:json_path/json_path.dart';
 
 /*
 * 首页
@@ -26,16 +28,17 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text("首页"),
       ),
-      body: const Center(
-        child: Text("这里是首页"),
+      body: Center(
+        child: TextButton(
+          child: Text("点击测试"),
+          onPressed: () async {
+
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.device_hub),
-        onPressed: () async {
-          userApi.loadLikePosts().then((value) {
-            print("object");
-          });
-        },
+        onPressed: () async {},
       ),
     );
   }

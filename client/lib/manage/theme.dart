@@ -26,19 +26,19 @@ class ThemeManage extends BaseManage {
   }
 
   // 获取主色
-  Color? get primaryColor => currentTheme?.primaryColor;
+  Color get primaryColor => currentTheme.primaryColor;
 
   // 当前样式
-  ThemeData? get currentTheme {
+  ThemeData get currentTheme {
     var index = cacheManage.getInt(defaultThemeCacheKey);
-    return ThemeType.values[index ?? 0].getTheme();
+    return ThemeType.values[index ?? 0].theme;
   }
 
   // 切换默认样式
   Future<bool> switchTheme(ThemeType type) async {
     var result = await cacheManage.setInt(defaultThemeCacheKey, type.index);
     eventManage.send(ThemeEvent(
-      themeData: type.getTheme(),
+      themeData: type.theme,
     ));
     return result;
   }
@@ -56,13 +56,13 @@ enum ThemeType {
 // 样式枚举扩展
 extension ThemeTypeExtension on ThemeType {
   // 样式中文名
-  String? get nameCN => <ThemeType, String>{
+  String get nameCN => <ThemeType, String>{
         ThemeType.light: "日间模式",
         ThemeType.dark: "夜间模式",
-      }[this];
+      }[this]!;
 
   // 获取对应的样式配置
-  ThemeData? getTheme() => <ThemeType, ThemeData>{
+  ThemeData get theme => <ThemeType, ThemeData>{
         ThemeType.light: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
@@ -71,5 +71,5 @@ extension ThemeTypeExtension on ThemeType {
           useMaterial3: true,
           brightness: Brightness.dark,
         ),
-      }[this];
+      }[this]!;
 }
