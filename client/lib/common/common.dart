@@ -1,6 +1,6 @@
 import 'package:client/main.dart';
 import 'package:client/page/home/home.dart';
-import 'package:client/page/auth.dart';
+import 'package:client/page/auth/login.dart';
 import 'package:flutter/widgets.dart';
 
 /*
@@ -34,14 +34,14 @@ class RoutePath {
   // 创建路由表
   static Map<String, WidgetBuilder> get routes => {
         home: (c) => const HomePage(),
-        auth: (c) => const AuthPage(),
+        login: (c) => const LoginPage(),
       };
 
   // 首页
   static const String home = "/home";
 
-  // 收取按页
-  static const String auth = "/auth";
+  // 登录按页
+  static const String login = "/login";
 }
 
 /*

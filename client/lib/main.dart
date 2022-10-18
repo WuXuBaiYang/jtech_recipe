@@ -111,7 +111,7 @@ class _SplashPageState extends State<SplashPage> {
       routerManage.pushReplacementNamed(RoutePath.home);
     } else {
       // 未授权跳转到授权页
-      routerManage.pushReplacementNamed(RoutePath.auth);
+      routerManage.pushReplacementNamed(RoutePath.login);
     }
   }
 

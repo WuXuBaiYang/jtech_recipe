@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /*
-* 授权页
+* 登录页
 * @author wuxubaiyang
 * @Time 2022/9/8 15:01
 */
-class AuthPage extends StatefulWidget {
-  const AuthPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AuthPageState();
+  State<StatefulWidget> createState() => _LoginPageState();
 }
 
 /*
-* 授权页-状态
+* 登录页-状态
 * @author wuxubaiyang
 * @Time 2022/9/8 15:02
 */
-class _AuthPageState extends State<AuthPage> {
+class _LoginPageState extends State<LoginPage> {
   // 表单key
   final formKey = GlobalKey<FormState>();
 
