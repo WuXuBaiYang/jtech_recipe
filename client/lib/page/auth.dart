@@ -45,99 +45,7 @@ class _AuthPageState extends State<AuthPage> {
       body: Container(
         padding: const EdgeInsets.all(35),
         alignment: Alignment.center,
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const FlutterLogo(size: 80),
-              const SizedBox(height: 65),
-              TextFormField(
-                autofocus: true,
-                controller: phoneController,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                onChanged: (v) =>
-                    phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration: InputDecoration(
-                  label: const Text("手机号"),
-                  hintText: "000 0000 0000",
-                  prefixIcon: const Icon(Icons.phone),
-                  suffixIcon: ValueListenableBuilder<bool>(
-                    valueListenable: phoneVerifyNotifier,
-                    builder: (_, v, __) {
-                      return Visibility(
-                        visible: v,
-                        child: const Icon(Icons.verified_outlined),
-                      );
-                    },
-                  ),
-                ),
-                validator: (v) {
-                  if (v == null || v.isEmpty) {
-                    return "手机号不能为空";
-                  }
-                  if (!Tool.verifyPhone(v)) {
-                    return "手机号校验失败";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 28),
-              TextFormField(
-                maxLength: 4,
-                controller: smsCodeController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                onFieldSubmitted: (v) => _authSaved(),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: InputDecoration(
-                  counter: const SizedBox(),
-                  label: const Text("验证码"),
-                  hintText: "0000",
-                  prefixIcon: const Icon(Icons.sms),
-                  suffixIcon: ValueListenableBuilder<bool>(
-                    valueListenable: phoneVerifyNotifier,
-                    builder: (_, verifyPhone, __) {
-                      return ValueListenableBuilder<int>(
-                        valueListenable: smsCountdownNotifier,
-                        builder: (_, countdown, __) {
-                          var text = countdown > 0
-                              ? "验证码已发送(${countdown ~/ 1000})"
-                              : "获取验证码";
-                          return TextButton(
-                            onPressed: verifyPhone && countdown == 0
-                                ? () => _sendSMS()
-                                : null,
-                            child: countdown == -1
-                                ? const SizedBox.square(
-                                    dimension: 18,
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : Text(text),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-                validator: (v) {
-                  if (v == null || v.isEmpty) {
-                    return "验证码不能为空";
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
+        child: _buildAuthForm(),
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
         valueListenable: authStateNotifier,
@@ -154,6 +62,102 @@ class _AuthPageState extends State<AuthPage> {
                 : const Icon(Icons.done),
           );
         },
+      ),
+    );
+  }
+
+  // 构建授权表单
+  Widget _buildAuthForm() {
+    return Form(
+      key: formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const FlutterLogo(size: 80),
+          const SizedBox(height: 65),
+          TextFormField(
+            autofocus: true,
+            controller: phoneController,
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.next,
+            onChanged: (v) => phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            decoration: InputDecoration(
+              label: const Text("手机号"),
+              hintText: "000 0000 0000",
+              prefixIcon: const Icon(Icons.phone),
+              suffixIcon: ValueListenableBuilder<bool>(
+                valueListenable: phoneVerifyNotifier,
+                builder: (_, v, __) {
+                  return Visibility(
+                    visible: v,
+                    child: const Icon(Icons.verified_outlined),
+                  );
+                },
+              ),
+            ),
+            validator: (v) {
+              if (v == null || v.isEmpty) {
+                return "手机号不能为空";
+              }
+              if (!Tool.verifyPhone(v)) {
+                return "手机号校验失败";
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 28),
+          TextFormField(
+            maxLength: 4,
+            controller: smsCodeController,
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (v) => _authSaved(),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: InputDecoration(
+              counter: const SizedBox(),
+              label: const Text("验证码"),
+              hintText: "0000",
+              prefixIcon: const Icon(Icons.sms),
+              suffixIcon: ValueListenableBuilder<bool>(
+                valueListenable: phoneVerifyNotifier,
+                builder: (_, verifyPhone, __) {
+                  return ValueListenableBuilder<int>(
+                    valueListenable: smsCountdownNotifier,
+                    builder: (_, countdown, __) {
+                      var text = countdown > 0
+                          ? "验证码已发送(${countdown ~/ 1000})"
+                          : "获取验证码";
+                      return TextButton(
+                        onPressed: verifyPhone && countdown == 0
+                            ? () => _sendSMS()
+                            : null,
+                        child: countdown == -1
+                            ? const SizedBox.square(
+                                dimension: 18,
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text(text),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            validator: (v) {
+              if (v == null || v.isEmpty) {
+                return "验证码不能为空";
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }

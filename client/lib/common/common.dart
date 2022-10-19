@@ -1,5 +1,5 @@
 import 'package:client/main.dart';
-import 'package:client/page/home/home.dart';
+import 'package:client/page/home.dart';
 import 'package:client/page/auth.dart';
 import 'package:flutter/widgets.dart';
 
