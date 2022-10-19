@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:client/common/manage.dart';
+import 'package:client/model/tag.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:json_path/json_path.dart';
 
 /*
 * 标签管理
@@ -12,19 +17,55 @@ class TagManage extends BaseManage {
 
   TagManage._internal();
 
-// var j = JsonPath(r'$..[?hasCode]');
-// var raw = await DefaultAssetBundle.of(context)
-//     .loadString("assets/tags/address.json");
-// var result = j
-//     .read(jsonDecode(raw), filters: {
-//   "hasCode": (m) {
-//     return m.value is Map &&
-//         ["110102", "120105"].contains(m.value["code"]);
-//   },
-// })
-//     .map((e) => TagModel.from(e.value))
-//     .toList();
-// print("object");
+  // 定义字典检索对象
+  final jsonPath = JsonPath(r'$..[?hasCode]');
+
+  // 根据code集合查找目标标签对象
+  Future<List<TagModel>> findTags(
+    BuildContext context, {
+    required TagSource source,
+    required List<String> codes,
+  }) async {
+    var json = await loadTagsMapSource(context, source);
+    return jsonPath
+        .read(json, filters: {
+          "hasCode": (m) => m.value is Map && codes.contains(m.value["code"]),
+        })
+        .map((e) => TagModel.from(e.value))
+        .toList();
+  }
+
+  // 根据code查找一个标签
+  Future<TagModel?> findTag(
+    BuildContext context, {
+    required TagSource source,
+    required String code,
+  }) async {
+    var result = await findTags(
+      context,
+      source: source,
+      codes: [code],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
+  // 加载某个标签对象
+  Future<List> loadTagsMapSource(
+    BuildContext context,
+    TagSource source,
+  ) async {
+    var raw = await _loadAssetFileAsString(context, source.path);
+    return jsonDecode(raw);
+  }
+
+  // 缓存assetsBundle对象
+  AssetBundle? assetBundle;
+
+  // 加载assets资源
+  Future<String> _loadAssetFileAsString(BuildContext context, String path) {
+    assetBundle ??= DefaultAssetBundle.of(context);
+    return assetBundle!.loadString(path);
+  }
 }
 
 // 单例调用

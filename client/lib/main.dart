@@ -5,6 +5,7 @@ import 'package:client/manage/event.dart';
 import 'package:client/manage/notification/notification.dart';
 import 'package:client/manage/oss.dart';
 import 'package:client/manage/router.dart';
+import 'package:client/manage/tag.dart';
 import 'package:client/manage/theme.dart';
 import 'package:client/model/event.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,8 @@ class _SplashPageState extends State<SplashPage> {
       await ossManage.init();
       // 初始化样式管理
       await themeManage.init();
+      // 初始化标签管理
+      await tagManage.init();
     }).then(_goNextPage).onError(_onInitError);
   }
 
@@ -107,8 +110,8 @@ class _SplashPageState extends State<SplashPage> {
   // 跳转到下一页
   void _goNextPage(v) {
     // if (authManage.authorized) {
-      // 已授权则跳转到首页
-      routerManage.pushReplacementNamed(RoutePath.home);
+    // 已授权则跳转到首页
+    routerManage.pushReplacementNamed(RoutePath.home);
     // } else {
     //   // 未授权跳转到授权页
     //   routerManage.pushReplacementNamed(RoutePath.login);
