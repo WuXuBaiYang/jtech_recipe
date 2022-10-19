@@ -82,7 +82,7 @@ class BaseJAPI extends BaseAPI {
             onReceiveProgress: onReceiveProgress);
       }
       // 授权刷新失败，跳转到登录页面
-      routerManage.pushNamedAndRemoveUntil(RoutePath.login, untilPath: "");
+      routerManage.pushNamedAndRemoveUntil(RoutePath.auth, untilPath: "");
       rethrow;
     } catch (e) {
       rethrow;

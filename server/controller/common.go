@@ -50,6 +50,47 @@ func GetSMS(c *gin.Context) {
 	response.SuccessDef(c, true)
 }
 
+// Auth 用户请求授权
+func Auth(c *gin.Context) {
+	// 获取请求体参数
+	var req authReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailParamsDef(c, err)
+		return
+	}
+	// 校验短信验证码
+	rdb := common.GetBaseRDB()
+	vCode := rdb.Get(c, req.PhoneNumber)
+	if vCode.Err() != nil || vCode.Val() != req.Code {
+		response.FailParams(c, "短信验证码校验失败")
+		return
+	}
+	// 判断用户（手机号）是否已存在
+	var result model.User
+	db := common.GetDB()
+	if err := db.Where("phone_number = ?", req.PhoneNumber).
+		First(&result).Error; err != nil {
+		// 用户不存在则创建用户
+		result.OrmBase = createBase()
+		result.PhoneNumber = req.PhoneNumber
+		result.NickName = tool.GenInitUserNickName()
+		if err := db.Create(&result).Error; err != nil {
+			response.FailDef(c, -1, "用户创建失败")
+			return
+		}
+	}
+	// 构造授权信息并返回
+	auth, authErr := createAuthInfo(c, result)
+	if authErr != nil {
+		response.FailDef(c, -1, "授权失败")
+		return
+	}
+	// 删除使用过的短信验证码
+	rdb.Del(c, req.PhoneNumber)
+	// 写入用户授权信息
+	response.SuccessDef(c, auth)
+}
+
 // Register 用户注册接口
 func Register(c *gin.Context) {
 	// 获取请求体参数

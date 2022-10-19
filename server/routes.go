@@ -53,12 +53,16 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 func authRoutes(group *gin.RouterGroup) {
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
-	// 用户注册
-	group.POST("/register", controller.Register)
-	// 用户登录
-	group.POST("/login", controller.Login)
+	// 请求授权
+	group.POST("/auth", controller.Auth)
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken)
+	// 用户注册
+	group.POST("/register", middleware.
+		PermissionCheck(fullPermissionList), controller.Register)
+	// 用户登录
+	group.POST("/login", middleware.
+		PermissionCheck(fullPermissionList), controller.Login)
 	// 用户强制下线
 	group.POST("/forceOffline", middleware.
 		PermissionCheck(highPermissionList), controller.ForcedOffline)

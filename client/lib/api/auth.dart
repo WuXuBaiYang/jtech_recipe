@@ -12,54 +12,30 @@ import 'base.dart';
 * @Time 2022/9/12 18:48
 */
 class AuthAPI extends BaseJAPI {
-  // 注册
-  Future<AuthModel> register({
-    required String phoneNumber,
-    required String password,
-    required String code,
-  }) {
-    return handleResponseData(
-      post("/register",
-          requestModel: RequestModel.body(data: {
-            "phoneNumber": phoneNumber,
-            "password": _signPassword(phoneNumber, password),
-            "code": code,
-          })),
-      handle: (e) => AuthModel.from(e),
-    ).then(
-      (v) => Future.wait([
-        // 设置授权信息
-        authManage.setupAuthInfo(v),
-      ]).then((_) => v),
-    );
-  }
-
-  // 登录
-  Future<AuthModel> login({
-    required String phoneNumber,
-    String password = "",
-    String code = "",
-  }) {
-    return handleResponseData(
-      post("/login",
-          requestModel: RequestModel.body(data: {
-            "phoneNumber": phoneNumber,
-            "password": _signPassword(phoneNumber, password),
-            "code": code,
-          })),
-      handle: (e) => AuthModel.from(e),
-    ).then(
-      (v) => Future.wait([
-        // 设置授权信息
-        authManage.setupAuthInfo(v),
-      ]).then((_) => v),
-    );
-  }
-
   // 获取短信验证码
   Future<bool> sendSMS({required String phoneNumber}) {
     return handleResponseData(
       post("/sms/$phoneNumber"),
+    );
+  }
+
+  // 请求授权
+  Future<AuthModel> auth({
+    required String phoneNumber,
+    required String code,
+  }) {
+    return handleResponseData(
+      post("/auth",
+          requestModel: RequestModel.body(data: {
+            "phoneNumber": phoneNumber,
+            "code": code,
+          })),
+      handle: (e) => AuthModel.from(e),
+    ).then(
+      (v) => Future.wait([
+        // 设置授权信息
+        authManage.setupAuthInfo(v),
+      ]).then((_) => v),
     );
   }
 

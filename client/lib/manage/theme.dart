@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:client/common/manage.dart';
 import 'package:client/manage/cache.dart';
 import 'package:client/manage/event.dart';
 import 'package:client/model/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /*
 * 样式管理
@@ -21,8 +24,18 @@ class ThemeManage extends BaseManage {
 
   @override
   Future<void> init() async {
+    var currTheme = currentTheme;
     // 获取当前样式并发送消息切换样式
-    eventManage.send(ThemeEvent(themeData: currentTheme));
+    eventManage.send(ThemeEvent(themeData: currTheme));
+    // 设置沉浸式状态栏
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: currTheme.brightness == Brightness.light
+            ? Brightness.dark
+            : Brightness.light,
+      ));
+    }
   }
 
   // 获取主色
@@ -66,10 +79,24 @@ extension ThemeTypeExtension on ThemeType {
         ThemeType.light: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
+          inputDecorationTheme: _inputDecorationTheme,
         ),
         ThemeType.dark: ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
+          inputDecorationTheme: _inputDecorationTheme,
         ),
       }[this]!;
+
+  // 获取输入框样式
+  InputDecorationTheme get _inputDecorationTheme => const InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(6),
+          ),
+        ),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        contentPadding: EdgeInsets.all(12),
+        alignLabelWithHint: true,
+      );
 }
