@@ -7,7 +7,7 @@ type User struct {
 	OrmBase
 	// 基础信息/敏感内容
 	PhoneNumber string          `json:"phoneNumber" gorm:"varchar(40);not null;unique;comment:手机号（登录凭证）"`
-	Password    string          `json:"-" gorm:"varchar(120);not null;comment:密码（登录密码）"`
+	Password    string          `json:"-" gorm:"varchar(120);comment:密码（登录密码）"`
 	Blocked     bool            `json:"-" gorm:"comment:是否被封锁"`
 	Permission  PermissionLevel `json:"-" gorm:"comment:权限等级"`
 	// 用户详细信息

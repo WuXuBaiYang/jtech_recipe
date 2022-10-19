@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:client/manage/tag.dart';
-import 'package:client/model/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:json_path/json_path.dart';
 
 /*
 * 首页
@@ -32,14 +28,7 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: TextButton(
           child: Text("点击测试"),
-          onPressed: () async {
-            var result = await tagManage.findTag(
-              context,
-              source: TagSource.address,
-              code: "11",
-            );
-            print("object");
-          },
+          onPressed: () async {},
         ),
       ),
       floatingActionButton: FloatingActionButton(

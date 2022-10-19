@@ -118,15 +118,15 @@ func Login(c *gin.Context) {
 	}
 	// 存在密码则验证密码，否则验证校验码
 	smsRDB := common.GetBaseRDB()
-	if len(req.Password) != 0 {
-		if result.Password != req.Password {
-			response.FailParams(c, "密码错误")
-			return
-		}
-	} else if len(req.Code) != 0 {
+	if len(req.Code) != 0 {
 		vCode := smsRDB.Get(c, req.PhoneNumber)
 		if vCode.Err() != nil || vCode.Val() != req.Code {
 			response.FailParams(c, "短信验证码校验失败")
+			return
+		}
+	} else if len(req.Password) != 0 {
+		if result.Password != req.Password {
+			response.FailParams(c, "密码错误")
 			return
 		}
 	} else {

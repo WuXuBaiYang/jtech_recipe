@@ -20,19 +20,37 @@ class TagManage extends BaseManage {
   // 定义字典检索对象
   final jsonPath = JsonPath(r'$..[?hasCode]');
 
+  // 缓存已读取的标签
+  final Map<String, TagModel> tagCacheMap = {};
+
   // 根据code集合查找目标标签对象
-  Future<List<TagModel>> findTags(
+  Future<List<TagModel?>> findTags(
     BuildContext context, {
     required TagSource source,
     required List<String> codes,
   }) async {
-    var json = await loadTagsMapSource(context, source);
-    return jsonPath
-        .read(json, filters: {
-          "hasCode": (m) => m.value is Map && codes.contains(m.value["code"]),
-        })
-        .map((e) => TagModel.from(e.value))
-        .toList();
+    var temp = <String>[];
+    var result = codes.asMap().map<String, TagModel?>(
+      (_, v) {
+        var item = tagCacheMap[v];
+        if (item != null) temp.add(v);
+        return MapEntry(v, item);
+      },
+    );
+    if (temp.isNotEmpty) {
+      jsonPath.read(await loadTagsMapSource(context, source), filters: {
+        "hasCode": (e) {
+          var v = e.value;
+          return v is Map && temp.contains(v["code"]);
+        },
+      }).forEach((e) {
+        var item = TagModel.from(e.value);
+        var mapItem = {item.code: item};
+        tagCacheMap.addAll(mapItem);
+        result.addAll(mapItem);
+      });
+    }
+    return result.values.toList();
   }
 
   // 根据code查找一个标签

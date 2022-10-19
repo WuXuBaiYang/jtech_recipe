@@ -1,6 +1,8 @@
 import 'package:client/common/model.dart';
+import 'package:client/manage/tag.dart';
 import 'package:client/model/tag.dart';
 import 'package:client/tool/date.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'model.dart';
 
@@ -54,6 +56,26 @@ class UserModel extends BaseModel with BasePart {
 
   // 升级所需经验
   final num updateExp;
+
+  // 获取性别
+  Future<String> getGender(BuildContext context) async {
+    var result = await tagManage.findTag(
+      context,
+      source: TagSource.userGender,
+      code: genderCode,
+    );
+    return result?.tag ?? "未知";
+  }
+
+  // 获取个人评价
+  Future<String> getEvaluate(BuildContext context) async {
+    var result = await tagManage.findTag(
+      context,
+      source: TagSource.userEvaluate,
+      code: evaluateCode,
+    );
+    return result?.tag ?? "";
+  }
 
   UserModel.from(obj)
       : phoneNumber = obj?["phoneNumber"] ?? "",
