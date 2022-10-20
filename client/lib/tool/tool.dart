@@ -16,7 +16,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class Tool {
   // 生成id
   static String genID({int? seed}) {
-    var time = DateTime.now().millisecondsSinceEpoch;
+    final time = DateTime.now().millisecondsSinceEpoch;
     return md5("${time}_${Random(seed ?? time).nextDouble()}");
   }
 
@@ -46,25 +46,25 @@ class Tool {
 
   // 获取应用名
   static Future<String> get appName async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.appName;
   }
 
   // 获取应用包名
   static Future<String> get packageName async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.packageName;
   }
 
   // 获取版本号
   static Future<String> get buildNumber async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.buildNumber;
   }
 
   // 获取版本名
   static Future<String> get version async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
   }
 
@@ -85,7 +85,7 @@ void updateGlobalTheme(ThemeData themeData) =>
 // 将map转为query的url
 String toQueryUrl(String url, Map<String, dynamic> params) {
   if (params.isNotEmpty) url += "?";
-  for (var entry in params.entries) {
+  for (final entry in params.entries) {
     url += "&${entry.key}=${entry.value}";
   }
   return url;
@@ -94,9 +94,9 @@ String toQueryUrl(String url, Map<String, dynamic> params) {
 // map深层路径索引
 V? findInMap<V>(Map map, String path) {
   if (path.isEmpty) return map as V;
-  var paths = path.split(".");
+  final paths = path.split(".");
   dynamic temp = map;
-  for (var it in paths) {
+  for (final it in paths) {
     temp = temp[it];
     if (null == temp) return null;
   }

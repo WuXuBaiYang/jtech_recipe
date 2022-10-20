@@ -18,7 +18,7 @@ class DateTool {
     DateTime date = DateTime(0).add(duration);
     _durationFormatRegMap.forEach((key, fun) {
       if (pattern.contains(key)) {
-        var value = fun(date, duration);
+        final value = fun(date, duration);
         pattern = pattern.replaceAll(key, value);
       }
     });

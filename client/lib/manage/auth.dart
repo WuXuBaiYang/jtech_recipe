@@ -23,7 +23,7 @@ class AuthManage extends BaseManage {
 
   @override
   Future<void> init() async {
-    var json = cacheManage.getJson(authInfoCacheKey);
+    final json = cacheManage.getJson(authInfoCacheKey);
     if (json != null) _auth = AuthModel.from(json);
   }
 
@@ -62,13 +62,9 @@ class AuthManage extends BaseManage {
   }
 
   // 注销授权信息
-  Future<bool> clearAuthInfo() async {
-    var result = true;
-    if (_auth != null) {
-      result = await cacheManage.remove(authInfoCacheKey);
-      if (result) _auth = null;
-    }
-    return result;
+  Future<void> clearAuthInfo() async {
+    await cacheManage.remove(authInfoCacheKey);
+    _auth = null;
   }
 }
 

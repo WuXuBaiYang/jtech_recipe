@@ -12,7 +12,7 @@ class FileTool {
   // 清除目录文件
   static Future<bool> clearDir({String path = ""}) async {
     try {
-      var dir = Directory(path);
+      final dir = Directory(path);
       if (dir.existsSync()) await dir.delete(recursive: true);
       return true;
     } catch (e) {
@@ -27,14 +27,14 @@ class FileTool {
     bool lowerCase = false,
     int fixed = 1,
   }) async {
-    var result = await getDirSize(path);
+    final result = await getDirSize(path);
     return parseFileSize(result, lowerCase: lowerCase, fixed: fixed);
   }
 
   // 迭代计算一个目录的大小
   static Future<int> getDirSize(String path, {int size = 0}) async {
-    var items = Directory(path).listSync(recursive: true, followLinks: true);
-    for (var item in items) {
+    final items = Directory(path).listSync(recursive: true, followLinks: true);
+    for (final item in items) {
       if (item is File) {
         size += await item.length();
       } else if (item is Directory) {
@@ -59,9 +59,9 @@ class FileTool {
     bool lowerCase = false,
     int fixed = 1,
   }) {
-    for (var item in _fileSizeMap.keys) {
+    for (final item in _fileSizeMap.keys) {
       if (size >= item) {
-        var result = (size / item).toStringAsFixed(fixed);
+        final result = (size / item).toStringAsFixed(fixed);
         var unit = _fileSizeMap[item];
         if (lowerCase) unit = unit!.toLowerCase();
         return "$result$unit";
@@ -75,9 +75,9 @@ class FileTool {
     String path, {
     FileDir root = FileDir.temporary,
   }) async {
-    var rootPath = await root.path;
+    final rootPath = await root.path;
     if (null == rootPath) return null;
-    var dir = Directory(join(rootPath, path));
+    final dir = Directory(join(rootPath, path));
     if (!dir.existsSync()) dir.createSync(recursive: true);
     return dir.path;
   }
@@ -124,7 +124,7 @@ extension FileDirExtension on FileDir {
 extension FileExtension on File {
   // 获取文件名
   String? get name {
-    var index = path.lastIndexOf(r'/');
+    final index = path.lastIndexOf(r'/');
     if (index >= 0 && index < path.length) {
       return path.substring(index + 1);
     }
@@ -133,8 +133,8 @@ extension FileExtension on File {
 
   // 获取文件后缀
   String? get suffixes {
-    var index = path.lastIndexOf(r'.');
-    var sepIndex = path.lastIndexOf(r'/');
+    final index = path.lastIndexOf(r'.');
+    final sepIndex = path.lastIndexOf(r'/');
     if (index >= 0 && index <= path.length && index > sepIndex) {
       return path.substring(index);
     }

@@ -67,7 +67,7 @@ class RouterManage extends BaseManage {
 
   // 页面跳转
   Future<T?>? pushNamed<T>(String url) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushNamed<T>(
       uri.path,
       arguments: uri.queryParameters,
@@ -107,7 +107,7 @@ class RouterManage extends BaseManage {
 
   // 跳转页面并一直退出到目标页面
   Future<T?>? pushNamedAndRemoveUntil<T>(String url, {required untilPath}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushNamedAndRemoveUntil<T>(
       uri.path,
       ModalRoute.withName(untilPath),
@@ -144,7 +144,7 @@ class RouterManage extends BaseManage {
 
   // 跳转并替换当前页面
   Future<T?>? pushReplacementNamed<T, TO>(String url, {TO? result}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushReplacementNamed<T, TO>(
       uri.path,
       result: result,
@@ -154,7 +154,7 @@ class RouterManage extends BaseManage {
 
   // 退出当前页面并跳转目标页面
   Future<T?>? popAndPushNamed<T, TO>(String url, {TO? result}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.popAndPushNamed<T, TO>(
       uri.path,
       result: result,
@@ -203,10 +203,10 @@ class RouterManage extends BaseManage {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
-    var begin = const Offset(0, 1);
-    var end = Offset.zero;
-    var curve = Curves.ease;
-    var tween = Tween(
+    final begin = const Offset(0, 1);
+    final end = Offset.zero;
+    final curve = Curves.ease;
+    final tween = Tween(
       begin: begin,
       end: end,
     ).chain(CurveTween(curve: curve));

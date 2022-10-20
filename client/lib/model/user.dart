@@ -59,7 +59,7 @@ class UserModel extends BaseModel with BasePart {
 
   // 获取性别
   Future<String> getGender(BuildContext context) async {
-    var result = await tagManage.findTag(
+    final result = await tagManage.findTag(
       context,
       source: TagSource.userGender,
       code: genderCode,
@@ -69,7 +69,7 @@ class UserModel extends BaseModel with BasePart {
 
   // 获取个人评价
   Future<String> getEvaluate(BuildContext context) async {
-    var result = await tagManage.findTag(
+    final result = await tagManage.findTag(
       context,
       source: TagSource.userEvaluate,
       code: evaluateCode,

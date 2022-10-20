@@ -24,7 +24,7 @@ class ThemeManage extends BaseManage {
 
   @override
   Future<void> init() async {
-    var currTheme = currentTheme;
+    final currTheme = currentTheme;
     // 获取当前样式并发送消息切换样式
     eventManage.send(ThemeEvent(themeData: currTheme));
     // 设置沉浸式状态栏
@@ -43,13 +43,13 @@ class ThemeManage extends BaseManage {
 
   // 当前样式
   ThemeData get currentTheme {
-    var index = cacheManage.getInt(defaultThemeCacheKey);
+    final index = cacheManage.getInt(defaultThemeCacheKey);
     return ThemeType.values[index ?? 0].theme;
   }
 
   // 切换默认样式
   Future<bool> switchTheme(ThemeType type) async {
-    var result = await cacheManage.setInt(defaultThemeCacheKey, type.index);
+    final result = await cacheManage.setInt(defaultThemeCacheKey, type.index);
     eventManage.send(ThemeEvent(
       themeData: type.theme,
     ));

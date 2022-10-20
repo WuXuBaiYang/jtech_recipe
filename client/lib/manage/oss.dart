@@ -35,10 +35,10 @@ class OSSManage extends BaseManage {
     required OSSBucket bucket,
     void Function(int)? onProgress,
   }) async {
-    var objects = <String?>[];
-    for (var it in files) {
+    final objects = <String?>[];
+    for (final it in files) {
       try {
-        var obj = _genObjectName(bucket.name, it);
+        final obj = _genObjectName(bucket.name, it);
         await _minio.fPutObject(bucket.name, obj, it.path);
         objects.add(obj);
         onProgress?.call(objects.length);
@@ -59,7 +59,7 @@ class OSSManage extends BaseManage {
 
   // 生成附件对象名称
   String _genObjectName(String bucket, File file) {
-    var name =
+    final name =
         "${file.path}_${Random(9527).nextDouble()}_${DateTime.now().toString()}";
     return "${bucket}_${Tool.md5(name)}${file.suffixes ?? ""}";
   }

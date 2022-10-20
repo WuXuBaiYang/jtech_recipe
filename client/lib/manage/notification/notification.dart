@@ -112,7 +112,7 @@ class NotificationManage extends BaseManage {
         "或者调用 jNotificationManage.initNotification() 自行指定默认图标");
     // 申请ios权限
     if (Platform.isIOS) {
-      var result = await _localNotification
+      final result = await _localNotification
           ?.resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(alert: true, badge: true, sound: true);
@@ -181,14 +181,14 @@ class NotificationManage extends BaseManage {
   // 当接收到通知消息回调
   Future _onReceiveNotification(
       int id, String? title, String? body, String? payload) async {
-    for (var item in _notificationReceiveListeners) {
+    for (final item in _notificationReceiveListeners) {
       await item(id, title, body, payload);
     }
   }
 
   // 消息通知点击事件回调
   Future _onNotificationSelect(String? payload) async {
-    for (var item in _notificationSelectListeners) {
+    for (final item in _notificationSelectListeners) {
       await item(payload);
     }
   }

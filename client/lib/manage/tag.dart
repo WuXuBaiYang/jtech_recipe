@@ -29,10 +29,10 @@ class TagManage extends BaseManage {
     required TagSource source,
     required List<String> codes,
   }) async {
-    var temp = <String>[];
-    var result = codes.asMap().map<String, TagModel?>(
+    final temp = <String>[];
+    final result = codes.asMap().map<String, TagModel?>(
       (_, v) {
-        var item = tagCacheMap[v];
+        final item = tagCacheMap[v];
         if (item != null) temp.add(v);
         return MapEntry(v, item);
       },
@@ -40,12 +40,12 @@ class TagManage extends BaseManage {
     if (temp.isNotEmpty) {
       jsonPath.read(await loadTagsMapSource(context, source), filters: {
         "hasCode": (e) {
-          var v = e.value;
+          final v = e.value;
           return v is Map && temp.contains(v["code"]);
         },
       }).forEach((e) {
-        var item = TagModel.from(e.value);
-        var mapItem = {item.code: item};
+        final item = TagModel.from(e.value);
+        final mapItem = {item.code: item};
         tagCacheMap.addAll(mapItem);
         result.addAll(mapItem);
       });
@@ -59,7 +59,7 @@ class TagManage extends BaseManage {
     required TagSource source,
     required String code,
   }) async {
-    var result = await findTags(
+    final result = await findTags(
       context,
       source: source,
       codes: [code],
@@ -72,7 +72,7 @@ class TagManage extends BaseManage {
     BuildContext context,
     TagSource source,
   ) async {
-    var raw = await _loadAssetFileAsString(context, source.path);
+    final raw = await _loadAssetFileAsString(context, source.path);
     return jsonDecode(raw);
   }
 

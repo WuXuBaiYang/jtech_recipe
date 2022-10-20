@@ -20,8 +20,8 @@ class PermissionTool {
     OnPermissionCheckFail? onCheckFail,
   }) async {
     List<PermissionResult> failResults = [];
-    for (var item in permissions) {
-      var result = await item.request();
+    for (final item in permissions) {
+      final result = await item.request();
       if (!result.isGranted) failResults.add(result);
     }
     if (failResults.isNotEmpty) {
@@ -372,7 +372,7 @@ class PermissionRequest extends BaseModel {
 
   // 请求权限
   Future<PermissionResult> request() async {
-    var status = await _permission.request();
+    final status = await _permission.request();
     return PermissionResult.from(status,
         message: !status.isGranted ? requestFail : "");
   }

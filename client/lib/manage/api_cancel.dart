@@ -21,7 +21,7 @@ class APICancelManage extends BaseManage {
     if (null != _cancelKeyMap[key]) {
       return _cancelKeyMap[key]!;
     }
-    var cancelToken = JCancelToken();
+    final cancelToken = JCancelToken();
     _cancelKeyMap[key] = cancelToken;
     return cancelToken;
   }

@@ -80,14 +80,14 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
 
   // 移除数据
   bool removeValue(V item, {bool notify = true}) {
-    var result = value.remove(item);
+    final result = value.remove(item);
     if (notify) notifyListeners();
     return result;
   }
 
   // 移除下标数据
   V? removeValueAt(int index, {bool notify = true}) {
-    var result = value.removeAt(index);
+    final result = value.removeAt(index);
     if (notify) notifyListeners();
     return result;
   }
@@ -126,7 +126,7 @@ class MapValueChangeNotifier<K, V> extends ValueChangeNotifier<Map<K, V>> {
 
   // 移除数据
   V? removeValue(K key, {bool notify = true}) {
-    var result = value.remove(key);
+    final result = value.remove(key);
     if (notify) notifyListeners();
     return result;
   }

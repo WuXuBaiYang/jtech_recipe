@@ -133,9 +133,9 @@ class BaseJAPI extends BaseAPI {
 
   @override
   ResponseModel handleResponse(Response? response) {
-    var result = response?.data;
-    var code = result?["code"] ?? -1;
-    var message = result?["message"] ?? "";
+    final result = response?.data;
+    final code = result?["code"] ?? -1;
+    final message = result?["message"] ?? "";
     return ResponseModel(
       code: code,
       message: message,

@@ -133,7 +133,7 @@ class _AuthPageState extends State<AuthPage> {
             return ValueListenableBuilder<int>(
               valueListenable: logic.smsCountdownNotifier,
               builder: (_, countdown, __) {
-                var text = countdown > 0 ? "验证码已发送($countdown)" : "获取验证码";
+                final text = countdown > 0 ? "验证码已发送($countdown)" : "获取验证码";
                 return TextButton(
                   onPressed: verifyPhone && countdown == 0
                       ? () => logic.sendSMS(context)
@@ -187,12 +187,12 @@ class _AuthLogic extends BaseLogic {
 
   // 授权信息保存
   Future<void> authSaved(BuildContext context) async {
-    var currState = formKey.currentState;
+    final currState = formKey.currentState;
     if (currState == null || !currState.validate()) return;
     try {
       authStateNotifier.setValue(true);
-      var phoneNumber = phoneController.text;
-      var code = smsCodeController.text;
+      final phoneNumber = phoneController.text;
+      final code = smsCodeController.text;
       await authApi.auth(phoneNumber: phoneNumber, code: code);
       // 登录成功跳转首页
       routerManage.pushReplacementNamed(RoutePath.home);
@@ -210,7 +210,7 @@ class _AuthLogic extends BaseLogic {
   Future<void> sendSMS(BuildContext context) async {
     try {
       smsCountdownNotifier.setValue(-1);
-      var phoneNumber = phoneController.value.text;
+      final phoneNumber = phoneController.value.text;
       if (await authApi.sendSMS(phoneNumber: phoneNumber)) {
         _startSmsCountdown();
         if (debugMode) {
@@ -230,12 +230,12 @@ class _AuthLogic extends BaseLogic {
 
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
-    var countDown = debugMode ? 5 : 60;
+    final countDown = debugMode ? 5 : 60;
     smsCountdownNotifier.setValue(countDown);
     smsCountdownTimer = Timer.periodic(
       const Duration(seconds: 1),
       (t) {
-        var v = smsCountdownNotifier.value;
+        final v = smsCountdownNotifier.value;
         smsCountdownNotifier.setValue(v - 1);
         if (smsCountdownNotifier.value <= 0) t.cancel();
       },
