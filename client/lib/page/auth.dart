@@ -8,6 +8,7 @@ import 'package:client/manage/router.dart';
 import 'package:client/tool/snack.dart';
 import 'package:client/tool/tool.dart';
 import 'package:client/widget/loading.dart';
+import 'package:client/widget/value_listenable_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -79,7 +80,8 @@ class _AuthPageState extends State<AuthPage> {
       controller: _logic.phoneController,
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
-      onChanged: (v) => _logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
+      onChanged: (v) =>
+          _logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -123,27 +125,26 @@ class _AuthPageState extends State<AuthPage> {
       ],
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
-        counter: const SizedBox(),
         label: const Text('验证码'),
+        counterText: '',
         hintText: '0000',
         prefixIcon: const Icon(Icons.sms),
-        suffixIcon: ValueListenableBuilder<bool>(
-          valueListenable: _logic.phoneVerifyNotifier,
-          builder: (_, verifyPhone, __) {
-            return ValueListenableBuilder<int>(
-              valueListenable: _logic.smsCountdownNotifier,
-              builder: (_, countdown, __) {
-                final text = countdown > 0 ? '验证码已发送($countdown)' : '获取验证码';
-                return TextButton(
-                  onPressed: verifyPhone && countdown == 0
-                      ? () => _logic.sendSMS(context)
-                      : null,
-                  child: LoadingView(
-                    loading: countdown == -1,
-                    child: Text(text),
-                  ),
-                );
-              },
+        suffixIcon: ValueListenableBuilder3<bool, int, SMSCodeState>(
+          first: _logic.phoneVerifyNotifier,
+          second: _logic.countdownSecondsNotifier,
+          third: _logic.smsCodeStateNotifier,
+          builder: (_, phoneVerified, countdownSeconds, smsCodeState, __) {
+            final text = smsCodeState == SMSCodeState.loaded
+                ? '验证码已发送($countdownSeconds)'
+                : '获取验证码';
+            return TextButton(
+              onPressed: phoneVerified && smsCodeState == SMSCodeState.normal
+                  ? () => _logic.sendSMS(context)
+                  : null,
+              child: LoadingView(
+                loading: smsCodeState == SMSCodeState.loading,
+                child: Text(text),
+              ),
             );
           },
         ),
@@ -183,7 +184,7 @@ class _AuthLogic extends BaseLogic {
   final phoneVerifyNotifier = ValueChangeNotifier<bool>(false);
 
   // 授权请求状态
-  final authStateNotifier = ValueChangeNotifier(false);
+  final authStateNotifier = ValueChangeNotifier<bool>(false);
 
   // 授权信息保存
   Future<void> authSaved(BuildContext context) async {
@@ -203,13 +204,14 @@ class _AuthLogic extends BaseLogic {
     }
   }
 
-  // 记录短信验证码获取倒计时
-  final smsCountdownNotifier = ValueChangeNotifier<int>(0);
+  // 短信验证码状态
+  final smsCodeStateNotifier =
+      ValueChangeNotifier<SMSCodeState>(SMSCodeState.normal);
 
   // 发送短信验证码
   Future<void> sendSMS(BuildContext context) async {
     try {
-      smsCountdownNotifier.setValue(-1);
+      smsCodeStateNotifier.setValue(SMSCodeState.loading);
       final phoneNumber = phoneController.value.text;
       if (await authApi.sendSMS(phoneNumber: phoneNumber)) {
         _startSmsCountdown();
@@ -221,23 +223,29 @@ class _AuthLogic extends BaseLogic {
       }
     } catch (e) {
       SnackTool.showMessage(context, message: '短信验证码发送失败');
-      smsCountdownNotifier.setValue(0);
+      smsCodeStateNotifier.setValue(SMSCodeState.loaded);
     }
   }
 
+  // 记录短信验证码获取倒计时
+  final countdownSecondsNotifier = ValueChangeNotifier<int>(0);
+
   // 计时器
-  Timer? _smsCountdownTimer;
+  Timer? _countdownTimer;
 
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
     final countDown = debugMode ? 5 : 60;
-    smsCountdownNotifier.setValue(countDown);
-    _smsCountdownTimer = Timer.periodic(
+    countdownSecondsNotifier.setValue(countDown);
+    _countdownTimer = Timer.periodic(
       const Duration(seconds: 1),
       (t) {
-        final v = smsCountdownNotifier.value;
-        smsCountdownNotifier.setValue(v - 1);
-        if (smsCountdownNotifier.value <= 0) t.cancel();
+        final v = countdownSecondsNotifier.value;
+        countdownSecondsNotifier.setValue(v - 1);
+        if (countdownSecondsNotifier.value <= 0) {
+          smsCodeStateNotifier.setValue(SMSCodeState.normal);
+          t.cancel();
+        }
       },
     );
   }
@@ -245,11 +253,14 @@ class _AuthLogic extends BaseLogic {
   @override
   void dispose() {
     // 销毁控制器和计时器
-    _smsCountdownTimer?.cancel();
+    _countdownTimer?.cancel();
     phoneController.dispose();
     smsCodeController.dispose();
     phoneVerifyNotifier.dispose();
-    smsCountdownNotifier.dispose();
+    countdownSecondsNotifier.dispose();
     super.dispose();
   }
 }
+
+// 验证码提示按钮状态枚举
+enum SMSCodeState { normal, loading, loaded }
