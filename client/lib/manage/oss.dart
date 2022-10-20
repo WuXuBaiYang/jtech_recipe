@@ -32,14 +32,14 @@ class OSSManage extends BaseManage {
   // 上传附件
   Future<List<String?>> uploadFiles(
     List<File> files, {
-    required String bucket,
+    required OSSBucket bucket,
     void Function(int)? onProgress,
   }) async {
     var objects = <String?>[];
     for (var it in files) {
       try {
-        var obj = _genObjectName(bucket, it);
-        await _minio.fPutObject(bucket, obj, it.path);
+        var obj = _genObjectName(bucket.name, it);
+        await _minio.fPutObject(bucket.name, obj, it.path);
         objects.add(obj);
         onProgress?.call(objects.length);
       } catch (e) {
@@ -49,48 +49,32 @@ class OSSManage extends BaseManage {
     return objects;
   }
 
-  // 上传附件到Profile
-  Future<List<String?>> uploadProfileFile(
-    List<File> files, {
-    void Function(int)? onProgress,
-  }) =>
-      uploadFiles(files, bucket: "profile", onProgress: onProgress);
-
-  // 上传附件到Post
-  Future<List<String?>> uploadPostFile(
-    List<File> files, {
-    void Function(int)? onProgress,
-  }) =>
-      uploadFiles(files, bucket: "post", onProgress: onProgress);
-
   // 获取附件流
   Future<String> getObjectUrl(
     String object, {
-    required String bucket,
+    required OSSBucket bucket,
     int? expires,
   }) =>
-      _minio.presignedGetObject(bucket, object, expires: expires);
-
-  // 获取Profile附件流
-  Future<String> getProfileObjectUrl(
-    String object, {
-    int? expires,
-  }) =>
-      getObjectUrl(object, bucket: "profile", expires: expires);
-
-  // 获取Post附件流
-  Future<String> getPostObjectUrl(
-    String object, {
-    int? expires,
-  }) =>
-      getObjectUrl(object, bucket: "post", expires: expires);
+      _minio.presignedGetObject(bucket.name, object, expires: expires);
 
   // 生成附件对象名称
   String _genObjectName(String bucket, File file) {
-    var name = "${file.path}_${Random(9527).nextDouble()}";
+    var name =
+        "${file.path}_${Random(9527).nextDouble()}_${DateTime.now().toString()}";
     return "${bucket}_${Tool.md5(name)}${file.suffixes ?? ""}";
   }
 }
 
 // 单例调用
 final ossManage = OSSManage();
+
+// oss桶类型
+enum OSSBucket { jTechRecipe }
+
+// oss桶扩展
+extension OSSBucketExtension on OSSBucket {
+  // 获取桶的名称
+  String get name => {
+        OSSBucket.jTechRecipe: "jtechrecipe",
+      }[this]!;
+}

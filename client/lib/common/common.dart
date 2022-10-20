@@ -4,28 +4,6 @@ import 'package:client/page/auth.dart';
 import 'package:flutter/widgets.dart';
 
 /*
-* 静态资源/通用静态变量
-* @author wuxubaiyang
-* @Time 2022/9/8 14:54
-*/
-class Common {
-  // api基础地址
-  static String baseUrl = debugMode ? _baseUrlDev : _baseUrlRelease;
-
-  // api开发地址
-  static const String _baseUrlDev = "http://192.168.16.50:9527/api";
-
-  // api正式地址
-  static const String _baseUrlRelease = "https://$remoteHost:9527/api";
-
-  // 远程域名
-  static const String remoteHost = "";
-
-  // 加密盐
-  static const String salt = "p5bDTyO6McoYeH";
-}
-
-/*
 * 路由路径静态变量
 * @author wuxubaiyang
 * @Time 2022/9/8 14:55
@@ -42,6 +20,25 @@ class RoutePath {
 
   // 授权页
   static const String auth = "/auth";
+}
+
+/*
+* 静态资源/通用静态变量
+* @author wuxubaiyang
+* @Time 2022/9/8 14:54
+*/
+class Common {
+  // api基础地址
+  static String baseUrl = debugMode ? _baseUrlDev : _baseUrlRelease;
+
+  // api开发地址
+  static const String _baseUrlDev = "http://192.168.16.50:9527/api";
+
+  // api正式地址
+  static const String _baseUrlRelease = "xxxxx";
+
+  // 加密盐
+  static const String salt = "p5bDTyO6McoYeH";
 }
 
 /*
