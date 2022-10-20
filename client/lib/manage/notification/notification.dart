@@ -33,31 +33,30 @@ class NotificationManage extends BaseManage {
   final List<OnNotificationSelect> _notificationSelectListeners = [];
 
   // 通知推送管理
-  late FlutterLocalNotificationsPlugin localNotification;
+  FlutterLocalNotificationsPlugin? _localNotification;
 
   // 通知栏初始化状态记录
   bool? _initialized;
 
   @override
   Future<void> init() async {
-    localNotification = FlutterLocalNotificationsPlugin();
+    _localNotification ??= FlutterLocalNotificationsPlugin();
   }
 
   // 获取初始化状态
   bool get initialized => _initialized ?? false;
 
   // 初始化通知栏消息
-  Future<bool?> initNotification(String icon) => localNotification
-      .initialize(
-        InitializationSettings(
-          android: AndroidInitializationSettings(icon),
-          iOS: IOSInitializationSettings(
-            onDidReceiveLocalNotification: _onReceiveNotification,
-          ),
-        ),
-        onSelectNotification: _onNotificationSelect,
-      )
-      .then((value) => _initialized = value);
+  Future<bool?> initNotification(String icon) async {
+    final settings = InitializationSettings(
+      android: AndroidInitializationSettings(icon),
+      iOS: IOSInitializationSettings(
+        onDidReceiveLocalNotification: _onReceiveNotification,
+      ),
+    );
+    return _initialized = await _localNotification?.initialize(settings,
+        onSelectNotification: _onNotificationSelect);
+  }
 
   // 显示进度通知
   Future<void> showProgress({
@@ -113,15 +112,15 @@ class NotificationManage extends BaseManage {
         "或者调用 jNotificationManage.initNotification() 自行指定默认图标");
     // 申请ios权限
     if (Platform.isIOS) {
-      var result = await localNotification
-          .resolvePlatformSpecificImplementation<
+      var result = await _localNotification
+          ?.resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(alert: true, badge: true, sound: true);
       if (null != result && !result) return;
     }
     androidConfig ??= const AndroidNotificationConfig();
     iosConfig ??= const IOSNotificationConfig();
-    return localNotification.show(
+    return _localNotification?.show(
       id,
       title,
       body,
@@ -165,11 +164,11 @@ class NotificationManage extends BaseManage {
   }
 
   // 取消通知
-  Future<void> cancel(int id, {String? tag}) =>
-      localNotification.cancel(id, tag: tag);
+  Future<void>? cancel(int id, {String? tag}) =>
+      _localNotification?.cancel(id, tag: tag);
 
   // 取消所有通知
-  Future<void> cancelAll() => localNotification.cancelAll();
+  Future<void>? cancelAll() => _localNotification?.cancelAll();
 
   // 添加接受消息监听
   void addReceiveListener(OnNotificationReceive listener) =>
