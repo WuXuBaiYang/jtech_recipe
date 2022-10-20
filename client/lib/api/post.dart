@@ -20,7 +20,7 @@ class PostAPI extends BaseJAPI {
     return handleResponseData(
       post("/post",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => PostModel.from(e),
     );
@@ -34,7 +34,7 @@ class PostAPI extends BaseJAPI {
     return handleResponseData(
       put("/post/$postId",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => PostModel.from(e),
     );

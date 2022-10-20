@@ -15,13 +15,13 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
   final String? originId;
 
   // 来源菜单
-  late MenuModel? originMenu;
+  final MenuModel? originMenu;
 
   // 活动记录id
   final String? activityRecordId;
 
   // 活动记录信息
-  late ActivityRecordModel? activityRecord;
+  final ActivityRecordModel? activityRecord;
 
   // 是否点赞
   final bool liked;
@@ -40,19 +40,19 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
             .map<MenuContentItem>((e) => MenuContentItem.from(e))
             .toList(),
         originId = obj?["originId"],
+        originMenu = obj?["originMenu"] != null
+            ? MenuModel.from(obj?["originMenu"] ?? {})
+            : null,
         activityRecordId = obj?["activityRecordId"],
+        activityRecord = obj?["activityRecord"] != null
+            ? ActivityRecordModel.from(obj?["activityRecord"] ?? {})
+            : null,
         liked = obj?["liked"] ?? false,
         likeCount = obj?["likeCount"] ?? 0,
         collected = obj?["collected"] ?? false,
         collectCount = obj?["collectCount"] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
-    if (obj?["originMenu"] != null) {
-      originMenu = MenuModel.from(obj?["originMenu"] ?? {});
-    }
-    if (obj?["activityRecord"] != null) {
-      activityRecord = ActivityRecordModel.from(obj?["activityRecord"] ?? {});
-    }
   }
 
   @override
@@ -70,8 +70,8 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
         "collectCount": collectCount,
       };
 
-  // 创建更新结构
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "contents": contents.map((e) => e.to()).toList(),
         "activityRecordId": activityRecordId,
       };

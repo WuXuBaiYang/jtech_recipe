@@ -121,8 +121,8 @@ class UserModel extends BaseModel with BasePart {
         "updateExp": updateExp,
       };
 
-  // 精简参数为信息修改所需
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "nickName": nickName,
         "avatar": avatar,
         "bio": bio,
@@ -165,8 +165,8 @@ class MedalModel extends BaseModel with BasePart {
         "rarityCode": rarityCode,
       };
 
-  // 创建更新信息结构
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "logo": logo,
         "name": name,
         "rarityCode": rarityCode,
@@ -195,7 +195,7 @@ class UserAddressModel extends BaseModel with BasePart, CreatorPart {
   final String tagCode;
 
   // 标签
-  late TagModel? tag;
+  final TagModel? tag;
 
   // 是否为默认地址
   final bool isDefault;
@@ -210,13 +210,11 @@ class UserAddressModel extends BaseModel with BasePart, CreatorPart {
             (obj?["addressCodes"] ?? []).map<String>((e) => "$e").toList(),
         addressDetail = obj?["addressDetail"] ?? "",
         tagCode = obj?["tagCode"] ?? "",
+        tag = obj?["tag"] != null ? TagModel.from(obj?["tag"] ?? {}) : null,
         isDefault = obj?["default"] ?? false,
         order = obj?["order"] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
-    if (obj?["tag"] != null) {
-      tag = TagModel.from(obj?["tag"] ?? {});
-    }
   }
 
   @override
@@ -233,7 +231,8 @@ class UserAddressModel extends BaseModel with BasePart, CreatorPart {
         "order": order,
       };
 
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "receiver": receiver,
         "contact": contact,
         "addressCodes": addressCodes,

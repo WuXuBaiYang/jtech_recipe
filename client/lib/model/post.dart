@@ -26,13 +26,13 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
   final String? activityRecordId;
 
   // 活动记录信息
-  late ActivityRecordModel? activityRecord;
+  final ActivityRecordModel? activityRecord;
 
   // 食谱id
   final String? recipeId;
 
   // 食谱信息
-  late RecipeModel? recipe;
+  final RecipeModel? recipe;
 
   // 是否点赞
   final bool liked;
@@ -56,19 +56,19 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
             .map<TagModel>((e) => TagModel.from(e))
             .toList(),
         activityRecordId = obj?["activityRecordId"],
+        activityRecord = obj?["activityRecord"] != null
+            ? ActivityRecordModel.from(obj?["activityRecord"] ?? {})
+            : null,
         recipeId = obj?["recipeId"],
+        recipe = obj?["recipe"] != null
+            ? RecipeModel.from(obj?["recipe"] ?? {})
+            : null,
         liked = obj?["liked"] ?? false,
         likeCount = obj?["likeCount"] ?? 0,
         collected = obj?["collected"] ?? false,
         collectCount = obj?["collectCount"] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
-    if (obj?["activityRecord"] != null) {
-      activityRecord = ActivityRecordModel.from(obj?["activityRecord"] ?? {});
-    }
-    if (obj?["recipe"] != null) {
-      recipe = RecipeModel.from(obj?["recipe"] ?? {});
-    }
   }
 
   @override
@@ -89,8 +89,8 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
         "collectCount": collectCount,
       };
 
-  // 整理更新结构
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "title": title,
         "contents": contents.map((e) => e.to()).toList(),
         "tagCodes": tagCodes,

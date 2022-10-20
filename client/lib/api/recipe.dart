@@ -2,7 +2,6 @@ import 'package:client/api/comment.dart';
 import 'package:client/api/tag.dart';
 import 'package:client/common/api/request.dart';
 import 'package:client/model/comment.dart';
-import 'package:client/model/menu.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/recipe.dart';
 import 'package:client/model/tag.dart';
@@ -21,7 +20,7 @@ class RecipeAPI extends BaseJAPI {
     return handleResponseData(
       post("/recipe",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => RecipeModel.from(e),
     );
@@ -35,7 +34,7 @@ class RecipeAPI extends BaseJAPI {
     return handleResponseData(
       put("/recipe/$recipeId",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => RecipeModel.from(e),
     );

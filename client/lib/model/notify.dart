@@ -12,7 +12,7 @@ class NotifyModel extends BaseModel with BasePart, CreatorPart {
   final String fromUserId;
 
   // 来源用户信息
-  late UserModel? fromUser;
+  final UserModel? fromUser;
 
   // 目标用户id
   final String toUserId;
@@ -31,6 +31,9 @@ class NotifyModel extends BaseModel with BasePart, CreatorPart {
 
   NotifyModel.from(obj)
       : fromUserId = obj?["fromUserId"] ?? "",
+        fromUser = obj?["fromUser"] != null
+            ? UserModel.from(obj?["fromUser"] ?? {})
+            : null,
         toUserId = obj?["toUserId"] ?? "",
         typeCode = obj?["typeCode"] ?? "",
         title = obj?["title"] ?? "",
@@ -38,9 +41,6 @@ class NotifyModel extends BaseModel with BasePart, CreatorPart {
         uri = obj?["uri"] ?? "" {
     initBasePart(obj);
     initCreatorPart(obj);
-    if (obj?["fromUser"] != null) {
-      fromUser = UserModel.from(obj?["fromUser"] ?? {});
-    }
   }
 
   @override

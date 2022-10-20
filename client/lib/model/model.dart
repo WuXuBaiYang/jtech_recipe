@@ -10,15 +10,15 @@ import 'package:client/tool/date.dart';
 */
 mixin BasePart {
   // id
-  late String _id;
+  String? _id;
 
   // 更新时间
-  late DateTime _updatedAt;
+  DateTime? _updatedAt;
 
   // 初始化基础结构
   void initBasePart(obj) {
-    _id = obj?["id"] ?? "";
-    _updatedAt = DateTool.parseDate(obj?["updatedAt"] ?? "") ?? DateTime(0);
+    _id = obj?["id"];
+    _updatedAt = DateTool.parseDate(obj?["updatedAt"] ?? "");
   }
 
   // 获取基础结构map
@@ -27,9 +27,9 @@ mixin BasePart {
         "updatedAt": updatedAt.toString(),
       };
 
-  String get id => _id;
+  String get id => _id ?? "";
 
-  DateTime get updatedAt => _updatedAt;
+  DateTime get updatedAt => _updatedAt ?? DateTime(0);
 }
 
 /*
@@ -39,10 +39,10 @@ mixin BasePart {
 */
 mixin CreatorPart {
   // 创建者id
-  late String _creatorId;
+  String? _creatorId;
 
   // 创建者信息
-  late UserModel? _creator;
+  UserModel? _creator;
 
   // 初始化基础结构
   void initCreatorPart(obj) {
@@ -58,7 +58,7 @@ mixin CreatorPart {
         if (_creator != null) "creator": creator?.to(),
       };
 
-  String get creatorId => _creatorId;
+  String get creatorId => _creatorId ?? "";
 
   UserModel? get creator => _creator;
 }

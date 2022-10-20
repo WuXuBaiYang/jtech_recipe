@@ -81,8 +81,8 @@ class ReplayModel extends BaseModel with BasePart, CreatorPart {
         "likeCount": likeCount,
       };
 
-  // 获取更新结构
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "pId": pId,
         "content": content,
       };

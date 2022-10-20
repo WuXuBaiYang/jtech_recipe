@@ -20,7 +20,7 @@ class MenuAPI extends BaseJAPI {
     return handleResponseData(
       post("/menu",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => MenuModel.from(e),
     );
@@ -44,7 +44,7 @@ class MenuAPI extends BaseJAPI {
     return handleResponseData(
       put("/menu/$menuId",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => MenuModel.from(e),
     );

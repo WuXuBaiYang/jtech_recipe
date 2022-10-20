@@ -34,7 +34,7 @@ class UserAPI extends BaseJAPI {
     return handleResponseData(
       put("/user/info",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => UserModel.from(e),
     );
@@ -70,7 +70,7 @@ class UserAPI extends BaseJAPI {
       post(
         "/user/address",
         requestModel: RequestModel.body(
-          data: model.toUpdateInfo(),
+          data: model.toModifyInfo(),
         ),
       ),
       handle: (e) => UserAddressModel.from(e),
@@ -86,7 +86,7 @@ class UserAPI extends BaseJAPI {
       post(
         "/user/address/$addressId",
         requestModel: RequestModel.body(
-          data: model.toUpdateInfo(),
+          data: model.toModifyInfo(),
         ),
       ),
       handle: (e) => UserAddressModel.from(e),

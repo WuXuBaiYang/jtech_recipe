@@ -1,7 +1,6 @@
 import 'package:client/common/api/request.dart';
 import 'package:client/model/comment.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/tag.dart';
 import 'base.dart';
 
 /*
@@ -55,7 +54,7 @@ class CommentAPI extends BaseJAPI {
     return handleResponseData(
       post("/replay",
           requestModel: RequestModel.body(
-            data: model.toUpdateInfo(),
+            data: model.toModifyInfo(),
           )),
       handle: (e) => ReplayModel.from(e),
     );

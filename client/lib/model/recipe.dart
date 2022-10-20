@@ -50,7 +50,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   final String? activityRecordId;
 
   // 活动记录信息
-  late ActivityRecordModel? activityRecord;
+  final ActivityRecordModel? activityRecord;
 
   // 是否点赞
   final bool liked;
@@ -88,15 +88,15 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
             .map<TagModel>((e) => TagModel.from(e))
             .toList(),
         activityRecordId = obj?["activityRecordId"],
+        activityRecord = obj?["activityRecord"] != null
+            ? ActivityRecordModel.from(obj?["activityRecord"] ?? {})
+            : null,
         liked = obj?["liked"] ?? false,
         likeCount = obj?["likeCount"] ?? 0,
         collected = obj?["collected"] ?? false,
         collectCount = obj?["collectCount"] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
-    if (obj?["activityRecord"] != null) {
-      activityRecord = ActivityRecordModel.from(obj?["activityRecord"] ?? {});
-    }
   }
 
   @override
@@ -123,8 +123,8 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
         "collectCount": collectCount,
       };
 
-  // 编辑结构体
-  Map<String, dynamic> toUpdateInfo() => {
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
         "title": title,
         "desc": desc,
         "images": images,
