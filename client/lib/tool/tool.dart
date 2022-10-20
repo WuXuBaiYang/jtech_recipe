@@ -81,24 +81,3 @@ class Tool {
 // 更新全局样式
 void updateGlobalTheme(ThemeData themeData) =>
     eventManage.send(ThemeEvent(themeData: themeData));
-
-// 将map转为query的url
-String toQueryUrl(String url, Map<String, dynamic> params) {
-  if (params.isNotEmpty) url += '?';
-  for (final entry in params.entries) {
-    url += '&${entry.key}=${entry.value}';
-  }
-  return url;
-}
-
-// map深层路径索引
-V? findInMap<V>(Map map, String path) {
-  if (path.isEmpty) return map as V;
-  final paths = path.split('.');
-  dynamic temp = map;
-  for (final it in paths) {
-    temp = temp[it];
-    if (null == temp) return null;
-  }
-  return temp as V;
-}
