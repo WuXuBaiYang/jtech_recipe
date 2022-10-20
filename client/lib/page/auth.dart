@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:client/api/auth.dart';
 import 'package:client/common/common.dart';
+import 'package:client/common/logic.dart';
 import 'package:client/common/notifier.dart';
 import 'package:client/main.dart';
 import 'package:client/manage/router.dart';
@@ -27,17 +28,8 @@ class AuthPage extends StatefulWidget {
 * @Time 2022/9/8 15:02
 */
 class _AuthPageState extends State<AuthPage> {
-  // 表单key
-  final formKey = GlobalKey<FormState>();
-
-  // 手机号输入框控制器
-  final phoneController = TextEditingController();
-
-  // 验证码输入框控制器
-  final smsCodeController = TextEditingController();
-
-  // 手机号校验状态
-  final phoneVerifyNotifier = ValueChangeNotifier<bool>(false);
+  // 页面逻辑管理
+  final logic = _AuthLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +37,13 @@ class _AuthPageState extends State<AuthPage> {
       body: Container(
         padding: const EdgeInsets.all(35),
         alignment: Alignment.center,
-        child: _buildAuthForm(),
+        child: _buildAuthForm(context),
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
-        valueListenable: authStateNotifier,
+        valueListenable: logic.authStateNotifier,
         builder: (_, v, __) {
           return FloatingActionButton(
-            onPressed: !v ? () => _authSaved() : null,
+            onPressed: !v ? () => logic.authSaved(context) : null,
             child: v
                 ? const SizedBox.square(
                     dimension: 18,
@@ -67,106 +59,141 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   // 构建授权表单
-  Widget _buildAuthForm() {
+  Widget _buildAuthForm(BuildContext context) {
     return Form(
-      key: formKey,
+      key: logic.formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const FlutterLogo(size: 80),
           const SizedBox(height: 65),
-          TextFormField(
-            autofocus: true,
-            controller: phoneController,
-            keyboardType: TextInputType.phone,
-            textInputAction: TextInputAction.next,
-            onChanged: (v) => phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            decoration: InputDecoration(
-              label: const Text("手机号"),
-              hintText: "000 0000 0000",
-              prefixIcon: const Icon(Icons.phone),
-              suffixIcon: ValueListenableBuilder<bool>(
-                valueListenable: phoneVerifyNotifier,
-                builder: (_, v, __) {
-                  return Visibility(
-                    visible: v,
-                    child: const Icon(Icons.verified_outlined),
-                  );
-                },
-              ),
-            ),
-            validator: (v) {
-              if (v == null || v.isEmpty) {
-                return "手机号不能为空";
-              }
-              if (!Tool.verifyPhone(v)) {
-                return "手机号校验失败";
-              }
-              return null;
-            },
-          ),
+          _buildPhoneField(),
           const SizedBox(height: 28),
-          TextFormField(
-            maxLength: 4,
-            controller: smsCodeController,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            onFieldSubmitted: (v) => _authSaved(),
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            decoration: InputDecoration(
-              counter: const SizedBox(),
-              label: const Text("验证码"),
-              hintText: "0000",
-              prefixIcon: const Icon(Icons.sms),
-              suffixIcon: ValueListenableBuilder<bool>(
-                valueListenable: phoneVerifyNotifier,
-                builder: (_, verifyPhone, __) {
-                  return ValueListenableBuilder<int>(
-                    valueListenable: smsCountdownNotifier,
-                    builder: (_, countdown, __) {
-                      var text = countdown > 0
-                          ? "验证码已发送(${countdown ~/ 1000})"
-                          : "获取验证码";
-                      return TextButton(
-                        onPressed: verifyPhone && countdown == 0
-                            ? () => _sendSMS()
-                            : null,
-                        child: countdown == -1
-                            ? const SizedBox.square(
-                                dimension: 18,
-                                child: CircularProgressIndicator(),
-                              )
-                            : Text(text),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-            validator: (v) {
-              if (v == null || v.isEmpty) {
-                return "验证码不能为空";
-              }
-              return null;
-            },
-          ),
+          _buildSMSCodeField(context),
         ],
       ),
     );
   }
 
+  // 构建手机号输入框
+  Widget _buildPhoneField() {
+    return TextFormField(
+      autofocus: true,
+      controller: logic.phoneController,
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      onChanged: (v) => logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+      decoration: InputDecoration(
+        label: const Text("手机号"),
+        hintText: "000 0000 0000",
+        prefixIcon: const Icon(Icons.phone),
+        suffixIcon: ValueListenableBuilder<bool>(
+          valueListenable: logic.phoneVerifyNotifier,
+          builder: (_, v, __) {
+            return Visibility(
+              visible: v,
+              child: const Icon(Icons.verified_outlined),
+            );
+          },
+        ),
+      ),
+      validator: (v) {
+        if (v == null || v.isEmpty) {
+          return "手机号不能为空";
+        }
+        if (!Tool.verifyPhone(v)) {
+          return "手机号校验失败";
+        }
+        return null;
+      },
+    );
+  }
+
+  // 构建短信验证码输入框
+  Widget _buildSMSCodeField(BuildContext context) {
+    return TextFormField(
+      maxLength: 4,
+      controller: logic.smsCodeController,
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.done,
+      onFieldSubmitted: (v) => logic.authSaved(context),
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      decoration: InputDecoration(
+        counter: const SizedBox(),
+        label: const Text("验证码"),
+        hintText: "0000",
+        prefixIcon: const Icon(Icons.sms),
+        suffixIcon: ValueListenableBuilder<bool>(
+          valueListenable: logic.phoneVerifyNotifier,
+          builder: (_, verifyPhone, __) {
+            return ValueListenableBuilder<int>(
+              valueListenable: logic.smsCountdownNotifier,
+              builder: (_, countdown, __) {
+                var text =
+                    countdown > 0 ? "验证码已发送(${countdown ~/ 1000})" : "获取验证码";
+                return TextButton(
+                  onPressed: verifyPhone && countdown == 0
+                      ? () => logic.sendSMS(context)
+                      : null,
+                  child: countdown == -1
+                      ? const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(),
+                        )
+                      : Text(text),
+                );
+              },
+            );
+          },
+        ),
+      ),
+      validator: (v) {
+        if (v == null || v.isEmpty) {
+          return "验证码不能为空";
+        }
+        return null;
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // 逻辑处理销毁
+    logic.dispose();
+  }
+}
+
+/*
+* 授权页逻辑处理
+* @author wuxubaiyang
+* @Time 2022/10/20 10:00
+*/
+class _AuthLogic extends BaseLogic {
+  // 表单key
+  final formKey = GlobalKey<FormState>();
+
+  // 手机号输入框控制器
+  final phoneController = TextEditingController();
+
+  // 验证码输入框控制器
+  final smsCodeController = TextEditingController();
+
+  // 手机号校验状态
+  final phoneVerifyNotifier = ValueChangeNotifier<bool>(false);
+
   // 授权请求状态
   final authStateNotifier = ValueChangeNotifier(false);
 
   // 授权信息保存
-  Future<void> _authSaved() async {
+  Future<void> authSaved(BuildContext context) async {
     var currState = formKey.currentState;
     if (currState == null || !currState.validate()) return;
     try {
@@ -187,7 +214,7 @@ class _AuthPageState extends State<AuthPage> {
   final smsCountdownNotifier = ValueChangeNotifier<int>(0);
 
   // 发送短信验证码
-  Future<void> _sendSMS() async {
+  Future<void> sendSMS(BuildContext context) async {
     try {
       smsCountdownNotifier.setValue(-1);
       var phoneNumber = phoneController.value.text;
