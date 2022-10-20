@@ -16,10 +16,10 @@ class RoutePath {
       };
 
   // 首页
-  static const String home = "/home";
+  static const String home = '/home';
 
   // 授权页
-  static const String auth = "/auth";
+  static const String auth = '/auth';
 }
 
 /*
@@ -32,13 +32,13 @@ class Common {
   static String baseUrl = debugMode ? _baseUrlDev : _baseUrlRelease;
 
   // api开发地址
-  static const String _baseUrlDev = "http://192.168.16.50:9527/api";
+  static const String _baseUrlDev = 'http://192.168.16.50:9527/api';
 
   // api正式地址
-  static const String _baseUrlRelease = "xxxxx";
+  static const String _baseUrlRelease = 'xxxxx';
 
   // 加密盐
-  static const String salt = "p5bDTyO6McoYeH";
+  static const String salt = 'p5bDTyO6McoYeH';
 }
 
 /*
@@ -51,10 +51,10 @@ class OSSConfig {
   static String endPoint = debugMode ? _endPointDev : _endPointRelease;
 
   // 开发版地址
-  static const String _endPointDev = "192.168.16.50";
+  static const String _endPointDev = '192.168.16.50';
 
   // 正式版地址
-  static const String _endPointRelease = "";
+  static const String _endPointRelease = '';
 
   // 端口号
   static const int port = 9000;
@@ -63,10 +63,10 @@ class OSSConfig {
   static const useSSL = false;
 
   // 授权key
-  static const accessKey = r"QFIknqJRoZOJV7E2";
+  static const accessKey = r'QFIknqJRoZOJV7E2';
 
   // 密钥
-  static const secretKey = r"SV46qm1zsumsyz870q6nXytHTLOoyxZp";
+  static const secretKey = r'SV46qm1zsumsyz870q6nXytHTLOoyxZp';
 }
 
 /*
@@ -76,14 +76,14 @@ class OSSConfig {
 */
 class FileDirPath {
   // 图片缓存路径
-  static const String imageCachePath = "imageCache";
+  static const String imageCachePath = 'imageCache';
 
   // 视频缓存路径
-  static const String videoCachePath = "videoCache";
+  static const String videoCachePath = 'videoCache';
 
   // 音频缓存路径
-  static const String audioCachePath = "audioCache";
+  static const String audioCachePath = 'audioCache';
 
   // im文档路径
-  static const String imDocumentPath = "imDocument";
+  static const String imDocumentPath = 'imDocument';
 }

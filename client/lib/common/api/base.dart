@@ -44,7 +44,7 @@ abstract class BaseAPI {
     String path, {
     required String savePath,
     RequestModel? request,
-    String method = "GET",
+    String method = 'GET',
     String? cancelKey,
     Options? options,
     bool deleteOnError = true,
@@ -77,7 +77,7 @@ abstract class BaseAPI {
   Future<ResponseModel> request(
     String path, {
     RequestModel? request,
-    String method = "GET",
+    String method = 'GET',
     String? cancelKey,
     Options? options,
     OnResponseHandle? responseHandle,
@@ -112,7 +112,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "GET",
+        method: 'GET',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
@@ -127,7 +127,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "POST",
+        method: 'POST',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
@@ -142,7 +142,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "PUT",
+        method: 'PUT',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
@@ -157,7 +157,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "DELETE",
+        method: 'DELETE',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,

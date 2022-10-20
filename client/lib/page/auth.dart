@@ -85,8 +85,8 @@ class _AuthPageState extends State<AuthPage> {
         FilteringTextInputFormatter.digitsOnly,
       ],
       decoration: InputDecoration(
-        label: const Text("手机号"),
-        hintText: "000 0000 0000",
+        label: const Text('手机号'),
+        hintText: '000 0000 0000',
         prefixIcon: const Icon(Icons.phone),
         suffixIcon: ValueListenableBuilder<bool>(
           valueListenable: _logic.phoneVerifyNotifier,
@@ -100,10 +100,10 @@ class _AuthPageState extends State<AuthPage> {
       ),
       validator: (v) {
         if (v == null || v.isEmpty) {
-          return "手机号不能为空";
+          return '手机号不能为空';
         }
         if (!Tool.verifyPhone(v)) {
-          return "手机号校验失败";
+          return '手机号校验失败';
         }
         return null;
       },
@@ -124,8 +124,8 @@ class _AuthPageState extends State<AuthPage> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
         counter: const SizedBox(),
-        label: const Text("验证码"),
-        hintText: "0000",
+        label: const Text('验证码'),
+        hintText: '0000',
         prefixIcon: const Icon(Icons.sms),
         suffixIcon: ValueListenableBuilder<bool>(
           valueListenable: _logic.phoneVerifyNotifier,
@@ -133,7 +133,7 @@ class _AuthPageState extends State<AuthPage> {
             return ValueListenableBuilder<int>(
               valueListenable: _logic.smsCountdownNotifier,
               builder: (_, countdown, __) {
-                final text = countdown > 0 ? "验证码已发送($countdown)" : "获取验证码";
+                final text = countdown > 0 ? '验证码已发送($countdown)' : '获取验证码';
                 return TextButton(
                   onPressed: verifyPhone && countdown == 0
                       ? () => _logic.sendSMS(context)
@@ -150,7 +150,7 @@ class _AuthPageState extends State<AuthPage> {
       ),
       validator: (v) {
         if (v == null || v.isEmpty) {
-          return "验证码不能为空";
+          return '验证码不能为空';
         }
         return null;
       },
@@ -198,7 +198,7 @@ class _AuthLogic extends BaseLogic {
       routerManage.pushReplacementNamed(RoutePath.home);
     } catch (e) {
       SnackTool.showMessage(context,
-          message: debugMode ? e.toString() : "请求授权失败");
+          message: debugMode ? e.toString() : '请求授权失败');
       authStateNotifier.setValue(false);
     }
   }
@@ -220,7 +220,7 @@ class _AuthLogic extends BaseLogic {
         }
       }
     } catch (e) {
-      SnackTool.showMessage(context, message: "短信验证码发送失败");
+      SnackTool.showMessage(context, message: '短信验证码发送失败');
       smsCountdownNotifier.setValue(0);
     }
   }

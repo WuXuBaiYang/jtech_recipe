@@ -47,26 +47,26 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
   final num collectCount;
 
   PostModel.from(obj)
-      : title = obj?["title"] ?? "",
-        contents = (obj?["contents"] ?? [])
+      : title = obj?['title'] ?? '',
+        contents = (obj?['contents'] ?? [])
             .map<ContentItem>((e) => ContentItem.from(e))
             .toList(),
-        tagCodes = (obj?["tagCodes"] ?? []).map<String>((e) => "$e").toList(),
-        tags = (obj?["tags"] ?? [])
+        tagCodes = (obj?['tagCodes'] ?? []).map<String>((e) => '$e').toList(),
+        tags = (obj?['tags'] ?? [])
             .map<TagModel>((e) => TagModel.from(e))
             .toList(),
-        activityRecordId = obj?["activityRecordId"],
-        activityRecord = obj?["activityRecord"] != null
-            ? ActivityRecordModel.from(obj?["activityRecord"] ?? {})
+        activityRecordId = obj?['activityRecordId'],
+        activityRecord = obj?['activityRecord'] != null
+            ? ActivityRecordModel.from(obj?['activityRecord'] ?? {})
             : null,
-        recipeId = obj?["recipeId"],
-        recipe = obj?["recipe"] != null
-            ? RecipeModel.from(obj?["recipe"] ?? {})
+        recipeId = obj?['recipeId'],
+        recipe = obj?['recipe'] != null
+            ? RecipeModel.from(obj?['recipe'] ?? {})
             : null,
-        liked = obj?["liked"] ?? false,
-        likeCount = obj?["likeCount"] ?? 0,
-        collected = obj?["collected"] ?? false,
-        collectCount = obj?["collectCount"] ?? 0 {
+        liked = obj?['liked'] ?? false,
+        likeCount = obj?['likeCount'] ?? 0,
+        collected = obj?['collected'] ?? false,
+        collectCount = obj?['collectCount'] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -75,27 +75,27 @@ class PostModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "title": title,
-        "contents": contents.map((e) => e.to()).toList(),
-        "tagCodes": tagCodes,
-        "tags": tags.map((e) => e.to()).toList(),
-        "activityRecordId": activityRecordId,
-        "activityRecord": activityRecord?.to(),
-        "recipeId": recipeId,
-        "recipe": recipe?.to(),
-        "liked": liked,
-        "likeCount": likeCount,
-        "collected": collected,
-        "collectCount": collectCount,
+        'title': title,
+        'contents': contents.map((e) => e.to()).toList(),
+        'tagCodes': tagCodes,
+        'tags': tags.map((e) => e.to()).toList(),
+        'activityRecordId': activityRecordId,
+        'activityRecord': activityRecord?.to(),
+        'recipeId': recipeId,
+        'recipe': recipe?.to(),
+        'liked': liked,
+        'likeCount': likeCount,
+        'collected': collected,
+        'collectCount': collectCount,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "title": title,
-        "contents": contents.map((e) => e.to()).toList(),
-        "tagCodes": tagCodes,
-        "activityRecordId": activityRecordId,
-        "recipeId": recipeId,
+        'title': title,
+        'contents': contents.map((e) => e.to()).toList(),
+        'tagCodes': tagCodes,
+        'activityRecordId': activityRecordId,
+        'recipeId': recipeId,
       };
 }
 

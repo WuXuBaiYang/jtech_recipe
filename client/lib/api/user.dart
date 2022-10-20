@@ -19,8 +19,8 @@ class UserAPI extends BaseJAPI {
   Future<UserModel> loadUserInfo({
     String? userId,
   }) {
-    var path = "/user/info";
-    if (userId != null) path = "$path/$userId";
+    var path = '/user/info';
+    if (userId != null) path = '$path/$userId';
     return handleResponseData(
       get(path),
       handle: (e) => UserModel.from(e),
@@ -32,7 +32,7 @@ class UserAPI extends BaseJAPI {
     required UserModel model,
   }) {
     return handleResponseData(
-      put("/user/info",
+      put('/user/info',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -45,7 +45,7 @@ class UserAPI extends BaseJAPI {
     required List<TagModel> tags,
   }) {
     return tagApi.addTags(
-      path: "/user/tag/address",
+      path: '/user/tag/address',
       tags: tags,
     );
   }
@@ -56,7 +56,7 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return tagApi.loadTags(
-      path: "/user/tag/address",
+      path: '/user/tag/address',
       pageIndex: pageIndex,
       pageSize: pageSize,
     );
@@ -68,7 +68,7 @@ class UserAPI extends BaseJAPI {
   }) {
     return handleResponseData(
       post(
-        "/user/address",
+        '/user/address',
         requestModel: RequestModel.body(
           data: model.toModifyInfo(),
         ),
@@ -84,7 +84,7 @@ class UserAPI extends BaseJAPI {
   }) {
     return handleResponseData(
       post(
-        "/user/address/$addressId",
+        '/user/address/$addressId',
         requestModel: RequestModel.body(
           data: model.toModifyInfo(),
         ),
@@ -98,7 +98,7 @@ class UserAPI extends BaseJAPI {
     required String addressId,
   }) {
     return handleResponseData(
-      put("/user/address/$addressId/default"),
+      put('/user/address/$addressId/default'),
     );
   }
 
@@ -108,10 +108,10 @@ class UserAPI extends BaseJAPI {
     required int order,
   }) {
     return handleResponseData(
-      put("/user/address/$addressId/order",
+      put('/user/address/$addressId/order',
           requestModel: RequestModel.body(
             data: {
-              "order": order,
+              'order': order,
             },
           )),
     );
@@ -120,7 +120,7 @@ class UserAPI extends BaseJAPI {
   // 获取全部收货地址
   Future<List<UserAddressModel>> loadAllUserAddress() {
     return handleResponseListData(
-      get("/user/address"),
+      get('/user/address'),
       handle: (e) => UserAddressModel.from(e),
     );
   }
@@ -130,7 +130,7 @@ class UserAPI extends BaseJAPI {
     required String addressId,
   }) {
     return handleResponseData(
-      get("/user/address/$addressId"),
+      get('/user/address/$addressId'),
       handle: (e) => UserAddressModel.from(e),
     );
   }
@@ -141,11 +141,11 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/user/post/like",
+      get('/user/post/like',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => PostModel.from(e),
@@ -158,11 +158,11 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/user/post/collect",
+      get('/user/post/collect',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => PostModel.from(e),
@@ -175,11 +175,11 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/user/menu/like",
+      get('/user/menu/like',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => MenuModel.from(e),
@@ -192,11 +192,11 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/user/menu/collect",
+      get('/user/menu/collect',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => MenuModel.from(e),
@@ -209,11 +209,11 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/user/recipe/like",
+      get('/user/recipe/like',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => RecipeModel.from(e),
@@ -226,11 +226,11 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/user/recipe/collect",
+      get('/user/recipe/collect',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => RecipeModel.from(e),
@@ -242,7 +242,7 @@ class UserAPI extends BaseJAPI {
     required String userId,
   }) {
     return handleResponseData(
-      post("/user/subscribe/$userId"),
+      post('/user/subscribe/$userId'),
     );
   }
 
@@ -251,7 +251,7 @@ class UserAPI extends BaseJAPI {
     required String userId,
   }) {
     return handleResponseData(
-      delete("/user/subscribe/$userId"),
+      delete('/user/subscribe/$userId'),
     );
   }
 
@@ -261,14 +261,14 @@ class UserAPI extends BaseJAPI {
     int pageSize = 15,
     String? userId,
   }) {
-    var path = "/user/subscribe";
-    if (userId != null) path = "$path/$userId";
+    var path = '/user/subscribe';
+    if (userId != null) path = '$path/$userId';
     return handleResponsePaginationData(
       get(path,
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
             },
           )),
       handle: (e) => UserModel.from(e),
@@ -278,7 +278,7 @@ class UserAPI extends BaseJAPI {
   // 获取全部勋章
   Future<List<MedalModel>> loadAllMedals() {
     return handleResponseListData(
-      get("/user/medal"),
+      get('/user/medal'),
       handle: (e) => MedalModel.from(e),
     );
   }

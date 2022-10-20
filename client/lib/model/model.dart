@@ -17,17 +17,17 @@ mixin BasePart {
 
   // 初始化基础结构
   void initBasePart(obj) {
-    _id = obj?["id"];
-    _updatedAt = DateTool.parseDate(obj?["updatedAt"] ?? "");
+    _id = obj?['id'];
+    _updatedAt = DateTool.parseDate(obj?['updatedAt'] ?? '');
   }
 
   // 获取基础结构map
   Map<String, dynamic> get basePart => {
-        "id": id,
-        "updatedAt": updatedAt.toString(),
+        'id': id,
+        'updatedAt': updatedAt.toString(),
       };
 
-  String get id => _id ?? "";
+  String get id => _id ?? '';
 
   DateTime get updatedAt => _updatedAt ?? DateTime(0);
 }
@@ -46,19 +46,19 @@ mixin CreatorPart {
 
   // 初始化基础结构
   void initCreatorPart(obj) {
-    _creatorId = obj?["creatorId"] ?? "";
-    if (null != obj?["creator"]) {
-      _creator = UserModel.from(obj?["creator"] ?? {});
+    _creatorId = obj?['creatorId'] ?? '';
+    if (null != obj?['creator']) {
+      _creator = UserModel.from(obj?['creator'] ?? {});
     }
   }
 
   // 获取基础结构map
   Map<String, dynamic> get creatorPart => {
-        "creatorId": creatorId,
-        if (_creator != null) "creator": creator?.to(),
+        'creatorId': creatorId,
+        if (_creator != null) 'creator': creator?.to(),
       };
 
-  String get creatorId => _creatorId ?? "";
+  String get creatorId => _creatorId ?? '';
 
   UserModel? get creator => _creator;
 }
@@ -82,10 +82,10 @@ class PaginationModel<T extends BaseModel> extends BaseModel {
   final List<T> data;
 
   PaginationModel.from(obj, {required OnModelParse<T> itemParse})
-      : pageIndex = obj?["pageIndex"] ?? 1,
-        pageSize = obj?["pageSize"] ?? 15,
-        total = obj?["total"] ?? 0,
-        data = (obj?["data"] ?? []).map<T>((e) => itemParse(e)).toList();
+      : pageIndex = obj?['pageIndex'] ?? 1,
+        pageSize = obj?['pageSize'] ?? 15,
+        total = obj?['total'] ?? 0,
+        data = (obj?['data'] ?? []).map<T>((e) => itemParse(e)).toList();
 }
 
 /*
@@ -108,14 +108,14 @@ class AuthModel extends BaseModel {
       accessToken.isNotEmpty && refreshToken.isNotEmpty && user.id.isNotEmpty;
 
   AuthModel.from(obj)
-      : accessToken = obj?["accessToken"] ?? "",
-        refreshToken = obj?["refreshToken"] ?? "",
-        user = UserModel.from(obj?["user"] ?? {});
+      : accessToken = obj?['accessToken'] ?? '',
+        refreshToken = obj?['refreshToken'] ?? '',
+        user = UserModel.from(obj?['user'] ?? {});
 
   @override
   Map<String, dynamic> to() => {
-        "accessToken": accessToken,
-        "refreshToken": refreshToken,
-        "user": user.to(),
+        'accessToken': accessToken,
+        'refreshToken': refreshToken,
+        'user': user.to(),
       };
 }

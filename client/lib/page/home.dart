@@ -22,11 +22,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("首页"),
+        title: const Text('首页'),
       ),
       body: Center(
         child: TextButton(
-          child: Text("点击测试"),
+          child: Text('点击测试'),
           onPressed: () async {},
         ),
       ),

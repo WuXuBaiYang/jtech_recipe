@@ -41,7 +41,7 @@ class BaseJAPI extends BaseAPI {
                 // 添加请求头
                 options.headers.addAll({
                   if (authManage.authorized)
-                    "Authorization": "Bearer ${authManage.accessToken}",
+                    'Authorization': 'Bearer ${authManage.accessToken}',
                 });
                 handler.next(options);
               },
@@ -54,7 +54,7 @@ class BaseJAPI extends BaseAPI {
   Future<ResponseModel> request(
     String path, {
     RequestModel? request,
-    String method = "GET",
+    String method = 'GET',
     String? cancelKey,
     Options? options,
     OnResponseHandle? responseHandle,
@@ -82,7 +82,7 @@ class BaseJAPI extends BaseAPI {
             onReceiveProgress: onReceiveProgress);
       }
       // 授权刷新失败，跳转到登录页面
-      routerManage.pushNamedAndRemoveUntil(RoutePath.auth, untilPath: "");
+      routerManage.pushNamedAndRemoveUntil(RoutePath.auth, untilPath: '');
       rethrow;
     } catch (e) {
       rethrow;
@@ -134,13 +134,13 @@ class BaseJAPI extends BaseAPI {
   @override
   ResponseModel handleResponse(Response? response) {
     final result = response?.data;
-    final code = result?["code"] ?? -1;
-    final message = result?["message"] ?? "";
+    final code = result?['code'] ?? -1;
+    final message = result?['message'] ?? '';
     return ResponseModel(
       code: code,
       message: message,
       success: code == 200,
-      data: result?["data"],
+      data: result?['data'],
     );
   }
 }

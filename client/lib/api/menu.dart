@@ -18,7 +18,7 @@ class MenuAPI extends BaseJAPI {
     required MenuModel model,
   }) {
     return handleResponseData(
-      post("/menu",
+      post('/menu',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -31,7 +31,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      post("/menu/fork/$menuId"),
+      post('/menu/fork/$menuId'),
       handle: (e) => MenuModel.from(e),
     );
   }
@@ -42,7 +42,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      put("/menu/$menuId",
+      put('/menu/$menuId',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -57,12 +57,12 @@ class MenuAPI extends BaseJAPI {
     String? userId,
   }) {
     return handleResponsePaginationData(
-      get("/menu",
+      get('/menu',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              if (userId != null) "userId": userId,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+              if (userId != null) 'userId': userId,
             },
           )),
       handle: (e) => MenuModel.from(e),
@@ -74,7 +74,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      get("/menu/$menuId"),
+      get('/menu/$menuId'),
       handle: (e) => MenuModel.from(e),
     );
   }
@@ -85,7 +85,7 @@ class MenuAPI extends BaseJAPI {
     required String content,
   }) {
     return commentApi.createComment(
-      path: "/menu/comment",
+      path: '/menu/comment',
       pId: menuId,
       content: content,
     );
@@ -98,7 +98,7 @@ class MenuAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return commentApi.loadComments(
-      path: "/menu/comment",
+      path: '/menu/comment',
       pId: menuId,
       pageIndex: pageIndex,
       pageSize: pageSize,
@@ -110,7 +110,7 @@ class MenuAPI extends BaseJAPI {
     required List<TagModel> tags,
   }) {
     return tagApi.addTags(
-      path: "/menu/tag",
+      path: '/menu/tag',
       tags: tags,
     );
   }
@@ -122,7 +122,7 @@ class MenuAPI extends BaseJAPI {
     String? userId,
   }) {
     return tagApi.loadTags(
-      path: "/menu/tag",
+      path: '/menu/tag',
       pageIndex: pageIndex,
       pageSize: pageSize,
       userId: userId,
@@ -134,7 +134,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      post("/menu/like/$menuId"),
+      post('/menu/like/$menuId'),
     );
   }
 
@@ -143,7 +143,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      delete("/menu/like/$menuId"),
+      delete('/menu/like/$menuId'),
     );
   }
 
@@ -152,7 +152,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      post("/menu/collect/$menuId"),
+      post('/menu/collect/$menuId'),
     );
   }
 
@@ -161,7 +161,7 @@ class MenuAPI extends BaseJAPI {
     required String menuId,
   }) {
     return handleResponseData(
-      delete("/menu/collect/$menuId"),
+      delete('/menu/collect/$menuId'),
     );
   }
 }

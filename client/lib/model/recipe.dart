@@ -68,37 +68,37 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   final num collectCount;
 
   RecipeModel.from(obj)
-      : title = obj?["title"] ?? "",
-        desc = obj?["desc"] ?? "",
-        cover = obj?["cover"] ?? "",
-        images = obj?["images"] ?? [],
-        time = obj?["time"] ?? 0,
-        rating = obj?["rating"] ?? 0,
-        steps = (obj?["steps"] ?? [])
+      : title = obj?['title'] ?? '',
+        desc = obj?['desc'] ?? '',
+        cover = obj?['cover'] ?? '',
+        images = obj?['images'] ?? [],
+        time = obj?['time'] ?? 0,
+        rating = obj?['rating'] ?? 0,
+        steps = (obj?['steps'] ?? [])
             .map<RecipeStepItem>((e) => RecipeStepItem.from(e))
             .toList(),
         cuisineCodes =
-            (obj?["cuisineCodes"] ?? []).map<String>((e) => "$e").toList(),
+            (obj?['cuisineCodes'] ?? []).map<String>((e) => '$e').toList(),
         tasteCodes =
-            (obj?["tasteCodes"] ?? []).map<String>((e) => "$e").toList(),
-        ingredientsMainCodes = (obj?["ingredientsMainCodes"] ?? [])
-            .map<String>((e) => "$e")
+            (obj?['tasteCodes'] ?? []).map<String>((e) => '$e').toList(),
+        ingredientsMainCodes = (obj?['ingredientsMainCodes'] ?? [])
+            .map<String>((e) => '$e')
             .toList(),
-        ingredientsSubCodes = (obj?["ingredientsSubCodes"] ?? [])
-            .map<String>((e) => "$e")
+        ingredientsSubCodes = (obj?['ingredientsSubCodes'] ?? [])
+            .map<String>((e) => '$e')
             .toList(),
-        tagCodes = (obj?["tagCodes"] ?? []).map<String>((e) => "$e").toList(),
-        tags = (obj?["tags"] ?? [])
+        tagCodes = (obj?['tagCodes'] ?? []).map<String>((e) => '$e').toList(),
+        tags = (obj?['tags'] ?? [])
             .map<TagModel>((e) => TagModel.from(e))
             .toList(),
-        activityRecordId = obj?["activityRecordId"],
-        activityRecord = obj?["activityRecord"] != null
-            ? ActivityRecordModel.from(obj?["activityRecord"] ?? {})
+        activityRecordId = obj?['activityRecordId'],
+        activityRecord = obj?['activityRecord'] != null
+            ? ActivityRecordModel.from(obj?['activityRecord'] ?? {})
             : null,
-        liked = obj?["liked"] ?? false,
-        likeCount = obj?["likeCount"] ?? 0,
-        collected = obj?["collected"] ?? false,
-        collectCount = obj?["collectCount"] ?? 0 {
+        liked = obj?['liked'] ?? false,
+        likeCount = obj?['likeCount'] ?? 0,
+        collected = obj?['collected'] ?? false,
+        collectCount = obj?['collectCount'] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -107,42 +107,42 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "title": title,
-        "desc": desc,
-        "cover": cover,
-        "images": images,
-        "time": time,
-        "rating": rating,
-        "steps": steps.map((e) => e.to()).toList(),
-        "cuisineCodes": cuisineCodes,
-        "tasteCodes": tasteCodes,
-        "ingredientsMainCodes": ingredientsMainCodes,
-        "ingredientsSubCodes": ingredientsSubCodes,
-        "tagCodes": tagCodes,
-        "tags": tags.map((e) => e.to()).toList(),
-        "activityRecordId": activityRecordId,
-        "activityRecord": activityRecord?.to(),
-        "liked": liked,
-        "likeCount": likeCount,
-        "collected": collected,
-        "collectCount": collectCount,
+        'title': title,
+        'desc': desc,
+        'cover': cover,
+        'images': images,
+        'time': time,
+        'rating': rating,
+        'steps': steps.map((e) => e.to()).toList(),
+        'cuisineCodes': cuisineCodes,
+        'tasteCodes': tasteCodes,
+        'ingredientsMainCodes': ingredientsMainCodes,
+        'ingredientsSubCodes': ingredientsSubCodes,
+        'tagCodes': tagCodes,
+        'tags': tags.map((e) => e.to()).toList(),
+        'activityRecordId': activityRecordId,
+        'activityRecord': activityRecord?.to(),
+        'liked': liked,
+        'likeCount': likeCount,
+        'collected': collected,
+        'collectCount': collectCount,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "title": title,
-        "desc": desc,
-        "cover": cover,
-        "images": images,
-        "time": time,
-        "rating": rating,
-        "steps": steps.map((e) => e.to()).toList(),
-        "cuisineCodes": cuisineCodes,
-        "tasteCodes": tasteCodes,
-        "ingredientsMainCodes": ingredientsMainCodes,
-        "ingredientsSubCodes": ingredientsSubCodes,
-        "tagCodes": tagCodes,
-        "activityRecordId": activityRecordId,
+        'title': title,
+        'desc': desc,
+        'cover': cover,
+        'images': images,
+        'time': time,
+        'rating': rating,
+        'steps': steps.map((e) => e.to()).toList(),
+        'cuisineCodes': cuisineCodes,
+        'tasteCodes': tasteCodes,
+        'ingredientsMainCodes': ingredientsMainCodes,
+        'ingredientsSubCodes': ingredientsSubCodes,
+        'tagCodes': tagCodes,
+        'activityRecordId': activityRecordId,
       };
 }
 
@@ -159,14 +159,14 @@ class RecipeStepItem extends BaseModel {
   final List<ContentItem> contents;
 
   RecipeStepItem.from(obj)
-      : time = obj?["time"] ?? 0,
-        contents = (obj?["contents"] ?? [])
+      : time = obj?['time'] ?? 0,
+        contents = (obj?['contents'] ?? [])
             .map<ContentItem>((e) => ContentItem.from(e))
             .toList();
 
   @override
   Map<String, dynamic> to() => {
-        "time": time,
-        "contents": contents.map((e) => e.to()).toList(),
+        'time': time,
+        'contents': contents.map((e) => e.to()).toList(),
       };
 }

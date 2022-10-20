@@ -39,9 +39,9 @@ class TagManage extends BaseManage {
     );
     if (temp.isNotEmpty) {
       _jsonPath.read(await loadTagsMapSource(context, source), filters: {
-        "hasCode": (e) {
+        'hasCode': (e) {
           final v = e.value;
-          return v is Map && temp.contains(v["code"]);
+          return v is Map && temp.contains(v['code']);
         },
       }).forEach((e) {
         final item = TagModel.from(e.value);
@@ -105,23 +105,23 @@ enum TagSource {
 }
 
 // 标签根路径
-const String tagRoot = "assets/tags";
+const String tagRoot = 'assets/tags';
 
 // 标签来源枚举扩展
 extension TagSourceExtension on TagSource {
   // 获取资源路径
   String get path => <TagSource, String>{
-        TagSource.activityType: "$tagRoot/activity_type.json",
-        TagSource.address: "$tagRoot/address.json",
-        TagSource.commentType: "$tagRoot/comment_type.json",
-        TagSource.medalRarity: "$tagRoot/medal_rarity.json",
-        TagSource.noticeType: "$tagRoot/notice_type.json",
-        TagSource.recipeCuisine: "$tagRoot/recipe_cuisine.json",
+        TagSource.activityType: '$tagRoot/activity_type.json',
+        TagSource.address: '$tagRoot/address.json',
+        TagSource.commentType: '$tagRoot/comment_type.json',
+        TagSource.medalRarity: '$tagRoot/medal_rarity.json',
+        TagSource.noticeType: '$tagRoot/notice_type.json',
+        TagSource.recipeCuisine: '$tagRoot/recipe_cuisine.json',
         TagSource.recipeIngredientsMain:
-            "$tagRoot/recipe_ingredients_main.json",
-        TagSource.recipeIngredientsSub: "$tagRoot/recipe_ingredients_sub.json",
-        TagSource.recipeTaste: "$tagRoot/recipe_taste.json",
-        TagSource.userEvaluate: "$tagRoot/user_evaluate.json",
-        TagSource.userGender: "$tagRoot/user_gender.json",
+            '$tagRoot/recipe_ingredients_main.json',
+        TagSource.recipeIngredientsSub: '$tagRoot/recipe_ingredients_sub.json',
+        TagSource.recipeTaste: '$tagRoot/recipe_taste.json',
+        TagSource.userEvaluate: '$tagRoot/user_evaluate.json',
+        TagSource.userGender: '$tagRoot/user_gender.json',
       }[this]!;
 }

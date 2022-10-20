@@ -17,7 +17,7 @@ class Tool {
   // 生成id
   static String genID({int? seed}) {
     final time = DateTime.now().millisecondsSinceEpoch;
-    return md5("${time}_${Random(seed ?? time).nextDouble()}");
+    return md5('${time}_${Random(seed ?? time).nextDouble()}');
   }
 
   // 生成时间戳签名
@@ -69,8 +69,8 @@ class Tool {
   }
 
   // 手机号校验正则
-  static final _verifyPhoneRegExp = RegExp(r'^1(3'
-      r'\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$');
+  static final _verifyPhoneRegExp =
+      RegExp(r'^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$');
 
   // 校验手机号
   static bool verifyPhone(String phone) {
@@ -84,9 +84,9 @@ void updateGlobalTheme(ThemeData themeData) =>
 
 // 将map转为query的url
 String toQueryUrl(String url, Map<String, dynamic> params) {
-  if (params.isNotEmpty) url += "?";
+  if (params.isNotEmpty) url += '?';
   for (final entry in params.entries) {
-    url += "&${entry.key}=${entry.value}";
+    url += '&${entry.key}=${entry.value}';
   }
   return url;
 }
@@ -94,7 +94,7 @@ String toQueryUrl(String url, Map<String, dynamic> params) {
 // map深层路径索引
 V? findInMap<V>(Map map, String path) {
   if (path.isEmpty) return map as V;
-  final paths = path.split(".");
+  final paths = path.split('.');
   dynamic temp = map;
   for (final it in paths) {
     temp = temp[it];

@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 */
 class ThemeManage extends BaseManage {
   // 默认样式缓存字段
-  final String _defaultThemeCacheKey = "default_theme_cache";
+  final String _defaultThemeCacheKey = 'default_theme_cache';
 
   static final ThemeManage _instance = ThemeManage._internal();
 
@@ -70,8 +70,8 @@ enum ThemeType {
 extension ThemeTypeExtension on ThemeType {
   // 样式中文名
   String get nameCN => <ThemeType, String>{
-        ThemeType.light: "日间模式",
-        ThemeType.dark: "夜间模式",
+        ThemeType.light: '日间模式',
+        ThemeType.dark: '夜间模式',
       }[this]!;
 
   // 获取对应的样式配置

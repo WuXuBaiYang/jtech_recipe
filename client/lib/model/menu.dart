@@ -39,22 +39,22 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
   final num collectCount;
 
   MenuModel.from(obj)
-      : title = obj?["title"] ?? "",
-        contents = (obj?["contents"] ?? [])
+      : title = obj?['title'] ?? '',
+        contents = (obj?['contents'] ?? [])
             .map<MenuContentItem>((e) => MenuContentItem.from(e))
             .toList(),
-        originId = obj?["originId"],
-        originMenu = obj?["originMenu"] != null
-            ? MenuModel.from(obj?["originMenu"] ?? {})
+        originId = obj?['originId'],
+        originMenu = obj?['originMenu'] != null
+            ? MenuModel.from(obj?['originMenu'] ?? {})
             : null,
-        activityRecordId = obj?["activityRecordId"],
-        activityRecord = obj?["activityRecord"] != null
-            ? ActivityRecordModel.from(obj?["activityRecord"] ?? {})
+        activityRecordId = obj?['activityRecordId'],
+        activityRecord = obj?['activityRecord'] != null
+            ? ActivityRecordModel.from(obj?['activityRecord'] ?? {})
             : null,
-        liked = obj?["liked"] ?? false,
-        likeCount = obj?["likeCount"] ?? 0,
-        collected = obj?["collected"] ?? false,
-        collectCount = obj?["collectCount"] ?? 0 {
+        liked = obj?['liked'] ?? false,
+        likeCount = obj?['likeCount'] ?? 0,
+        collected = obj?['collected'] ?? false,
+        collectCount = obj?['collectCount'] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -63,23 +63,23 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "title": title,
-        "contents": contents.map((e) => e.to()).toList(),
-        "originId": originId,
-        "originMenu": originMenu?.to(),
-        "activityRecordId": activityRecordId,
-        "activityRecord": activityRecord?.to(),
-        "liked": liked,
-        "likeCount": likeCount,
-        "collected": collected,
-        "collectCount": collectCount,
+        'title': title,
+        'contents': contents.map((e) => e.to()).toList(),
+        'originId': originId,
+        'originMenu': originMenu?.to(),
+        'activityRecordId': activityRecordId,
+        'activityRecord': activityRecord?.to(),
+        'liked': liked,
+        'likeCount': likeCount,
+        'collected': collected,
+        'collectCount': collectCount,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "title": title,
-        "contents": contents.map((e) => e.to()).toList(),
-        "activityRecordId": activityRecordId,
+        'title': title,
+        'contents': contents.map((e) => e.to()).toList(),
+        'activityRecordId': activityRecordId,
       };
 }
 

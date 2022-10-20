@@ -19,8 +19,8 @@ class CommentAPI extends BaseJAPI {
       post(path,
           requestModel: RequestModel.body(
             data: {
-              "content": content,
-              "pId": pId,
+              'content': content,
+              'pId': pId,
             },
           )),
       handle: (e) => CommentModel.from(e),
@@ -38,9 +38,9 @@ class CommentAPI extends BaseJAPI {
       get(path,
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              "pId": pId,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+              'pId': pId,
             },
           )),
       handle: (e) => CommentModel.from(e),
@@ -52,7 +52,7 @@ class CommentAPI extends BaseJAPI {
     required ReplayModel model,
   }) {
     return handleResponseData(
-      post("/replay",
+      post('/replay',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -71,9 +71,9 @@ class CommentAPI extends BaseJAPI {
       get(path,
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              "pId": pId,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+              'pId': pId,
             },
           )),
       handle: (e) => ReplayModel.from(e),
@@ -85,7 +85,7 @@ class CommentAPI extends BaseJAPI {
     required String commentId,
   }) {
     return handleResponseData(
-      post("/comment/like/$commentId"),
+      post('/comment/like/$commentId'),
     );
   }
 
@@ -94,7 +94,7 @@ class CommentAPI extends BaseJAPI {
     required String commentId,
   }) {
     return handleResponseData(
-      delete("/comment/like/$commentId"),
+      delete('/comment/like/$commentId'),
     );
   }
 
@@ -103,7 +103,7 @@ class CommentAPI extends BaseJAPI {
     required String replayId,
   }) {
     return handleResponseData(
-      post("/replay/like/$replayId"),
+      post('/replay/like/$replayId'),
     );
   }
 
@@ -112,7 +112,7 @@ class CommentAPI extends BaseJAPI {
     required String replayId,
   }) {
     return handleResponseData(
-      delete("/replay/like/$replayId"),
+      delete('/replay/like/$replayId'),
     );
   }
 }

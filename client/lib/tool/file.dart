@@ -10,20 +10,20 @@ import 'package:path_provider/path_provider.dart';
 */
 class FileTool {
   // 清除目录文件
-  static Future<bool> clearDir({String path = ""}) async {
+  static Future<bool> clearDir({String path = ''}) async {
     try {
       final dir = Directory(path);
       if (dir.existsSync()) await dir.delete(recursive: true);
       return true;
     } catch (e) {
-      LogTool.e("dir_cache_clear_error：", error: e);
+      LogTool.e('dir_cache_clear_error：', error: e);
     }
     return false;
   }
 
   // 解析目录大小
   static Future<String> parseDirSize({
-    String path = "",
+    String path = '',
     bool lowerCase = false,
     int fixed = 1,
   }) async {
@@ -46,11 +46,11 @@ class FileTool {
 
   // 文件大小对照表
   static final Map<int, String> _fileSizeMap = {
-    1024 * 1024 * 1024 * 1024: "TB",
-    1024 * 1024 * 1024: "GB",
-    1024 * 1024: "MB",
-    1024: "KB",
-    0: "B",
+    1024 * 1024 * 1024 * 1024: 'TB',
+    1024 * 1024 * 1024: 'GB',
+    1024 * 1024: 'MB',
+    1024: 'KB',
+    0: 'B',
   };
 
   // 文件大小格式转换
@@ -64,10 +64,10 @@ class FileTool {
         final result = (size / item).toStringAsFixed(fixed);
         var unit = _fileSizeMap[item];
         if (lowerCase) unit = unit!.toLowerCase();
-        return "$result$unit";
+        return '$result$unit';
       }
     }
-    return "";
+    return '';
   }
 
   // 获取本地文件目录(传入相对路径，拼接目标路径)

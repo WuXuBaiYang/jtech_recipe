@@ -18,7 +18,7 @@ class RecipeAPI extends BaseJAPI {
     required RecipeModel model,
   }) {
     return handleResponseData(
-      post("/recipe",
+      post('/recipe',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -32,7 +32,7 @@ class RecipeAPI extends BaseJAPI {
     required String recipeId,
   }) {
     return handleResponseData(
-      put("/recipe/$recipeId",
+      put('/recipe/$recipeId',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -47,12 +47,12 @@ class RecipeAPI extends BaseJAPI {
     String? userId,
   }) {
     return handleResponsePaginationData(
-      get("/recipe",
+      get('/recipe',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              if (userId != null) "userId": userId,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+              if (userId != null) 'userId': userId,
             },
           )),
       handle: (e) => RecipeModel.from(e),
@@ -64,7 +64,7 @@ class RecipeAPI extends BaseJAPI {
     required String recipeId,
   }) {
     return handleResponseData(
-      get("/recipe/$recipeId"),
+      get('/recipe/$recipeId'),
       handle: (e) => RecipeModel.from(e),
     );
   }
@@ -75,7 +75,7 @@ class RecipeAPI extends BaseJAPI {
     required String content,
   }) {
     return commentApi.createComment(
-      path: "/recipe/comment",
+      path: '/recipe/comment',
       pId: recipeId,
       content: content,
     );
@@ -88,7 +88,7 @@ class RecipeAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return commentApi.loadComments(
-      path: "/recipe/comment",
+      path: '/recipe/comment',
       pId: recipeId,
       pageIndex: pageIndex,
       pageSize: pageSize,
@@ -100,7 +100,7 @@ class RecipeAPI extends BaseJAPI {
     required List<TagModel> tags,
   }) {
     return tagApi.addTags(
-      path: "/recipe/tag",
+      path: '/recipe/tag',
       tags: tags,
     );
   }
@@ -112,7 +112,7 @@ class RecipeAPI extends BaseJAPI {
     String? userId,
   }) {
     return tagApi.loadTags(
-      path: "/recipe/tag",
+      path: '/recipe/tag',
       pageIndex: pageIndex,
       pageSize: pageSize,
       userId: userId,
@@ -124,7 +124,7 @@ class RecipeAPI extends BaseJAPI {
     required String recipeId,
   }) {
     return handleResponseData(
-      post("/recipe/like/$recipeId"),
+      post('/recipe/like/$recipeId'),
     );
   }
 
@@ -133,7 +133,7 @@ class RecipeAPI extends BaseJAPI {
     required String recipeId,
   }) {
     return handleResponseData(
-      delete("/recipe/like/$recipeId"),
+      delete('/recipe/like/$recipeId'),
     );
   }
 
@@ -142,7 +142,7 @@ class RecipeAPI extends BaseJAPI {
     required String recipeId,
   }) {
     return handleResponseData(
-      post("/recipe/collect/$recipeId"),
+      post('/recipe/collect/$recipeId'),
     );
   }
 
@@ -151,7 +151,7 @@ class RecipeAPI extends BaseJAPI {
     required String recipeId,
   }) {
     return handleResponseData(
-      delete("/recipe/collect/$recipeId"),
+      delete('/recipe/collect/$recipeId'),
     );
   }
 }

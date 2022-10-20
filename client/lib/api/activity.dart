@@ -13,7 +13,7 @@ class ActivityAPI extends BaseJAPI {
   // 获取全部进行中的活动
   Future<List<ActivityRecordModel>> loadAllProcessActivity() {
     return handleResponseListData(
-      get("/activity/process"),
+      get('/activity/process'),
       handle: (e) => ActivityRecordModel.from(e),
     );
   }
@@ -24,7 +24,7 @@ class ActivityAPI extends BaseJAPI {
     required String content,
   }) {
     return commentApi.createComment(
-      path: "/activity/comment",
+      path: '/activity/comment',
       pId: activityId,
       content: content,
     );
@@ -37,7 +37,7 @@ class ActivityAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return commentApi.loadComments(
-      path: "/activity/comment",
+      path: '/activity/comment',
       pId: activityId,
       pageIndex: pageIndex,
       pageSize: pageSize,

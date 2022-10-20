@@ -23,11 +23,11 @@ class CommentModel extends BaseModel with BasePart, CreatorPart {
   final num likeCount;
 
   CommentModel.from(obj)
-      : pId = obj?["pId"] ?? "",
-        typeCode = obj?["typeCode"] ?? "",
-        content = obj?["content"] ?? "",
-        liked = obj?["liked"] ?? false,
-        likeCount = obj?["likeCount"] ?? 0 {
+      : pId = obj?['pId'] ?? '',
+        typeCode = obj?['typeCode'] ?? '',
+        content = obj?['content'] ?? '',
+        liked = obj?['liked'] ?? false,
+        likeCount = obj?['likeCount'] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -36,11 +36,11 @@ class CommentModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "pId": pId,
-        "typeCode": typeCode,
-        "content": content,
-        "liked": liked,
-        "likeCount": likeCount,
+        'pId': pId,
+        'typeCode': typeCode,
+        'content': content,
+        'liked': liked,
+        'likeCount': likeCount,
       };
 }
 
@@ -63,10 +63,10 @@ class ReplayModel extends BaseModel with BasePart, CreatorPart {
   final num likeCount;
 
   ReplayModel.from(obj)
-      : pId = obj?["pId"] ?? "",
-        content = obj?["content"] ?? "",
-        liked = obj?["liked"] ?? false,
-        likeCount = obj?["likeCount"] ?? 0 {
+      : pId = obj?['pId'] ?? '',
+        content = obj?['content'] ?? '',
+        liked = obj?['liked'] ?? false,
+        likeCount = obj?['likeCount'] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -75,15 +75,15 @@ class ReplayModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "pId": pId,
-        "content": content,
-        "liked": liked,
-        "likeCount": likeCount,
+        'pId': pId,
+        'content': content,
+        'liked': liked,
+        'likeCount': likeCount,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "pId": pId,
-        "content": content,
+        'pId': pId,
+        'content': content,
       };
 }

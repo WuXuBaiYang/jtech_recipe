@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<ThemeEvent>(
       stream: eventManage.on<ThemeEvent>(),
       builder: (c, snap) => MaterialApp(
-        title: "JTech Recipe",
+        title: 'JTech Recipe',
         navigatorKey: routerManage.navigateKey,
         debugShowCheckedModeBanner: debugMode,
         theme: snap.data?.themeData,
@@ -102,7 +102,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text("还没写，看什么看"),
+        child: Text('还没写，看什么看'),
       ),
     );
   }

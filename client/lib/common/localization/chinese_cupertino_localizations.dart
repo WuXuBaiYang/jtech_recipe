@@ -70,19 +70,19 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
   ];
 
   @override
-  String datePickerYear(int yearIndex) => "$yearIndex年";
+  String datePickerYear(int yearIndex) => '$yearIndex年';
 
   @override
   String datePickerMonth(int monthIndex) => _months[monthIndex - 1];
 
   @override
-  String datePickerDayOfMonth(int dayIndex) => "$dayIndex日";
+  String datePickerDayOfMonth(int dayIndex) => '$dayIndex日';
 
   @override
   String datePickerHour(int hour) => hour.toString();
 
   @override
-  String datePickerHourSemanticsLabel(int hour) => "$hour 小时";
+  String datePickerHourSemanticsLabel(int hour) => '$hour 小时';
 
   @override
   String datePickerMinute(int minute) => minute.toString().padLeft(2, '0');
@@ -162,13 +162,13 @@ class ChineseCupertinoLocalizations implements CupertinoLocalizations {
       _CupertinoLocalizationsDelegate();
 
   @override
-  String get todayLabel => "今天";
+  String get todayLabel => '今天';
 
   @override
-  String get modalBarrierDismissLabel => "取消";
+  String get modalBarrierDismissLabel => '取消';
 
   @override
-  String get searchTextFieldPlaceholderLabel => "";
+  String get searchTextFieldPlaceholderLabel => '';
 
   @override
   String tabSemanticsLabel({required int tabIndex, required int tabCount}) {

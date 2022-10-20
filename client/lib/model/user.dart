@@ -64,7 +64,7 @@ class UserModel extends BaseModel with BasePart {
       source: TagSource.userGender,
       code: genderCode,
     );
-    return result?.tag ?? "未知";
+    return result?.tag ?? '未知';
   }
 
   // 获取个人评价
@@ -74,64 +74,64 @@ class UserModel extends BaseModel with BasePart {
       source: TagSource.userEvaluate,
       code: evaluateCode,
     );
-    return result?.tag ?? "";
+    return result?.tag ?? '';
   }
 
   UserModel.from(obj)
-      : phoneNumber = obj?["phoneNumber"] ?? "",
-        nickName = obj?["nickName"] ?? "",
-        avatar = obj?["avatar"] ?? "",
-        bio = obj?["bio"] ?? "",
-        profession = obj?["profession"] ?? "",
-        genderCode = obj?["genderCode"] ?? "",
-        birth = DateTool.parseDate(obj["birth"] ?? "") ?? DateTime(0),
-        medals = (obj?["medals"] ?? [])
+      : phoneNumber = obj?['phoneNumber'] ?? '',
+        nickName = obj?['nickName'] ?? '',
+        avatar = obj?['avatar'] ?? '',
+        bio = obj?['bio'] ?? '',
+        profession = obj?['profession'] ?? '',
+        genderCode = obj?['genderCode'] ?? '',
+        birth = DateTool.parseDate(obj['birth'] ?? '') ?? DateTime(0),
+        medals = (obj?['medals'] ?? [])
             .map<MedalModel>((e) => MedalModel.from(e))
             .toList(),
-        evaluateCode = obj?["evaluateCode"] ?? "",
-        recipeCuisineCodes = (obj?["recipeCuisineCodes"] ?? [])
-            .map<String>((e) => "$e")
+        evaluateCode = obj?['evaluateCode'] ?? '',
+        recipeCuisineCodes = (obj?['recipeCuisineCodes'] ?? [])
+            .map<String>((e) => '$e')
             .toList(),
         recipeTasteCodes =
-            (obj?["recipeTasteCodes"] ?? []).map<String>((e) => "$e").toList(),
-        exp = obj?["exp"] ?? 0,
-        level = obj?["level"] ?? 0,
-        levelExp = obj?["levelExp"] ?? 0,
-        updateExp = obj?["updateExp"] ?? 0 {
+            (obj?['recipeTasteCodes'] ?? []).map<String>((e) => '$e').toList(),
+        exp = obj?['exp'] ?? 0,
+        level = obj?['level'] ?? 0,
+        levelExp = obj?['levelExp'] ?? 0,
+        updateExp = obj?['updateExp'] ?? 0 {
     initBasePart(obj);
   }
 
   @override
   Map<String, dynamic> to() => {
         ...basePart,
-        "phoneNumber": phoneNumber,
-        "nickName": nickName,
-        "avatar": avatar,
-        "bio": bio,
-        "profession": profession,
-        "genderCode": genderCode,
-        "birth": birth.toString(),
-        "medals": medals.map((e) => e.to()).toList(),
-        "evaluateCode": evaluateCode,
-        "recipeCuisineCodes": recipeCuisineCodes,
-        "recipeTasteCodes": recipeTasteCodes,
-        "exp": exp,
-        "level": level,
-        "levelExp": levelExp,
-        "updateExp": updateExp,
+        'phoneNumber': phoneNumber,
+        'nickName': nickName,
+        'avatar': avatar,
+        'bio': bio,
+        'profession': profession,
+        'genderCode': genderCode,
+        'birth': birth.toString(),
+        'medals': medals.map((e) => e.to()).toList(),
+        'evaluateCode': evaluateCode,
+        'recipeCuisineCodes': recipeCuisineCodes,
+        'recipeTasteCodes': recipeTasteCodes,
+        'exp': exp,
+        'level': level,
+        'levelExp': levelExp,
+        'updateExp': updateExp,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "nickName": nickName,
-        "avatar": avatar,
-        "bio": bio,
-        "profession": profession,
-        "genderCode": genderCode,
-        "birth": birth.toString(),
-        "evaluateCode": evaluateCode,
-        "recipeCuisineCodes": recipeCuisineCodes,
-        "recipeTasteCodes": recipeTasteCodes,
+        'nickName': nickName,
+        'avatar': avatar,
+        'bio': bio,
+        'profession': profession,
+        'genderCode': genderCode,
+        'birth': birth.toString(),
+        'evaluateCode': evaluateCode,
+        'recipeCuisineCodes': recipeCuisineCodes,
+        'recipeTasteCodes': recipeTasteCodes,
       };
 }
 
@@ -151,25 +151,25 @@ class MedalModel extends BaseModel with BasePart {
   final String rarityCode;
 
   MedalModel.from(obj)
-      : logo = obj?["logo"] ?? "",
-        name = obj?["name"] ?? "",
-        rarityCode = obj?["rarityCode"] ?? "" {
+      : logo = obj?['logo'] ?? '',
+        name = obj?['name'] ?? '',
+        rarityCode = obj?['rarityCode'] ?? '' {
     initBasePart(obj);
   }
 
   @override
   Map<String, dynamic> to() => {
         ...basePart,
-        "logo": logo,
-        "name": name,
-        "rarityCode": rarityCode,
+        'logo': logo,
+        'name': name,
+        'rarityCode': rarityCode,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "logo": logo,
-        "name": name,
-        "rarityCode": rarityCode,
+        'logo': logo,
+        'name': name,
+        'rarityCode': rarityCode,
       };
 }
 
@@ -204,15 +204,15 @@ class UserAddressModel extends BaseModel with BasePart, CreatorPart {
   final num order;
 
   UserAddressModel.from(obj)
-      : receiver = obj?["receiver"] ?? "",
-        contact = obj?["contact"] ?? "",
+      : receiver = obj?['receiver'] ?? '',
+        contact = obj?['contact'] ?? '',
         addressCodes =
-            (obj?["addressCodes"] ?? []).map<String>((e) => "$e").toList(),
-        addressDetail = obj?["addressDetail"] ?? "",
-        tagCode = obj?["tagCode"] ?? "",
-        tag = obj?["tag"] != null ? TagModel.from(obj?["tag"] ?? {}) : null,
-        isDefault = obj?["default"] ?? false,
-        order = obj?["order"] ?? 0 {
+            (obj?['addressCodes'] ?? []).map<String>((e) => '$e').toList(),
+        addressDetail = obj?['addressDetail'] ?? '',
+        tagCode = obj?['tagCode'] ?? '',
+        tag = obj?['tag'] != null ? TagModel.from(obj?['tag'] ?? {}) : null,
+        isDefault = obj?['default'] ?? false,
+        order = obj?['order'] ?? 0 {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -221,24 +221,24 @@ class UserAddressModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "receiver": receiver,
-        "contact": contact,
-        "addressCodes": addressCodes,
-        "addressDetail": addressDetail,
-        "tag": tag?.to(),
-        "tagCode": tagCode,
-        "default": isDefault,
-        "order": order,
+        'receiver': receiver,
+        'contact': contact,
+        'addressCodes': addressCodes,
+        'addressDetail': addressDetail,
+        'tag': tag?.to(),
+        'tagCode': tagCode,
+        'default': isDefault,
+        'order': order,
       };
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
-        "receiver": receiver,
-        "contact": contact,
-        "addressCodes": addressCodes,
-        "addressDetail": addressDetail,
-        "tagCode": tagCode,
-        "default": isDefault,
-        "order": order,
+        'receiver': receiver,
+        'contact': contact,
+        'addressCodes': addressCodes,
+        'addressDetail': addressDetail,
+        'tagCode': tagCode,
+        'default': isDefault,
+        'order': order,
       };
 }

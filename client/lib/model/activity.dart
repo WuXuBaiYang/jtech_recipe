@@ -24,22 +24,22 @@ class ActivityModel extends BaseModel with BasePart {
   final List<String> typeCodes;
 
   ActivityModel.from(obj)
-      : cycleTime = obj?["cycleTime"] ?? 0,
-        always = obj?["always"] ?? false,
-        title = obj?["title"] ?? "",
-        url = obj?["url"] ?? "",
-        typeCodes = (obj?["typeCodes"] ?? []).map<String>((e) => "$e").toList() {
+      : cycleTime = obj?['cycleTime'] ?? 0,
+        always = obj?['always'] ?? false,
+        title = obj?['title'] ?? '',
+        url = obj?['url'] ?? '',
+        typeCodes = (obj?['typeCodes'] ?? []).map<String>((e) => '$e').toList() {
     initBasePart(obj);
   }
 
   @override
   Map<String, dynamic> to() => {
         ...basePart,
-        "cycleTime": cycleTime,
-        "always": always,
-        "title": title,
-        "url": url,
-        "typeCodes": typeCodes,
+        'cycleTime': cycleTime,
+        'always': always,
+        'title': title,
+        'url': url,
+        'typeCodes': typeCodes,
       };
 }
 
@@ -62,19 +62,19 @@ class ActivityRecordModel extends BaseModel with BasePart {
   final ActivityModel activity;
 
   ActivityRecordModel.from(obj)
-      : beginTime = DateTool.parseDate(obj?["beginTime"] ?? "") ?? DateTime(0),
-        endTime = DateTool.parseDate(obj?["endTime"] ?? "") ?? DateTime(0),
-        activityId = obj?["activityId"] ?? "",
-        activity = ActivityModel.from(obj?["activity"] ?? {}) {
+      : beginTime = DateTool.parseDate(obj?['beginTime'] ?? '') ?? DateTime(0),
+        endTime = DateTool.parseDate(obj?['endTime'] ?? '') ?? DateTime(0),
+        activityId = obj?['activityId'] ?? '',
+        activity = ActivityModel.from(obj?['activity'] ?? {}) {
     initBasePart(obj);
   }
 
   @override
   Map<String, dynamic> to() => {
         ...basePart,
-        "beginTime": beginTime.toString(),
-        "endTime": endTime.toString(),
-        "activityId": activityId,
-        "activity": activity.to(),
+        'beginTime': beginTime.toString(),
+        'endTime': endTime.toString(),
+        'activityId': activityId,
+        'activity': activity.to(),
       };
 }

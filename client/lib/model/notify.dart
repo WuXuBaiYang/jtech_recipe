@@ -30,15 +30,15 @@ class NotifyModel extends BaseModel with BasePart, CreatorPart {
   final String uri;
 
   NotifyModel.from(obj)
-      : fromUserId = obj?["fromUserId"] ?? "",
-        fromUser = obj?["fromUser"] != null
-            ? UserModel.from(obj?["fromUser"] ?? {})
+      : fromUserId = obj?['fromUserId'] ?? '',
+        fromUser = obj?['fromUser'] != null
+            ? UserModel.from(obj?['fromUser'] ?? {})
             : null,
-        toUserId = obj?["toUserId"] ?? "",
-        typeCode = obj?["typeCode"] ?? "",
-        title = obj?["title"] ?? "",
-        content = obj?["content"] ?? "",
-        uri = obj?["uri"] ?? "" {
+        toUserId = obj?['toUserId'] ?? '',
+        typeCode = obj?['typeCode'] ?? '',
+        title = obj?['title'] ?? '',
+        content = obj?['content'] ?? '',
+        uri = obj?['uri'] ?? '' {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -47,12 +47,12 @@ class NotifyModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "fromUserId": fromUserId,
-        "fromUser": fromUser?.to(),
-        "toUserId": toUserId,
-        "typeCode": typeCode,
-        "title": title,
-        "content": content,
-        "uri": uri,
+        'fromUserId': fromUserId,
+        'fromUser': fromUser?.to(),
+        'toUserId': toUserId,
+        'typeCode': typeCode,
+        'title': title,
+        'content': content,
+        'uri': uri,
       };
 }

@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 */
 class CacheManage extends BaseManage {
   // 时效字段后缀
-  final String _expirationSuffix = "expiration";
+  final String _expirationSuffix = 'expiration';
 
   static final CacheManage _instance = CacheManage._internal();
 
@@ -172,8 +172,8 @@ class CacheManage extends BaseManage {
 
   // 获取有效期的存储字段
   String _getExpirationKey(String key) {
-    key = "${key}_$_expirationSuffix";
-    return "${key}_${Tool.md5(key)}";
+    key = '${key}_$_expirationSuffix';
+    return '${key}_${Tool.md5(key)}';
   }
 }
 

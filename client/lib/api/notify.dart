@@ -16,10 +16,10 @@ class NotifyAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return handleResponsePaginationData(
-      get("/notification",
+      get('/notification',
           requestModel: RequestModel.query(parameters: {
-            "pageIndex": pageIndex,
-            "pageSize": pageSize,
+            'pageIndex': pageIndex,
+            'pageSize': pageSize,
           })),
       handle: (e) => NotifyModel.from(e),
     );

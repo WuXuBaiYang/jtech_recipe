@@ -12,7 +12,7 @@ class AuthAPI extends BaseJAPI {
   // 获取短信验证码
   Future<bool> sendSMS({required String phoneNumber}) {
     return handleResponseData(
-      post("/sms/$phoneNumber"),
+      post('/sms/$phoneNumber'),
     );
   }
 
@@ -22,10 +22,10 @@ class AuthAPI extends BaseJAPI {
     required String code,
   }) {
     return handleResponseData(
-      post("/auth",
+      post('/auth',
           requestModel: RequestModel.body(data: {
-            "phoneNumber": phoneNumber,
-            "code": code,
+            'phoneNumber': phoneNumber,
+            'code': code,
           })),
       handle: (e) => AuthModel.from(e),
     ).then(
@@ -39,9 +39,9 @@ class AuthAPI extends BaseJAPI {
   // 刷新token
   Future<AuthModel> refreshToken() {
     return handleResponseData(
-      post("/refreshToken",
+      post('/refreshToken',
           requestModel: RequestModel.create(headers: {
-            "RefreshToken": authManage.refreshToken,
+            'RefreshToken': authManage.refreshToken,
           })),
       handle: (e) => AuthModel.from(e),
     ).then(

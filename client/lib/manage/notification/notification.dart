@@ -24,7 +24,7 @@ class NotificationManage extends BaseManage {
   NotificationManage._internal();
 
   // 默认图标名称
-  final String _defaultIconName = "ic_launcher";
+  final String _defaultIconName = 'ic_launcher';
 
   // 接受通知消息回调集合
   final List<OnNotificationReceive> _notificationReceiveListeners = [];
@@ -71,7 +71,7 @@ class NotificationManage extends BaseManage {
   }) {
     if (null == body && !indeterminate) {
       double ratio = (progress / maxProgress.toDouble()) * 100;
-      body = "${ratio.toStringAsFixed(1)}%";
+      body = '${ratio.toStringAsFixed(1)}%';
     }
     return show(
       id: id,
@@ -108,8 +108,8 @@ class NotificationManage extends BaseManage {
     if (!initialized) await initNotification(_defaultIconName);
     assert(
         initialized,
-        "请在 android-app-src-main-res-drawable 目录下添加 app_icon 图片文件；"
-        "或者调用 jNotificationManage.initNotification() 自行指定默认图标");
+        '请在 android-app-src-main-res-drawable 目录下添加 app_icon 图片文件；'
+        '或者调用 jNotificationManage.initNotification() 自行指定默认图标');
     // 申请ios权限
     if (Platform.isIOS) {
       final result = await _localNotification
@@ -126,9 +126,9 @@ class NotificationManage extends BaseManage {
       body,
       NotificationDetails(
         android: AndroidNotificationDetails(
-          androidConfig.channelId ?? "$id",
-          androidConfig.channelName ?? "$id",
-          channelDescription: androidConfig.channelDescription ?? "$id",
+          androidConfig.channelId ?? '$id',
+          androidConfig.channelName ?? '$id',
+          channelDescription: androidConfig.channelDescription ?? '$id',
           channelShowBadge: androidConfig.channelShowBadge,
           importance: Importance.max,
           priority: Priority.high,

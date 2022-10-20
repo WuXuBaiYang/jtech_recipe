@@ -18,7 +18,7 @@ class PostAPI extends BaseJAPI {
     required PostModel model,
   }) {
     return handleResponseData(
-      post("/post",
+      post('/post',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -32,7 +32,7 @@ class PostAPI extends BaseJAPI {
     required String postId,
   }) {
     return handleResponseData(
-      put("/post/$postId",
+      put('/post/$postId',
           requestModel: RequestModel.body(
             data: model.toModifyInfo(),
           )),
@@ -47,12 +47,12 @@ class PostAPI extends BaseJAPI {
     String? userId,
   }) {
     return handleResponsePaginationData(
-      get("/post",
+      get('/post',
           requestModel: RequestModel.query(
             parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              if (userId != null) "userId": userId
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+              if (userId != null) 'userId': userId
             },
           )),
       handle: (e) => PostModel.from(e),
@@ -64,7 +64,7 @@ class PostAPI extends BaseJAPI {
     required String postId,
   }) {
     return handleResponseData(
-      get("/post/$postId"),
+      get('/post/$postId'),
       handle: (e) => PostModel.from(e),
     );
   }
@@ -75,7 +75,7 @@ class PostAPI extends BaseJAPI {
     required String content,
   }) {
     return commentApi.createComment(
-      path: "/post/comment",
+      path: '/post/comment',
       pId: postId,
       content: content,
     );
@@ -88,7 +88,7 @@ class PostAPI extends BaseJAPI {
     int pageSize = 15,
   }) {
     return commentApi.loadComments(
-      path: "/post/comment",
+      path: '/post/comment',
       pId: postId,
       pageIndex: pageIndex,
       pageSize: pageSize,
@@ -100,7 +100,7 @@ class PostAPI extends BaseJAPI {
     required List<TagModel> tags,
   }) {
     return tagApi.addTags(
-      path: "/post/tag",
+      path: '/post/tag',
       tags: tags,
     );
   }
@@ -112,7 +112,7 @@ class PostAPI extends BaseJAPI {
     String? userId,
   }) {
     return tagApi.loadTags(
-      path: "/post/tag",
+      path: '/post/tag',
       pageIndex: pageIndex,
       pageSize: pageSize,
       userId: userId,
@@ -124,7 +124,7 @@ class PostAPI extends BaseJAPI {
     required String postId,
   }) {
     return handleResponseData(
-      post("/post/like/$postId"),
+      post('/post/like/$postId'),
     );
   }
 
@@ -133,7 +133,7 @@ class PostAPI extends BaseJAPI {
     required String postId,
   }) {
     return handleResponseData(
-      delete("/post/like/$postId"),
+      delete('/post/like/$postId'),
     );
   }
 
@@ -142,7 +142,7 @@ class PostAPI extends BaseJAPI {
     required String postId,
   }) {
     return handleResponseData(
-      post("/post/collect/$postId"),
+      post('/post/collect/$postId'),
     );
   }
 
@@ -151,7 +151,7 @@ class PostAPI extends BaseJAPI {
     required String postId,
   }) {
     return handleResponseData(
-      delete("/post/collect/$postId"),
+      delete('/post/collect/$postId'),
     );
   }
 }

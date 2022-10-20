@@ -20,10 +20,10 @@ class TagModel extends BaseModel with BasePart, CreatorPart {
   final String info;
 
   TagModel.from(obj)
-      : pCode = obj?["pCode"] ?? "",
-        code = obj?["code"] ?? "",
-        tag = obj?["tag"] ?? obj?["name"] ?? "",
-        info = obj?["info"] ?? "" {
+      : pCode = obj?['pCode'] ?? '',
+        code = obj?['code'] ?? '',
+        tag = obj?['tag'] ?? obj?['name'] ?? '',
+        info = obj?['info'] ?? '' {
     initBasePart(obj);
     initCreatorPart(obj);
   }
@@ -32,15 +32,15 @@ class TagModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
-        "pCode": pCode,
-        "code": code,
-        "tag": tag,
-        "info": info,
+        'pCode': pCode,
+        'code': code,
+        'tag': tag,
+        'info': info,
       };
 
   // 导出添加标签信息结构
   Map<String, dynamic> toAddInfo() => {
-        "tag": tag,
-        "info": info,
+        'tag': tag,
+        'info': info,
       };
 }

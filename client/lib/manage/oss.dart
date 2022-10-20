@@ -60,8 +60,8 @@ class OSSManage extends BaseManage {
   // 生成附件对象名称
   String _genObjectName(String bucket, File file) {
     final name =
-        "${file.path}_${Random(9527).nextDouble()}_${DateTime.now().toString()}";
-    return "${bucket}_${Tool.md5(name)}${file.suffixes ?? ""}";
+        '${file.path}_${Random(9527).nextDouble()}_${DateTime.now().toString()}';
+    return '${bucket}_${Tool.md5(name)}${file.suffixes ?? ''}';
   }
 }
 
@@ -75,6 +75,6 @@ enum OSSBucket { jTechRecipe }
 extension OSSBucketExtension on OSSBucket {
   // 获取桶的名称
   String get name => {
-        OSSBucket.jTechRecipe: "jtechrecipe",
+        OSSBucket.jTechRecipe: 'jtechrecipe',
       }[this]!;
 }

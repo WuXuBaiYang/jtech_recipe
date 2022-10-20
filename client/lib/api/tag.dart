@@ -18,7 +18,7 @@ class TagAPI extends BaseJAPI {
       post(path,
           requestModel: RequestModel.body(
             data: {
-              "dictList": tags.map((e) => e.toAddInfo()).toList(),
+              'dictList': tags.map((e) => e.toAddInfo()).toList(),
             },
           )),
       handle: (e) => TagModel.from(e),
@@ -35,9 +35,9 @@ class TagAPI extends BaseJAPI {
     return handleResponsePaginationData(
         get(path,
             requestModel: RequestModel.query(parameters: {
-              "pageIndex": pageIndex,
-              "pageSize": pageSize,
-              if (userId != null) "userId": userId,
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+              if (userId != null) 'userId': userId,
             })),
         handle: (e) => TagModel.from(e));
   }
