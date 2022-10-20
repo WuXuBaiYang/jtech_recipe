@@ -159,9 +159,8 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   void dispose() {
-    super.dispose();
-    // 逻辑处理销毁
     logic.dispose();
+    super.dispose();
   }
 }
 
@@ -245,12 +244,12 @@ class _AuthLogic extends BaseLogic {
 
   @override
   void dispose() {
-    super.dispose();
     // 销毁控制器和计时器
     smsCountdownTimer?.cancel();
     phoneController.dispose();
     smsCodeController.dispose();
     phoneVerifyNotifier.dispose();
     smsCountdownNotifier.dispose();
+    super.dispose();
   }
 }

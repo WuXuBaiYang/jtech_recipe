@@ -16,16 +16,11 @@ class ValueChangeNotifier<V> extends ChangeNotifier
   V get value => _value;
 
   // 赋值并刷新
-  bool setValue(V newValue, {bool notify = true}) {
+  bool setValue(V newValue) {
     if (newValue == _value) return false;
     _value = newValue;
-    update(notify);
+    notifyListeners();
     return true;
-  }
-
-  // 刷新
-  void update(bool notify) {
-    if (notify) notifyListeners();
   }
 
   @override
@@ -54,7 +49,7 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
   // 清除数据
   void clear() {
     value.clear();
-    update(true);
+    notifyListeners();
   }
 
   // 获取子项
@@ -68,32 +63,32 @@ class ListValueChangeNotifier<V> extends ValueChangeNotifier<List<V>> {
   // 添加数据
   void addValue(List<V> newValue, {bool notify = true}) {
     value.addAll(newValue);
-    update(notify);
+    if (notify) notifyListeners();
   }
 
   // 插入数据
   void insertValue(int index, List<V> newValue, {bool notify = true}) {
     value.insertAll(index, newValue);
-    update(notify);
+    if (notify) notifyListeners();
   }
 
   // 更新/添加数据
   void putValue(int index, V item, {bool notify = true}) {
     value[index] = item;
-    update(notify);
+    if (notify) notifyListeners();
   }
 
   // 移除数据
   bool removeValue(V item, {bool notify = true}) {
     var result = value.remove(item);
-    update(notify);
+    if (notify) notifyListeners();
     return result;
   }
 
   // 移除下标数据
   V? removeValueAt(int index, {bool notify = true}) {
     var result = value.removeAt(index);
-    update(notify);
+    if (notify) notifyListeners();
     return result;
   }
 
@@ -120,19 +115,19 @@ class MapValueChangeNotifier<K, V> extends ValueChangeNotifier<Map<K, V>> {
   // 清除数据
   void clear() {
     value.clear();
-    update(true);
+    notifyListeners();
   }
 
   // 添加数据
   void putValue(K k, V v, {bool notify = true}) {
     value.addAll({k: v});
-    update(notify);
+    if (notify) notifyListeners();
   }
 
   // 移除数据
   V? removeValue(K key, {bool notify = true}) {
     var result = value.remove(key);
-    update(notify);
+    if (notify) notifyListeners();
     return result;
   }
 
