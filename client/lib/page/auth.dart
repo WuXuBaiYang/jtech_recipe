@@ -7,6 +7,7 @@ import 'package:client/main.dart';
 import 'package:client/manage/router.dart';
 import 'package:client/tool/snack.dart';
 import 'package:client/tool/tool.dart';
+import 'package:client/widget/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -41,17 +42,13 @@ class _AuthPageState extends State<AuthPage> {
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
         valueListenable: logic.authStateNotifier,
-        builder: (_, v, __) {
+        builder: (_, authState, __) {
           return FloatingActionButton(
-            onPressed: !v ? () => logic.authSaved(context) : null,
-            child: v
-                ? const SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.done),
+            onPressed: !authState ? () => logic.authSaved(context) : null,
+            child: LoadingView.dark(
+              loading: authState,
+              child: const Icon(Icons.done),
+            ),
           );
         },
       ),
@@ -142,12 +139,10 @@ class _AuthPageState extends State<AuthPage> {
                   onPressed: verifyPhone && countdown == 0
                       ? () => logic.sendSMS(context)
                       : null,
-                  child: countdown == -1
-                      ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(),
-                        )
-                      : Text(text),
+                  child: LoadingView(
+                    loading: countdown == -1,
+                    child: Text(text),
+                  ),
                 );
               },
             );
