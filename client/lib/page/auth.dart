@@ -222,8 +222,8 @@ class _AuthLogic extends BaseLogic {
         }
       }
     } catch (e) {
-      SnackTool.showMessage(context, message: '短信验证码发送失败');
-      smsCodeStateNotifier.setValue(SMSCodeState.loaded);
+      SnackTool.showMessage(context, message: '验证码发送失败');
+      smsCodeStateNotifier.setValue(SMSCodeState.normal);
     }
   }
 
@@ -235,6 +235,7 @@ class _AuthLogic extends BaseLogic {
 
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
+    smsCodeStateNotifier.setValue(SMSCodeState.loaded);
     final countDown = debugMode ? 5 : 60;
     countdownSecondsNotifier.setValue(countDown);
     _countdownTimer = Timer.periodic(
