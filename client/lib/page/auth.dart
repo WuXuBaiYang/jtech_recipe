@@ -30,7 +30,7 @@ class AuthPage extends StatefulWidget {
 */
 class _AuthPageState extends State<AuthPage> {
   // 页面逻辑管理
-  final logic = _AuthLogic();
+  final _logic = _AuthLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +41,10 @@ class _AuthPageState extends State<AuthPage> {
         child: _buildAuthForm(context),
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
-        valueListenable: logic.authStateNotifier,
+        valueListenable: _logic.authStateNotifier,
         builder: (_, authState, __) {
           return FloatingActionButton(
-            onPressed: !authState ? () => logic.authSaved(context) : null,
+            onPressed: !authState ? () => _logic.authSaved(context) : null,
             child: LoadingView.dark(
               loading: authState,
               child: const Icon(Icons.done),
@@ -58,7 +58,7 @@ class _AuthPageState extends State<AuthPage> {
   // 构建授权表单
   Widget _buildAuthForm(BuildContext context) {
     return Form(
-      key: logic.formKey,
+      key: _logic.formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -76,10 +76,10 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildPhoneField() {
     return TextFormField(
       autofocus: true,
-      controller: logic.phoneController,
+      controller: _logic.phoneController,
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
-      onChanged: (v) => logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
+      onChanged: (v) => _logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -89,7 +89,7 @@ class _AuthPageState extends State<AuthPage> {
         hintText: "000 0000 0000",
         prefixIcon: const Icon(Icons.phone),
         suffixIcon: ValueListenableBuilder<bool>(
-          valueListenable: logic.phoneVerifyNotifier,
+          valueListenable: _logic.phoneVerifyNotifier,
           builder: (_, v, __) {
             return Visibility(
               visible: v,
@@ -114,10 +114,10 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildSMSCodeField(BuildContext context) {
     return TextFormField(
       maxLength: 4,
-      controller: logic.smsCodeController,
+      controller: _logic.smsCodeController,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.done,
-      onFieldSubmitted: (v) => logic.authSaved(context),
+      onFieldSubmitted: (v) => _logic.authSaved(context),
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
       ],
@@ -128,15 +128,15 @@ class _AuthPageState extends State<AuthPage> {
         hintText: "0000",
         prefixIcon: const Icon(Icons.sms),
         suffixIcon: ValueListenableBuilder<bool>(
-          valueListenable: logic.phoneVerifyNotifier,
+          valueListenable: _logic.phoneVerifyNotifier,
           builder: (_, verifyPhone, __) {
             return ValueListenableBuilder<int>(
-              valueListenable: logic.smsCountdownNotifier,
+              valueListenable: _logic.smsCountdownNotifier,
               builder: (_, countdown, __) {
                 final text = countdown > 0 ? "验证码已发送($countdown)" : "获取验证码";
                 return TextButton(
                   onPressed: verifyPhone && countdown == 0
-                      ? () => logic.sendSMS(context)
+                      ? () => _logic.sendSMS(context)
                       : null,
                   child: LoadingView(
                     loading: countdown == -1,
@@ -159,7 +159,7 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   void dispose() {
-    logic.dispose();
+    _logic.dispose();
     super.dispose();
   }
 }
@@ -226,13 +226,13 @@ class _AuthLogic extends BaseLogic {
   }
 
   // 计时器
-  Timer? smsCountdownTimer;
+  Timer? _smsCountdownTimer;
 
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
     final countDown = debugMode ? 5 : 60;
     smsCountdownNotifier.setValue(countDown);
-    smsCountdownTimer = Timer.periodic(
+    _smsCountdownTimer = Timer.periodic(
       const Duration(seconds: 1),
       (t) {
         final v = smsCountdownNotifier.value;
@@ -245,7 +245,7 @@ class _AuthLogic extends BaseLogic {
   @override
   void dispose() {
     // 销毁控制器和计时器
-    smsCountdownTimer?.cancel();
+    _smsCountdownTimer?.cancel();
     phoneController.dispose();
     smsCodeController.dispose();
     phoneVerifyNotifier.dispose();

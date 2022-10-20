@@ -19,7 +19,7 @@ class PermissionTool {
     required List<PermissionRequest> permissions,
     OnPermissionCheckFail? onCheckFail,
   }) async {
-    List<PermissionResult> failResults = [];
+    final failResults = <PermissionResult>[];
     for (final item in permissions) {
       final result = await item.request();
       if (!result.isGranted) failResults.add(result);

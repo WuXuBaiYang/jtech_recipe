@@ -29,41 +29,42 @@ class CacheManage extends BaseManage {
   }
 
   // 获取int类型
-  int? getInt(String key, {int? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp?.getInt(key) ?? def;
+  int? getInt(String key) {
+    if (_checkExpiration(key)) return _sp?.getInt(key);
+    return null;
   }
 
   // 获取bool类型
-  bool? getBool(String key, {bool? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp?.getBool(key) ?? def;
+  bool? getBool(String key) {
+    if (_checkExpiration(key)) return _sp?.getBool(key);
+    return null;
   }
 
   // 获取double类型
-  double? getDouble(String key, {double? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp?.getDouble(key) ?? def;
+  double? getDouble(String key) {
+    if (_checkExpiration(key)) return _sp?.getDouble(key);
+    return null;
   }
 
   // 获取String类型
-  String? getString(String key, {String? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp?.getString(key) ?? def;
+  String? getString(String key) {
+    if (_checkExpiration(key)) return _sp?.getString(key);
+    return null;
   }
 
   // 获取StringList类型
-  List<String>? getStringList(String key, {List<String>? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp?.getStringList(key) ?? def;
+  List<String>? getStringList(String key) {
+    if (_checkExpiration(key)) return _sp?.getStringList(key);
+    return [];
   }
 
   // 获取json类型
-  dynamic getJson(String key, {dynamic def}) {
-    if (!_checkExpiration(key)) return def;
-    final value = _sp?.getString(key);
-    if (null == value) return def;
-    return jsonDecode(value) ?? def;
+  dynamic getJson(String key) {
+    if (_checkExpiration(key)) {
+      final value = _sp?.getString(key);
+      if (null != value) return jsonDecode(value);
+    }
+    return null;
   }
 
   // 设置int类型

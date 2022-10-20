@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 */
 class ThemeManage extends BaseManage {
   // 默认样式缓存字段
-  final String defaultThemeCacheKey = "default_theme_cache";
+  final String _defaultThemeCacheKey = "default_theme_cache";
 
   static final ThemeManage _instance = ThemeManage._internal();
 
@@ -43,13 +43,13 @@ class ThemeManage extends BaseManage {
 
   // 当前样式
   ThemeData get currentTheme {
-    final index = cacheManage.getInt(defaultThemeCacheKey);
+    final index = cacheManage.getInt(_defaultThemeCacheKey);
     return ThemeType.values[index ?? 0].theme;
   }
 
   // 切换默认样式
   Future<bool> switchTheme(ThemeType type) async {
-    final result = await cacheManage.setInt(defaultThemeCacheKey, type.index);
+    final result = await cacheManage.setInt(_defaultThemeCacheKey, type.index);
     eventManage.send(ThemeEvent(
       themeData: type.theme,
     ));

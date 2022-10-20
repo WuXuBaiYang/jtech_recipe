@@ -16,14 +16,14 @@ class AuthManage extends BaseManage {
   AuthManage._internal();
 
   // 授权信息缓存字段
-  static const String authInfoCacheKey = "auth_info_cache";
+  static const String _authInfoCacheKey = "auth_info_cache";
 
   // 授权信息实体
   AuthModel? _auth;
 
   @override
   Future<void> init() async {
-    final json = cacheManage.getJson(authInfoCacheKey);
+    final json = cacheManage.getJson(_authInfoCacheKey);
     if (json != null) _auth = AuthModel.from(json);
   }
 
@@ -55,7 +55,7 @@ class AuthManage extends BaseManage {
   Future<AuthModel> setupAuthInfo(AuthModel? auth) async {
     if (auth == null) throw Exception("授权信息不能为空");
     if (!auth.check()) throw Exception("授权信息异常");
-    if (!await cacheManage.setJsonMap(authInfoCacheKey, auth.to())) {
+    if (!await cacheManage.setJsonMap(_authInfoCacheKey, auth.to())) {
       throw Exception("授权信息缓存失败");
     }
     return _auth = auth;
@@ -63,7 +63,7 @@ class AuthManage extends BaseManage {
 
   // 注销授权信息
   Future<void> clearAuthInfo() async {
-    await cacheManage.remove(authInfoCacheKey);
+    await cacheManage.remove(_authInfoCacheKey);
     _auth = null;
   }
 }

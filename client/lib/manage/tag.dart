@@ -18,10 +18,10 @@ class TagManage extends BaseManage {
   TagManage._internal();
 
   // 定义字典检索对象
-  final jsonPath = JsonPath(r'$..[?hasCode]');
+  final _jsonPath = JsonPath(r'$..[?hasCode]');
 
   // 缓存已读取的标签
-  final Map<String, TagModel> tagCacheMap = {};
+  final Map<String, TagModel> _tagCacheMap = {};
 
   // 根据code集合查找目标标签对象
   Future<List<TagModel?>> findTags(
@@ -32,13 +32,13 @@ class TagManage extends BaseManage {
     final temp = <String>[];
     final result = codes.asMap().map<String, TagModel?>(
       (_, v) {
-        final item = tagCacheMap[v];
+        final item = _tagCacheMap[v];
         if (item != null) temp.add(v);
         return MapEntry(v, item);
       },
     );
     if (temp.isNotEmpty) {
-      jsonPath.read(await loadTagsMapSource(context, source), filters: {
+      _jsonPath.read(await loadTagsMapSource(context, source), filters: {
         "hasCode": (e) {
           final v = e.value;
           return v is Map && temp.contains(v["code"]);
@@ -46,7 +46,7 @@ class TagManage extends BaseManage {
       }).forEach((e) {
         final item = TagModel.from(e.value);
         final mapItem = {item.code: item};
-        tagCacheMap.addAll(mapItem);
+        _tagCacheMap.addAll(mapItem);
         result.addAll(mapItem);
       });
     }
@@ -77,12 +77,12 @@ class TagManage extends BaseManage {
   }
 
   // 缓存assetsBundle对象
-  AssetBundle? assetBundle;
+  AssetBundle? _assetBundle;
 
   // 加载assets资源
   Future<String> _loadAssetFileAsString(BuildContext context, String path) {
-    assetBundle ??= DefaultAssetBundle.of(context);
-    return assetBundle!.loadString(path);
+    _assetBundle ??= DefaultAssetBundle.of(context);
+    return _assetBundle!.loadString(path);
   }
 }
 

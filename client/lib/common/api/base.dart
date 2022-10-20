@@ -55,7 +55,7 @@ abstract class BaseAPI {
     // 默认值
     cancelKey ??= path;
     options ??= Options();
-    return handleRequest(
+    return _handleRequest(
       onRequest: _dio.download(
         path,
         savePath,
@@ -87,7 +87,7 @@ abstract class BaseAPI {
     // 默认值
     cancelKey ??= path;
     options ??= Options();
-    return handleRequest(
+    return _handleRequest(
       onRequest: _dio.request(
         path,
         queryParameters: request?.parameters,
@@ -164,7 +164,7 @@ abstract class BaseAPI {
       );
 
   // 处理请求响应
-  Future<ResponseModel> handleRequest({
+  Future<ResponseModel> _handleRequest({
     required Future<Response> onRequest,
     OnResponseHandle? responseHandle,
   }) async {
