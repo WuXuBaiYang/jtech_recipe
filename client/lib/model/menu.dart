@@ -8,6 +8,9 @@ import 'package:client/model/model.dart';
 * @Time 2022/10/14 15:16
 */
 class MenuModel extends BaseModel with BasePart, CreatorPart {
+  // 标题
+  final String title;
+
   // 内容集合
   final List<MenuContentItem> contents;
 
@@ -36,7 +39,8 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
   final num collectCount;
 
   MenuModel.from(obj)
-      : contents = (obj?["contents"] ?? [])
+      : title = obj?["title"] ?? "",
+        contents = (obj?["contents"] ?? [])
             .map<MenuContentItem>((e) => MenuContentItem.from(e))
             .toList(),
         originId = obj?["originId"],
@@ -59,6 +63,7 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> to() => {
         ...basePart,
         ...creatorPart,
+        "title": title,
         "contents": contents.map((e) => e.to()).toList(),
         "originId": originId,
         "originMenu": originMenu?.to(),
@@ -72,6 +77,7 @@ class MenuModel extends BaseModel with BasePart, CreatorPart {
 
   // 获取编辑结构
   Map<String, dynamic> toModifyInfo() => {
+        "title": title,
         "contents": contents.map((e) => e.to()).toList(),
         "activityRecordId": activityRecordId,
       };

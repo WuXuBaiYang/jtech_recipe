@@ -16,6 +16,9 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   // 食谱描述
   final String desc;
 
+  // 食谱封面
+  final String cover;
+
   // 食谱图片集合
   final List<String> images;
 
@@ -67,6 +70,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   RecipeModel.from(obj)
       : title = obj?["title"] ?? "",
         desc = obj?["desc"] ?? "",
+        cover = obj?["cover"] ?? "",
         images = obj?["images"] ?? [],
         time = obj?["time"] ?? 0,
         rating = obj?["rating"] ?? 0,
@@ -105,6 +109,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
         ...creatorPart,
         "title": title,
         "desc": desc,
+        "cover": cover,
         "images": images,
         "time": time,
         "rating": rating,
@@ -127,6 +132,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   Map<String, dynamic> toModifyInfo() => {
         "title": title,
         "desc": desc,
+        "cover": cover,
         "images": images,
         "time": time,
         "rating": rating,
