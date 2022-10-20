@@ -133,8 +133,7 @@ class _AuthPageState extends State<AuthPage> {
             return ValueListenableBuilder<int>(
               valueListenable: logic.smsCountdownNotifier,
               builder: (_, countdown, __) {
-                var text =
-                    countdown > 0 ? "验证码已发送(${countdown ~/ 1000})" : "获取验证码";
+                var text = countdown > 0 ? "验证码已发送($countdown)" : "获取验证码";
                 return TextButton(
                   onPressed: verifyPhone && countdown == 0
                       ? () => logic.sendSMS(context)
@@ -232,13 +231,13 @@ class _AuthLogic extends BaseLogic {
 
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
-    var countDown = debugMode ? 1000 * 5 : 1000 * 60;
+    var countDown = debugMode ? 5 : 60;
     smsCountdownNotifier.setValue(countDown);
     smsCountdownTimer = Timer.periodic(
-      const Duration(milliseconds: 1000),
+      const Duration(seconds: 1),
       (t) {
         var v = smsCountdownNotifier.value;
-        smsCountdownNotifier.setValue(v - 1000);
+        smsCountdownNotifier.setValue(v - 1);
         if (smsCountdownNotifier.value <= 0) t.cancel();
       },
     );
