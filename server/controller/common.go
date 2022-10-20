@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
@@ -119,7 +120,7 @@ func Register(c *gin.Context) {
 		OrmBase:     createBase(),
 		Permission:  model.GeneralUser,
 		PhoneNumber: req.PhoneNumber,
-		Password:    req.Password,
+		Password:    signPassword(req.Password),
 		NickName:    tool.GenInitUserNickName(),
 	}
 	if err := db.Create(&result).Error; err != nil {
@@ -168,7 +169,7 @@ func Login(c *gin.Context) {
 			return
 		}
 	} else if len(req.Password) != 0 {
-		if result.Password != req.Password {
+		if result.Password != signPassword(req.Password) {
 			response.FailParams(c, "密码错误")
 			return
 		}
@@ -386,4 +387,13 @@ func hasNoRecord(target interface{}, id string) bool {
 		Where("id = ?", id).
 		Count(&count).First(&target)
 	return count == 0
+}
+
+// 密码加密盐
+const passwordSalt = "TxkytNwsL3uM9F"
+
+// 对密码加密
+func signPassword(password string) string {
+	return tool.MD5(fmt.Sprintf(
+		"%s_%s_%s", passwordSalt, password, passwordSalt))
 }

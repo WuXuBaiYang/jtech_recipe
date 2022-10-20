@@ -1,9 +1,6 @@
 import 'package:client/common/api/request.dart';
-import 'package:client/common/common.dart';
 import 'package:client/manage/auth.dart';
 import 'package:client/model/model.dart';
-import 'package:client/tool/tool.dart';
-
 import 'base.dart';
 
 /*
@@ -53,12 +50,6 @@ class AuthAPI extends BaseJAPI {
         authManage.setupAuthInfo(v),
       ]).then((_) => v),
     );
-  }
-
-  // 明文密码签名加密
-  String _signPassword(String phoneNumber, String password) {
-    if (phoneNumber.isEmpty || password.isEmpty) return "";
-    return Tool.md5("$phoneNumber：${Common.salt}_${password}_${Common.salt}");
   }
 }
 
