@@ -5,6 +5,7 @@ type Menu struct {
 	OrmBase
 	Creator
 
+	Title            string          `json:"title" gorm:"comment:菜单标题"`
 	Contents         []any           `json:"contents" gorm:"type:json;serializer:json;not null;comment:菜单内容集合"`
 	OriginId         *string         `json:"originId" gorm:"comment:菜单复制来源id"`
 	OriginMenu       *Menu           `json:"originMenu,omitempty" gorm:"foreignKey:OriginId"`
