@@ -1,5 +1,6 @@
 import 'package:client/common/manage.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/user.dart';
 
 import 'cache.dart';
 
@@ -40,6 +41,12 @@ class AuthManage extends BaseManage {
   String get refreshToken {
     if (!authorized) throw Exception('请在授权之后调用');
     return _auth!.refreshToken;
+  }
+
+  // 获取用户信息
+  UserModel get userInfo {
+    if (!authorized) throw Exception('请在授权之后调用');
+    return _auth!.user;
   }
 
   // 获取用户id

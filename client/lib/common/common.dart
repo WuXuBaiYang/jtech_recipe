@@ -63,10 +63,10 @@ class OSSConfig {
   static const useSSL = false;
 
   // 授权key
-  static const accessKey = r'QFIknqJRoZOJV7E2';
+  static const accessKey = r'IkcLOGuLGKZRIN7b';
 
   // 密钥
-  static const secretKey = r'SV46qm1zsumsyz870q6nXytHTLOoyxZp';
+  static const secretKey = r'VvZPcT8SOPl5pQDDshMqLGvpbvIeIhpo';
 }
 
 /*

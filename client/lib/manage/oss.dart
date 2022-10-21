@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:client/common/common.dart';
 import 'package:client/common/manage.dart';
 import 'package:client/tool/file.dart';
+import 'package:client/tool/log.dart';
 import 'package:client/tool/tool.dart';
 import 'package:minio/io.dart';
 import 'package:minio/minio.dart';
@@ -32,8 +33,8 @@ class OSSManage extends BaseManage {
   // 上传附件
   Future<List<String?>> uploadFiles(
     List<File> files, {
-    required OSSBucket bucket,
     void Function(int)? onProgress,
+    OSSBucket bucket = OSSBucket.jTechRecipe,
   }) async {
     final objects = <String?>[];
     for (final it in files) {
@@ -49,13 +50,32 @@ class OSSManage extends BaseManage {
     return objects;
   }
 
+  // 文件请求缓存
+  final _objectGetCacheMap = <String, String>{};
+
   // 获取附件流
   Future<String> getObjectUrl(
     String object, {
-    required OSSBucket bucket,
     int? expires,
-  }) =>
-      _minio.presignedGetObject(bucket.name, object, expires: expires);
+    OSSBucket bucket = OSSBucket.jTechRecipe,
+    bool cached = true,
+  }) async {
+    try {
+      if (object.isEmpty) return "";
+      final cacheUrl = _objectGetCacheMap[object];
+      if (cacheUrl != null) return cacheUrl;
+      final url = await _minio.presignedGetObject(
+        bucket.name,
+        object,
+        expires: expires,
+      );
+      if (cached) _objectGetCacheMap[object] = url;
+      return url;
+    } catch (e) {
+      LogTool.e(e.toString());
+    }
+    return "";
+  }
 
   // 生成附件对象名称
   String _genObjectName(String bucket, File file) {

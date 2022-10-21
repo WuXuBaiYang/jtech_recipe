@@ -46,7 +46,7 @@ class _AuthPageState extends State<AuthPage> {
         builder: (_, authState, __) {
           return FloatingActionButton(
             onPressed: !authState ? () => _logic.authSaved(context) : null,
-            child: LoadingView.dark(
+            child: Loading.dark(
               loading: authState,
               child: const Icon(Icons.done),
             ),
@@ -141,7 +141,7 @@ class _AuthPageState extends State<AuthPage> {
               onPressed: phoneVerified && smsCodeState == SMSCodeState.normal
                   ? () => _logic.sendSMS(context)
                   : null,
-              child: LoadingView(
+              child: Loading(
                 loading: smsCodeState == SMSCodeState.loading,
                 child: Text(text),
               ),

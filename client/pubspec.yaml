@@ -77,6 +77,9 @@ dependencies:
   # json匹配
   json_path: ^0.4.2
 
+  # 图片框架
+  cached_network_image: ^3.2.2
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5

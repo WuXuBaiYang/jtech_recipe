@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 * @author wuxubaiyang
 * @Time 2022/10/20 10:32
 */
-class LoadingView extends StatelessWidget {
+class Loading extends StatelessWidget {
   // 默认展示元素
   final Widget child;
 
@@ -19,7 +19,7 @@ class LoadingView extends StatelessWidget {
   // 加载组件样式
   final LoadingStyle loadingStyle;
 
-  const LoadingView({
+  const Loading({
     super.key,
     required this.loading,
     required this.child,
@@ -28,7 +28,7 @@ class LoadingView extends StatelessWidget {
   });
 
   // 深色构造
-  const LoadingView.dark({
+  const Loading.dark({
     super.key,
     required this.loading,
     required this.child,
