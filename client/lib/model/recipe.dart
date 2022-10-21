@@ -23,7 +23,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
   final List<String> images;
 
   // 预计耗时
-  final num time;
+  final Duration time;
 
   // 难度评分
   final num rating;
@@ -72,7 +72,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
         desc = obj?['desc'] ?? '',
         cover = obj?['cover'] ?? '',
         images = obj?['images'] ?? [],
-        time = obj?['time'] ?? 0,
+        time = Duration(milliseconds: obj?['time'] ?? 0),
         rating = obj?['rating'] ?? 0,
         steps = (obj?['steps'] ?? [])
             .map<RecipeStepItem>((e) => RecipeStepItem.from(e))
@@ -111,7 +111,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
         'desc': desc,
         'cover': cover,
         'images': images,
-        'time': time,
+        'time': time.inMilliseconds,
         'rating': rating,
         'steps': steps.map((e) => e.to()).toList(),
         'cuisineCodes': cuisineCodes,
@@ -134,7 +134,7 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
         'desc': desc,
         'cover': cover,
         'images': images,
-        'time': time,
+        'time': time.inMilliseconds,
         'rating': rating,
         'steps': steps.map((e) => e.to()).toList(),
         'cuisineCodes': cuisineCodes,
@@ -153,20 +153,20 @@ class RecipeModel extends BaseModel with BasePart, CreatorPart {
 */
 class RecipeStepItem extends BaseModel {
   // 预计耗时
-  final num time;
+  final Duration time;
 
   // 步骤内容
   final List<ContentItem> contents;
 
   RecipeStepItem.from(obj)
-      : time = obj?['time'] ?? 0,
+      : time = Duration(milliseconds: obj?['time'] ?? 0),
         contents = (obj?['contents'] ?? [])
             .map<ContentItem>((e) => ContentItem.from(e))
             .toList();
 
   @override
   Map<String, dynamic> to() => {
-        'time': time,
+        'time': time.inMilliseconds,
         'contents': contents.map((e) => e.to()).toList(),
       };
 }

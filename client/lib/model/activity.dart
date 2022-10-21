@@ -8,8 +8,8 @@ import 'package:client/tool/date.dart';
 * @Time 2022/10/14 14:56
 */
 class ActivityModel extends BaseModel with BasePart {
-  // 持续周期
-  final num cycleTime;
+  // 持续天数
+  final Duration cycleDays;
 
   // 是否为长期活动
   final bool always;
@@ -24,7 +24,7 @@ class ActivityModel extends BaseModel with BasePart {
   final List<String> typeCodes;
 
   ActivityModel.from(obj)
-      : cycleTime = obj?['cycleTime'] ?? 0,
+      : cycleDays = Duration(days: obj?['cycleDays'] ?? 0),
         always = obj?['always'] ?? false,
         title = obj?['title'] ?? '',
         url = obj?['url'] ?? '',
@@ -36,7 +36,7 @@ class ActivityModel extends BaseModel with BasePart {
   @override
   Map<String, dynamic> to() => {
         ...basePart,
-        'cycleTime': cycleTime,
+        'cycleDays': cycleDays,
         'always': always,
         'title': title,
         'url': url,

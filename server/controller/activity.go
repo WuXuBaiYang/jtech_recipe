@@ -11,7 +11,7 @@ import (
 
 // 活动请求
 type activityReq struct {
-	CycleTime int64    `json:"cycleTime" binding:"required,gte=86400000"`
+	CycleDays int64    `json:"cycleDays" binding:"required,gte=1"`
 	Always    bool     `json:"always" binding:"required"`
 	Title     string   `json:"title" binding:"required,gte=6"`
 	Url       string   `json:"url" binding:"required,url"`
@@ -35,7 +35,7 @@ func CreateActivity(c *gin.Context) {
 	db := common.GetDB()
 	result := model.Activity{
 		OrmBase:   createBase(),
-		CycleTime: req.CycleTime,
+		CycleDays: req.CycleDays,
 		Always:    req.Always,
 		Title:     req.Title,
 		Url:       req.Url,
@@ -68,7 +68,7 @@ func UpdateActivity(c *gin.Context) {
 		return
 	}
 	// 更新已有数据
-	result.CycleTime = req.CycleTime
+	result.CycleDays = req.CycleDays
 	result.Always = req.Always
 	result.Title = req.Title
 	result.Url = req.Url
@@ -110,7 +110,7 @@ func StartActivity(c *gin.Context) {
 		OrmBase:   createBase(),
 		BeginTime: req.BeginTime,
 		EndTime: req.BeginTime.
-			Add(time.Duration(activity.CycleTime)),
+			Add(time.Duration(activity.CycleDays * 24 * 60 * 60 * 1000 * 1000 * 1000)),
 		ActivityId: activityId,
 	}
 	if err := db.Create(&result).Error; err != nil {
