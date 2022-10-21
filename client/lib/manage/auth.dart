@@ -49,6 +49,13 @@ class AuthManage extends BaseManage {
     return _auth!.user;
   }
 
+  // 更新用户信息
+  Future<UserModel> updateUserInfo(UserModel userInfo) async {
+    if (!authorized) throw Exception('请在授权之后调用');
+    _auth = await setupAuthInfo(_auth!..user = userInfo);
+    return _auth!.user;
+  }
+
   // 获取用户id
   String get userId {
     if (!authorized) throw Exception('请在授权之后调用');
@@ -57,6 +64,9 @@ class AuthManage extends BaseManage {
 
   // 判断是否已授权
   bool get authorized => authInfo != null;
+
+  // 判断是否为新用户登录
+  bool get isNewUser => authInfo?.newUser ?? false;
 
   // 设置授权信息
   Future<AuthModel> setupAuthInfo(AuthModel? auth) async {

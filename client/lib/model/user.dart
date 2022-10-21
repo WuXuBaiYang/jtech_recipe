@@ -12,38 +12,38 @@ import 'model.dart';
 * @Time 2022/9/12 19:10
 */
 class UserModel extends BaseModel with BasePart {
+  // 昵称
+  String nickName;
+
+  // 头像
+  String avatar;
+
+  // 简介
+  String bio;
+
+  // 职业
+  String profession;
+
+  // 性别
+  String genderCode;
+
+  // 生日
+  DateTime? birth;
+
+  // 个人评价
+  String evaluateCode;
+
+  // 偏好菜系
+  List<String> recipeCuisineCodes;
+
+  // 偏好口味
+  List<String> recipeTasteCodes;
+
   // 手机号
   final String phoneNumber;
 
-  // 昵称
-  final String nickName;
-
-  // 头像
-  final String avatar;
-
-  // 简介
-  final String bio;
-
-  // 职业
-  final String profession;
-
-  // 性别
-  final String genderCode;
-
-  // 生日
-  final DateTime birth;
-
   // 勋章列表
   final List<MedalModel> medals;
-
-  // 个人评价
-  final String evaluateCode;
-
-  // 偏好菜系
-  final List<String> recipeCuisineCodes;
-
-  // 偏好口味
-  final List<String> recipeTasteCodes;
 
   // 用户经验
   final num exp;
@@ -84,7 +84,7 @@ class UserModel extends BaseModel with BasePart {
         bio = obj?['bio'] ?? '',
         profession = obj?['profession'] ?? '',
         genderCode = obj?['genderCode'] ?? '',
-        birth = DateTool.parseDate(obj['birth'] ?? '') ?? DateTime(0),
+        birth = DateTime.tryParse(obj['birth'] ?? ''),
         medals = (obj?['medals'] ?? [])
             .map<MedalModel>((e) => MedalModel.from(e))
             .toList(),
@@ -110,7 +110,7 @@ class UserModel extends BaseModel with BasePart {
         'bio': bio,
         'profession': profession,
         'genderCode': genderCode,
-        'birth': birth.toString(),
+        'birth': birth?.toIso8601StringWithUTC(),
         'medals': medals.map((e) => e.to()).toList(),
         'evaluateCode': evaluateCode,
         'recipeCuisineCodes': recipeCuisineCodes,
@@ -128,7 +128,7 @@ class UserModel extends BaseModel with BasePart {
         'bio': bio,
         'profession': profession,
         'genderCode': genderCode,
-        'birth': birth.toString(),
+        'birth': birth?.toIso8601StringWithUTC(),
         'evaluateCode': evaluateCode,
         'recipeCuisineCodes': recipeCuisineCodes,
         'recipeTasteCodes': recipeTasteCodes,

@@ -28,7 +28,8 @@ class ActivityModel extends BaseModel with BasePart {
         always = obj?['always'] ?? false,
         title = obj?['title'] ?? '',
         url = obj?['url'] ?? '',
-        typeCodes = (obj?['typeCodes'] ?? []).map<String>((e) => '$e').toList() {
+        typeCodes =
+            (obj?['typeCodes'] ?? []).map<String>((e) => '$e').toList() {
     initBasePart(obj);
   }
 
@@ -62,8 +63,8 @@ class ActivityRecordModel extends BaseModel with BasePart {
   final ActivityModel activity;
 
   ActivityRecordModel.from(obj)
-      : beginTime = DateTool.parseDate(obj?['beginTime'] ?? '') ?? DateTime(0),
-        endTime = DateTool.parseDate(obj?['endTime'] ?? '') ?? DateTime(0),
+      : beginTime = DateTime.tryParse(obj?['beginTime'] ?? '') ?? DateTime(0),
+        endTime = DateTime.tryParse(obj?['endTime'] ?? '') ?? DateTime(0),
         activityId = obj?['activityId'] ?? '',
         activity = ActivityModel.from(obj?['activity'] ?? {}) {
     initBasePart(obj);
@@ -72,8 +73,8 @@ class ActivityRecordModel extends BaseModel with BasePart {
   @override
   Map<String, dynamic> to() => {
         ...basePart,
-        'beginTime': beginTime.toString(),
-        'endTime': endTime.toString(),
+        'beginTime': beginTime.toIso8601StringWithUTC(),
+        'endTime': endTime.toIso8601StringWithUTC(),
         'activityId': activityId,
         'activity': activity.to(),
       };

@@ -50,6 +50,22 @@ class OSSManage extends BaseManage {
     return objects;
   }
 
+  // 上传单文件
+  Future<String?> uploadFile(
+    File file, {
+    OSSBucket bucket = OSSBucket.jTechRecipe,
+  }) async {
+    try {
+      final result = await uploadFiles([file]);
+      if (result.isNotEmpty && result.first != null) {
+        return result.first;
+      }
+    } catch (e) {
+      LogTool.e('附件上传失败');
+    }
+    return null;
+  }
+
   // 文件请求缓存
   final _objectGetCacheMap = <String, String>{};
 

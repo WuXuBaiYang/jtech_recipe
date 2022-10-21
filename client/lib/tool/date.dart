@@ -5,46 +5,45 @@ import 'package:intl/intl.dart';
 * @author wuxubaiyang
 * @Time 2022/3/17 15:02
 */
-class DateTool {
+class DateTool {}
+
+// 日期方法扩展
+extension DatetimeExtension on DateTime {
   // 日期格式化
-  static String formatDate(String pattern, DateTime dateTime) =>
-      DateFormat(pattern).format(dateTime);
+  String format(String pattern) => DateFormat(pattern).format(this);
 
-  // 日期解析
-  static DateTime? parseDate(String date) => DateTime.tryParse(date);
+  // 获取utc格式字符串
+  String toIso8601StringWithUTC() =>
+      "${toIso8601String()}+${timeZoneOffset.format("hh:mm")}";
+}
 
+// 时长格式化替换表
+final Map<String, String Function(DateTime date, Duration dur)>
+    _durationFormatRegMap = {
+  'dd': (_, dur) => '${dur.inDays}'.padLeft(2, '0'),
+  'hh': (_, dur) => '${dur.inHours}'.padLeft(2, '0'),
+  'mm': (date, _) => '${date.minute}'.padLeft(2, '0'),
+  'ss': (date, _) => '${date.second}'.padLeft(2, '0'),
+  'd': (_, dur) => '${dur.inDays}',
+  'h': (_, dur) => '${dur.inHours}',
+  'm': (date, _) => '${date.minute}',
+  's': (date, _) => '${date.second}',
+};
+
+// duration方法扩展
+extension DurationExtension on Duration {
   // 时长格式化
-  static String formatDuration(String pattern, Duration duration) {
-    DateTime date = DateTime(0).add(duration);
+  String format(String pattern) {
+    DateTime date = DateTime(0).add(this);
     _durationFormatRegMap.forEach((key, fun) {
       if (pattern.contains(key)) {
-        final value = fun(date, duration);
+        final value = fun(date, this);
         pattern = pattern.replaceAll(key, value);
       }
     });
     return pattern;
   }
 
-  // 时长格式化替换表
-  static final Map<String, String Function(DateTime date, Duration dur)>
-      _durationFormatRegMap = {
-    'dd': (_, dur) => '${dur.inDays}'.padLeft(2, '0'),
-    'hh': (_, dur) => '${dur.inHours}'.padLeft(2, '0'),
-    'mm': (date, _) => '${date.minute}'.padLeft(2, '0'),
-    'ss': (date, _) => '${date.second}'.padLeft(2, '0'),
-    'd': (_, dur) => '${dur.inDays}',
-    'h': (_, dur) => '${dur.inHours}',
-    'm': (date, _) => '${date.minute}',
-    's': (date, _) => '${date.second}',
-  };
-}
-
-/*
-* duration方法扩展
-* @author wuxubaiyang
-* @Time 2022/3/17 15:32
-*/
-extension DurationExtension on Duration {
   // duration相减
   Duration subtract(Duration duration) {
     duration.isNotEmpty;
@@ -107,11 +106,7 @@ extension DurationExtension on Duration {
   bool get isNotEmpty => inMicroseconds != 0;
 }
 
-/*
-* 日期格式化模型
-* @author wuxubaiyang
-* @Time 2022/3/17 15:25
-*/
+// 日期格式化模型
 class DatePattern {
   // 中文-完整日期/时间格式
   static const String fullDateTimeZH = 'yyyy年MM月dd日 hh时mm分ss秒';
@@ -153,11 +148,7 @@ class DatePattern {
   static const String dateSign = 'yyyyMMddHHmmssSSS';
 }
 
-/*
-* 时长格式化模型
-* @author wuxubaiyang
-* @Time 2022/3/17 15:36
-*/
+// 时长格式化模型
 class DurationPattern {
   // 完整格式
   static const String fullDateTime = 'dd:hh:mm:ss';

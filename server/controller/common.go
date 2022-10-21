@@ -67,10 +67,12 @@ func Auth(c *gin.Context) {
 		return
 	}
 	// 判断用户（手机号）是否已存在
+	newUser := false
 	var result model.User
 	db := common.GetDB()
 	if err := db.Where("phone_number = ?", req.PhoneNumber).
 		First(&result).Error; err != nil {
+		newUser = true
 		// 用户不存在则创建用户
 		result.OrmBase = createBase()
 		result.Permission = model.GeneralUser
@@ -90,7 +92,10 @@ func Auth(c *gin.Context) {
 	// 删除使用过的短信验证码
 	rdb.Del(c, req.PhoneNumber)
 	// 写入用户授权信息
-	response.SuccessDef(c, auth)
+	response.SuccessDef(c, struct {
+		*authRes
+		NewUser bool `json:"newUser"`
+	}{auth, newUser})
 }
 
 // Register 用户注册接口

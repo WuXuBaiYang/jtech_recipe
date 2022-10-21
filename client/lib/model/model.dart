@@ -18,13 +18,13 @@ mixin BasePart {
   // 初始化基础结构
   void initBasePart(obj) {
     _id = obj?['id'];
-    _updatedAt = DateTool.parseDate(obj?['updatedAt'] ?? '');
+    _updatedAt = DateTime.tryParse(obj?['updatedAt'] ?? '');
   }
 
   // 获取基础结构map
   Map<String, dynamic> get basePart => {
         'id': id,
-        'updatedAt': updatedAt.toString(),
+        'updatedAt': updatedAt.toIso8601StringWithUTC(),
       };
 
   String get id => _id ?? '';
@@ -100,8 +100,11 @@ class AuthModel extends BaseModel {
   // 授权刷新key
   final String refreshToken;
 
+  // 是否为新用户
+  final bool newUser;
+
   // 用户信息
-  final UserModel user;
+  UserModel user;
 
   // 检查授权信息是否有效（授权key，刷新key，用户id）
   bool check() =>
@@ -110,12 +113,14 @@ class AuthModel extends BaseModel {
   AuthModel.from(obj)
       : accessToken = obj?['accessToken'] ?? '',
         refreshToken = obj?['refreshToken'] ?? '',
+        newUser = obj?["newUser"] ?? false,
         user = UserModel.from(obj?['user'] ?? {});
 
   @override
   Map<String, dynamic> to() => {
         'accessToken': accessToken,
         'refreshToken': refreshToken,
+        "newUser": newUser,
         'user': user.to(),
       };
 }

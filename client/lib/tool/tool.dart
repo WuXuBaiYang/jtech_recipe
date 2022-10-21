@@ -21,8 +21,7 @@ class Tool {
   }
 
   // 生成时间戳签名
-  static String genDateSign() =>
-      DateTool.formatDate(DatePattern.dateSign, DateTime.now());
+  static String genDateSign() => DateTime.now().format(DatePattern.dateSign);
 
   // 计算md5
   static String md5(String value) =>

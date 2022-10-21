@@ -5,6 +5,7 @@ import 'package:client/common/logic.dart';
 import 'package:client/common/notifier.dart';
 import 'package:client/main.dart';
 import 'package:client/manage/router.dart';
+import 'package:client/model/model.dart';
 import 'package:client/tool/snack.dart';
 import 'package:client/tool/tool.dart';
 import 'package:client/widget/loading.dart';
@@ -30,7 +31,7 @@ class AuthPage extends StatefulWidget {
 * @Time 2022/9/8 15:02
 */
 class _AuthPageState extends State<AuthPage> {
-  // 页面逻辑管理
+  // 逻辑管理
   final _logic = _AuthLogic();
 
   @override
@@ -45,7 +46,14 @@ class _AuthPageState extends State<AuthPage> {
         valueListenable: _logic.authStateNotifier,
         builder: (_, authState, __) {
           return FloatingActionButton(
-            onPressed: !authState ? () => _logic.authSaved(context) : null,
+            onPressed: !authState
+                ? () => _logic.authSaved(context).then((v) {
+                      if (v != null) {
+                        routerManage.pushReplacementNamed(
+                            v.newUser ? RoutePath.authInit : RoutePath.home);
+                      }
+                    })
+                : null,
             child: Loading.dark(
               loading: authState,
               child: const Icon(Icons.done),
@@ -119,7 +127,6 @@ class _AuthPageState extends State<AuthPage> {
       controller: _logic.smsCodeController,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.done,
-      onFieldSubmitted: (v) => _logic.authSaved(context),
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
       ],
@@ -166,7 +173,7 @@ class _AuthPageState extends State<AuthPage> {
 }
 
 /*
-* 授权页逻辑处理
+* 授权页-逻辑
 * @author wuxubaiyang
 * @Time 2022/10/20 10:00
 */
@@ -187,21 +194,20 @@ class _AuthLogic extends BaseLogic {
   final authStateNotifier = ValueChangeNotifier<bool>(false);
 
   // 授权信息保存
-  Future<void> authSaved(BuildContext context) async {
+  Future<AuthModel?> authSaved(BuildContext context) async {
     final currState = formKey.currentState;
-    if (currState == null || !currState.validate()) return;
+    if (currState == null || !currState.validate()) return null;
     try {
       authStateNotifier.setValue(true);
       final phoneNumber = phoneController.text;
       final code = smsCodeController.text;
-      await authApi.auth(phoneNumber: phoneNumber, code: code);
-      // 登录成功跳转首页
-      routerManage.pushReplacementNamed(RoutePath.home);
+      return await authApi.auth(phoneNumber: phoneNumber, code: code);
     } catch (e) {
       SnackTool.showMessage(context,
           message: debugMode ? e.toString() : '请求授权失败');
       authStateNotifier.setValue(false);
     }
+    return null;
   }
 
   // 短信验证码状态

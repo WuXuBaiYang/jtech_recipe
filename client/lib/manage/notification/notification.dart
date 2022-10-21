@@ -29,9 +29,6 @@ class NotificationManage extends BaseManage {
   // 接受通知消息回调集合
   final List<OnNotificationReceive> _notificationReceiveListeners = [];
 
-  // 通知消息点击触发回调集合
-  final List<OnNotificationSelect> _notificationSelectListeners = [];
-
   // 通知推送管理
   FlutterLocalNotificationsPlugin? _localNotification;
 
@@ -50,12 +47,11 @@ class NotificationManage extends BaseManage {
   Future<bool?> initNotification(String icon) async {
     final settings = InitializationSettings(
       android: AndroidInitializationSettings(icon),
-      iOS: IOSInitializationSettings(
+      iOS: DarwinInitializationSettings(
         onDidReceiveLocalNotification: _onReceiveNotification,
       ),
     );
-    return _initialized = await _localNotification?.initialize(settings,
-        onSelectNotification: _onNotificationSelect);
+    return _initialized = await _localNotification?.initialize(settings);
   }
 
   // 显示进度通知
@@ -149,7 +145,7 @@ class NotificationManage extends BaseManage {
           progress: androidConfig.progress,
           indeterminate: androidConfig.indeterminate,
         ),
-        iOS: IOSNotificationDetails(
+        iOS: DarwinNotificationDetails(
           presentAlert: iosConfig.presentAlert,
           presentBadge: iosConfig.presentBadge,
           presentSound: iosConfig.presentSound,
@@ -174,22 +170,11 @@ class NotificationManage extends BaseManage {
   void addReceiveListener(OnNotificationReceive listener) =>
       _notificationReceiveListeners.add(listener);
 
-  // 添加消息选择监听
-  void addSelectListener(OnNotificationSelect listener) =>
-      _notificationSelectListeners.add(listener);
-
   // 当接收到通知消息回调
   Future _onReceiveNotification(
       int id, String? title, String? body, String? payload) async {
     for (final item in _notificationReceiveListeners) {
       await item(id, title, body, payload);
-    }
-  }
-
-  // 消息通知点击事件回调
-  Future _onNotificationSelect(String? payload) async {
-    for (final item in _notificationSelectListeners) {
-      await item(payload);
     }
   }
 }

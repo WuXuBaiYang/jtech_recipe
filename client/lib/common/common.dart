@@ -1,6 +1,7 @@
 import 'package:client/main.dart';
+import 'package:client/page/auth/init.dart';
 import 'package:client/page/home.dart';
-import 'package:client/page/auth.dart';
+import 'package:client/page/auth/auth.dart';
 import 'package:flutter/widgets.dart';
 
 /*
@@ -13,6 +14,7 @@ class RoutePath {
   static Map<String, WidgetBuilder> get routes => {
         home: (c) => const HomePage(),
         auth: (c) => const AuthPage(),
+        authInit: (c) => const AuthInitPage(),
       };
 
   // 首页
@@ -20,6 +22,9 @@ class RoutePath {
 
   // 授权页
   static const String auth = '/auth';
+
+  // 授权初始化页
+  static const String authInit = '/authInit';
 }
 
 /*

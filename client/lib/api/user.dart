@@ -1,5 +1,6 @@
 import 'package:client/api/tag.dart';
 import 'package:client/common/api/request.dart';
+import 'package:client/manage/auth.dart';
 import 'package:client/model/menu.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/post.dart';
@@ -24,6 +25,10 @@ class UserAPI extends BaseJAPI {
     return handleResponseData(
       get(path),
       handle: (e) => UserModel.from(e),
+    ).then(
+      (v) => Future.wait([
+        authManage.updateUserInfo(v),
+      ]).then((_) => v),
     );
   }
 
@@ -37,6 +42,10 @@ class UserAPI extends BaseJAPI {
             data: model.toModifyInfo(),
           )),
       handle: (e) => UserModel.from(e),
+    ).then(
+      (v) => Future.wait([
+        authManage.updateUserInfo(v),
+      ]).then((_) => v),
     );
   }
 
