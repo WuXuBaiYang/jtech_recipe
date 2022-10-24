@@ -60,7 +60,7 @@ class _AuthInitPageState extends State<AuthInitPage> {
                       initialValue: _logic.userInfo.avatar,
                       builder: (f) {
                         return Avatar.file(
-                          file: File(f.value ?? ""),
+                          file: File(f.value ?? ''),
                           avatarSize: AvatarSize.large,
                           onTap: () => _logic.pickAvatar(context).then(
                                 (v) => f.didChange(v),
