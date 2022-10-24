@@ -59,13 +59,14 @@ class _AuthInitPageState extends State<AuthInitPage> {
                     FormField<String>(
                       initialValue: _logic.userInfo.avatar,
                       builder: (f) {
-                        return Avatar.file(
-                          uri: f.value ?? "",
-                          avatarSize: AvatarSize.large,
-                          onTap: () => _logic.pickAvatar(context).then(
-                                (v) => f.didChange(v),
-                              ),
-                        );
+                        // return Avatar.file(
+                        //   uri: f.value ?? "",
+                        //   avatarSize: AvatarSize.large,
+                        //   onTap: () => _logic.pickAvatar(context).then(
+                        //         (v) => f.didChange(v),
+                        //       ),
+                        // );
+                        return SizedBox();
                       },
                     ),
                     const SizedBox(height: 25),

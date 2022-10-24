@@ -1,7 +1,10 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:client/manage/oss.dart';
+import 'dart:typed_data';
+
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+
+import 'image.dart';
 
 /*
 * 用户头像组件
@@ -9,121 +12,133 @@ import 'package:flutter/material.dart';
 * @Time 2022/10/21 10:28
 */
 class Avatar extends StatelessWidget {
-  // 头像地址
-  final String uri;
-
-  // 点击事件
-  final VoidCallback? onTap;
-
   // 头像尺寸
   final AvatarSize avatarSize;
 
-  // 头像来源
-  final AvatarSource avatarSource;
+  // 图片源
+  final ImageViewSource source;
+
+  // 图片点击事件
+  final VoidCallback? onTap;
+
+  // 图片异常状态
+  final ImageViewStateLoad? failState;
+
+  // 图片加载中状态
+  final ImageViewStateLoad? loadingState;
+
+  // 图片加载完成状态
+  final ImageViewStateLoad? completedState;
 
   const Avatar({
     super.key,
-    required this.uri,
-    required this.avatarSource,
+    required this.source,
     this.onTap,
+    this.failState,
+    this.loadingState,
+    this.completedState,
     this.avatarSize = AvatarSize.normal,
   });
 
-  // oss资源头像
-  const Avatar.oss({
-    super.key,
-    required this.uri,
-    this.onTap,
-    this.avatarSize = AvatarSize.normal,
-  }) : avatarSource = AvatarSource.oss;
-
-  // 网络头像
-  const Avatar.net({
-    super.key,
-    required this.uri,
-    this.onTap,
-    this.avatarSize = AvatarSize.normal,
-  }) : avatarSource = AvatarSource.net;
-
   // 本地头像
-  const Avatar.file({
+  Avatar.file({
     super.key,
-    required this.uri,
+    required File file,
     this.onTap,
+    this.failState,
+    this.loadingState,
+    this.completedState,
+    bool? cacheRawData,
+    String? imageCacheName,
     this.avatarSize = AvatarSize.normal,
-  }) : avatarSource = AvatarSource.file;
+  }) : source = ImageViewSource.file(
+          file: file,
+          cacheRawData: cacheRawData,
+          imageCacheName: imageCacheName,
+        );
 
   // assets头像
-  const Avatar.assets({
+  Avatar.assets({
     super.key,
-    required this.uri,
+    required String assetName,
     this.onTap,
+    this.failState,
+    this.loadingState,
+    this.completedState,
+    AssetBundle? bundle,
+    String? package,
+    bool? cacheRawData,
+    String? imageCacheName,
     this.avatarSize = AvatarSize.normal,
-  }) : avatarSource = AvatarSource.assets;
+  }) : source = ImageViewSource.assets(
+          assetName: assetName,
+          bundle: bundle,
+          package: package,
+          cacheRawData: cacheRawData,
+          imageCacheName: imageCacheName,
+        );
+
+  // 内存头像
+  Avatar.memory({
+    super.key,
+    required Uint8List bytes,
+    this.onTap,
+    this.failState,
+    this.loadingState,
+    this.completedState,
+    bool? cacheRawData,
+    String? imageCacheName,
+    this.avatarSize = AvatarSize.normal,
+  }) : source = ImageViewSource.memory(
+          bytes: bytes,
+          cacheRawData: cacheRawData,
+          imageCacheName: imageCacheName,
+        );
+
+  // 网络头像
+  Avatar.net({
+    super.key,
+    required String url,
+    this.onTap,
+    this.failState,
+    this.loadingState,
+    this.completedState,
+    Map<String, String>? headers,
+    bool? cache,
+    int? retries,
+    Duration? timeLimit,
+    Duration? timeRetry,
+    CancellationToken? cancelToken,
+    String? cacheKey,
+    bool? cacheRawData,
+    String? imageCacheName,
+    this.avatarSize = AvatarSize.normal,
+  }) : source = ImageViewSource.net(
+          url: url,
+          headers: headers,
+          cache: cache,
+          retries: retries,
+          timeLimit: timeLimit,
+          timeRetry: timeRetry,
+          cancelToken: cancelToken,
+          cacheKey: cacheKey,
+          cacheRawData: cacheRawData,
+          imageCacheName: imageCacheName,
+        );
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: _buildAvatar(uri),
-    );
-  }
-
-  // 构建头像
-  Widget _buildAvatar(String uri) {
-    if (uri.isEmpty) return _buildDefaultAvatar();
-    switch (avatarSource) {
-      case AvatarSource.net:
-        return _buildNetAvatar(uri);
-      case AvatarSource.oss:
-        return _buildOSSAvatar(uri);
-      case AvatarSource.file:
-        return _buildFileAvatar(uri);
-      case AvatarSource.assets:
-        return _buildAssetsAvatar(uri);
-    }
-  }
-
-  // 构建assets头像
-  Widget _buildAssetsAvatar(String assetsName) {
     return CircleAvatar(
       radius: avatarSize.size,
-      foregroundImage: AssetImage(assetsName),
-      child: _buildDefaultAvatar(),
-    );
-  }
-
-  // 构建本地头像
-  Widget _buildFileAvatar(String path) {
-    return CircleAvatar(
-      radius: avatarSize.size,
-      foregroundImage: FileImage(File(path)),
-      child: _buildDefaultAvatar(),
-    );
-  }
-
-  // 构建oss保管头像
-  Widget _buildOSSAvatar(String objectKey) {
-    return FutureBuilder<String>(
-      future: ossManage.getObjectUrl(uri),
-      builder: (_, snap) {
-        return _buildNetAvatar(snap.data ?? "");
-      },
-    );
-  }
-
-  // 构建网络头像
-  Widget _buildNetAvatar(String url) {
-    return CachedNetworkImage(
-      imageUrl: url,
-      placeholder: (_, __) => _buildDefaultAvatar(),
-      errorWidget: (_, __, err) => _buildDefaultAvatar(),
-      imageBuilder: (_, image) {
-        return CircleAvatar(
-          radius: avatarSize.size,
-          backgroundImage: image,
-        );
-      },
+      child: ImageView(
+        source: source,
+        fit: BoxFit.cover,
+        squareSize: avatarSize.size,
+        onTap: onTap,
+        failState: failState,
+        loadingState: loadingState,
+        completedState: completedState,
+      ),
     );
   }
 
@@ -151,6 +166,3 @@ extension AvatarSizeExtension on AvatarSize {
         AvatarSize.large: 55.0,
       }[this]!;
 }
-
-// 头像来源枚举
-enum AvatarSource { net, oss, file, assets }
