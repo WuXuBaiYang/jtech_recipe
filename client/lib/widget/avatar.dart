@@ -135,8 +135,8 @@ class Avatar extends StatelessWidget {
         fit: BoxFit.cover,
         squareSize: avatarSize.size,
         onTap: onTap,
-        failState: failState,
-        loadingState: loadingState,
+        failState: () => failState?.call() ?? _buildDefaultAvatar(),
+        loadingState: () => loadingState?.call() ?? _buildDefaultAvatar(),
         completedState: completedState,
       ),
     );
@@ -144,12 +144,9 @@ class Avatar extends StatelessWidget {
 
   // 构建默认头像
   Widget _buildDefaultAvatar() {
-    return CircleAvatar(
-      radius: avatarSize.size,
-      child: Icon(
-        Icons.account_circle_rounded,
-        size: avatarSize.size * 2 - 8,
-      ),
+    return Icon(
+      Icons.account_circle_rounded,
+      size: avatarSize.size * 2 - 8,
     );
   }
 }
