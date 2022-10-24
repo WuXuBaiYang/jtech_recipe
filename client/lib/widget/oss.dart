@@ -109,14 +109,11 @@ class OSSAvatar extends StatelessWidget {
     return FutureBuilder<String>(
       future: ossManage.getObjectUrl(object),
       builder: (_, snap) {
-        if (snap.data?.isNotEmpty ?? false) {
-          return Avatar.net(
-            url: snap.data ?? '',
-            avatarSize: avatarSize,
-            onTap: onTap,
-          );
-        }
-        return const SizedBox();
+        return Avatar.net(
+          url: snap.data ?? '',
+          avatarSize: avatarSize,
+          onTap: onTap,
+        );
       },
     );
   }

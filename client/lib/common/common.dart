@@ -15,6 +15,10 @@ class RoutePath {
         home: (c) => const HomePage(),
         auth: (c) => const AuthPage(),
         authInit: (c) => const AuthInitPage(),
+
+        /// 待补充
+        myProfile: (c) => const SizedBox(),
+        notice: (c) => const SizedBox(),
       };
 
   // 首页
@@ -25,6 +29,12 @@ class RoutePath {
 
   // 授权初始化页
   static const String authInit = '/authInit';
+
+  // 我的用户信息页
+  static const String myProfile = '/user/myProfile';
+
+  // 消息通知
+  static const String notice = '/notice';
 }
 
 /*

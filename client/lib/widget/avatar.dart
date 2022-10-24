@@ -118,7 +118,7 @@ class Avatar extends StatelessWidget {
   Widget _buildDefaultAvatar() {
     return Icon(
       Icons.account_circle_rounded,
-      size: avatarSize.size * 2 - 8,
+      size: avatarSize.defSize,
     );
   }
 }
@@ -132,6 +132,13 @@ extension AvatarSizeExtension on AvatarSize {
   double get size => {
         AvatarSize.small: 14.0,
         AvatarSize.normal: 24.0,
+        AvatarSize.large: 45.0,
+      }[this]!;
+
+  // 获取默认头像尺寸
+  double get defSize => {
+        AvatarSize.small: 25.0,
+        AvatarSize.normal: 45.0,
         AvatarSize.large: 55.0,
       }[this]!;
 }
