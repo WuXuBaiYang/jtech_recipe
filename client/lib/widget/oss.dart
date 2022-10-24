@@ -62,7 +62,7 @@ class OSSImageView extends StatelessWidget {
       builder: (_, snap) {
         if (snap.data?.isNotEmpty ?? false) {
           return ImageView.net(
-            url: snap.data ?? "",
+            url: snap.data ?? '',
             width: width,
             height: height,
             squareSize: squareSize,
@@ -97,22 +97,10 @@ class OSSAvatar extends StatelessWidget {
   // 图片点击事件
   final VoidCallback? onTap;
 
-  // 图片异常状态
-  final ImageViewStateLoad? failState;
-
-  // 图片加载中状态
-  final ImageViewStateLoad? loadingState;
-
-  // 图片加载完成状态
-  final ImageViewStateLoad? completedState;
-
   const OSSAvatar({
     super.key,
     required this.object,
     this.onTap,
-    this.failState,
-    this.loadingState,
-    this.completedState,
     this.avatarSize = AvatarSize.normal,
   });
 
@@ -123,12 +111,9 @@ class OSSAvatar extends StatelessWidget {
       builder: (_, snap) {
         if (snap.data?.isNotEmpty ?? false) {
           return Avatar.net(
-            url: snap.data ?? "",
+            url: snap.data ?? '',
             avatarSize: avatarSize,
             onTap: onTap,
-            failState: failState,
-            loadingState: loadingState,
-            completedState: completedState,
           );
         }
         return const SizedBox();

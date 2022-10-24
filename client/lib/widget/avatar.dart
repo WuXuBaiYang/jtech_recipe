@@ -21,22 +21,10 @@ class Avatar extends StatelessWidget {
   // 图片点击事件
   final VoidCallback? onTap;
 
-  // 图片异常状态
-  final ImageViewStateLoad? failState;
-
-  // 图片加载中状态
-  final ImageViewStateLoad? loadingState;
-
-  // 图片加载完成状态
-  final ImageViewStateLoad? completedState;
-
   const Avatar({
     super.key,
     required this.source,
     this.onTap,
-    this.failState,
-    this.loadingState,
-    this.completedState,
     this.avatarSize = AvatarSize.normal,
   });
 
@@ -45,9 +33,6 @@ class Avatar extends StatelessWidget {
     super.key,
     required File file,
     this.onTap,
-    this.failState,
-    this.loadingState,
-    this.completedState,
     bool? cacheRawData,
     String? imageCacheName,
     this.avatarSize = AvatarSize.normal,
@@ -62,9 +47,6 @@ class Avatar extends StatelessWidget {
     super.key,
     required String assetName,
     this.onTap,
-    this.failState,
-    this.loadingState,
-    this.completedState,
     AssetBundle? bundle,
     String? package,
     bool? cacheRawData,
@@ -83,9 +65,6 @@ class Avatar extends StatelessWidget {
     super.key,
     required Uint8List bytes,
     this.onTap,
-    this.failState,
-    this.loadingState,
-    this.completedState,
     bool? cacheRawData,
     String? imageCacheName,
     this.avatarSize = AvatarSize.normal,
@@ -100,9 +79,6 @@ class Avatar extends StatelessWidget {
     super.key,
     required String url,
     this.onTap,
-    this.failState,
-    this.loadingState,
-    this.completedState,
     Map<String, String>? headers,
     bool? cache,
     int? retries,
@@ -128,16 +104,12 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: avatarSize.size,
-      child: ImageView(
-        source: source,
-        fit: BoxFit.cover,
-        squareSize: avatarSize.size,
-        onTap: onTap,
-        failState: () => failState?.call() ?? _buildDefaultAvatar(),
-        loadingState: () => loadingState?.call() ?? _buildDefaultAvatar(),
-        completedState: completedState,
+    return GestureDetector(
+      onTap: onTap,
+      child: CircleAvatar(
+        radius: avatarSize.size,
+        foregroundImage: source.provider,
+        child: _buildDefaultAvatar(),
       ),
     );
   }

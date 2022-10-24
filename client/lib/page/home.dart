@@ -1,3 +1,4 @@
+import 'package:client/widget/avatar.dart';
 import 'package:client/widget/image.dart';
 import 'package:flutter/material.dart';
 
@@ -25,12 +26,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('首页'),
       ),
-      body: ImageView(
-        squareSize: 200,
-        source: ImageViewSource(
-          provider: const NetworkImage(
-              "https://pic3.zhimg.com/v2-58d652598269710fa67ec8d1c88d8f03_r"),
-        ),
+      body: Avatar.net(
+        url: "https://pic3.zhimg.com/v2-58d652598269710fa67ec8d1c88d8f03_r",
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.device_hub),
