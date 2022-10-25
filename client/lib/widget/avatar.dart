@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'image.dart';
 
@@ -116,8 +117,8 @@ class Avatar extends StatelessWidget {
 
   // 构建默认头像
   Widget _buildDefaultAvatar() {
-    return Icon(
-      Icons.account_circle_rounded,
+    return FaIcon(
+      FontAwesomeIcons.userAstronaut,
       size: avatarSize.defSize,
     );
   }
@@ -130,15 +131,15 @@ enum AvatarSize { small, normal, large }
 extension AvatarSizeExtension on AvatarSize {
   // 获取尺寸
   double get size => {
-        AvatarSize.small: 14.0,
+        AvatarSize.small: 16.0,
         AvatarSize.normal: 24.0,
         AvatarSize.large: 45.0,
       }[this]!;
 
   // 获取默认头像尺寸
   double get defSize => {
-        AvatarSize.small: 25.0,
-        AvatarSize.normal: 45.0,
-        AvatarSize.large: 55.0,
+        AvatarSize.small: 22.0,
+        AvatarSize.normal: 32.0,
+        AvatarSize.large: 36.0,
       }[this]!;
 }

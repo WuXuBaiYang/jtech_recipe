@@ -2,6 +2,7 @@ import 'package:client/main.dart';
 import 'package:client/page/auth/init.dart';
 import 'package:client/page/home.dart';
 import 'package:client/page/auth/auth.dart';
+import 'package:client/page/profile.dart';
 import 'package:flutter/widgets.dart';
 
 /*
@@ -12,12 +13,12 @@ import 'package:flutter/widgets.dart';
 class RoutePath {
   // 创建路由表
   static Map<String, WidgetBuilder> get routes => {
-        home: (c) => const HomePage(),
         auth: (c) => const AuthPage(),
         authInit: (c) => const AuthInitPage(),
+        home: (c) => const HomePage(),
+        profile: (c) => const ProfilePage(),
 
         /// 待补充
-        myProfile: (c) => const SizedBox(),
         notice: (c) => const SizedBox(),
       };
 
@@ -30,8 +31,8 @@ class RoutePath {
   // 授权初始化页
   static const String authInit = '/authInit';
 
-  // 我的用户信息页
-  static const String myProfile = '/user/myProfile';
+  // 用户页
+  static const String profile = '/user/profile';
 
   // 消息通知
   static const String notice = '/notice';
