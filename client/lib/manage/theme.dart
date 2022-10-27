@@ -22,22 +22,6 @@ class ThemeManage extends BaseManage {
 
   ThemeManage._internal();
 
-  @override
-  Future<void> init() async {
-    final currTheme = currentTheme;
-    // 获取当前样式并发送消息切换样式
-    eventManage.send(ThemeEvent(themeData: currTheme));
-    // 设置沉浸式状态栏
-    if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: currTheme.brightness == Brightness.light
-            ? Brightness.dark
-            : Brightness.light,
-      ));
-    }
-  }
-
   // 获取主色
   Color get primaryColor => currentTheme.primaryColor;
 

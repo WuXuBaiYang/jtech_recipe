@@ -39,8 +39,8 @@ class RouterManage extends BaseManage {
   }
 
   // 页面跳转
-  Future<T?>? push<T>(
-    RoutePageBuilder builder, {
+  Future<T?>? push<T>({
+    required RoutePageBuilder builder,
     String? name,
     Object? arguments,
     bool? opaque,
@@ -75,8 +75,8 @@ class RouterManage extends BaseManage {
   }
 
   // 页面跳转并移除到目标页面
-  Future<T?>? pushAndRemoveUntil<T>(
-    RoutePageBuilder builder, {
+  Future<T?>? pushAndRemoveUntil<T>({
+    required RoutePageBuilder builder,
     required untilPath,
     String? name,
     Object? arguments,
@@ -116,8 +116,8 @@ class RouterManage extends BaseManage {
   }
 
   // 跳转页面并一直退出到目标页面
-  Future<T?>? pushReplacement<T, TO>(
-    RoutePageBuilder builder, {
+  Future<T?>? pushReplacement<T, TO>({
+    required RoutePageBuilder builder,
     String? name,
     Object? arguments,
     bool? opaque,
@@ -203,9 +203,9 @@ class RouterManage extends BaseManage {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
-    final begin = const Offset(0, 1);
-    final end = Offset.zero;
-    final curve = Curves.ease;
+    const begin = Offset(0, 1);
+    const end = Offset.zero;
+    const curve = Curves.ease;
     final tween = Tween(
       begin: begin,
       end: end,
@@ -228,6 +228,43 @@ class RouterManage extends BaseManage {
   // 页面连续退出
   void popUntil({required String untilPath}) =>
       navigator?.popUntil(ModalRoute.withName(untilPath));
+
+  // 处理路由动画
+  RouteFactory onGenerateRoute({
+    required Map<String, WidgetBuilder> routesMap,
+    WidgetBuilder? errorPage,
+    String? name,
+    Object? arguments,
+    bool? opaque,
+    Color? barrierColor,
+    bool? barrierDismissible,
+    Duration? transitionDuration,
+    Duration? reverseTransitionDuration,
+    RouteTransitionsBuilder? transitionsBuilder,
+    bool fullscreenDialog = false,
+  }) {
+    return (settings) {
+      return _createPageRoute(
+        builder: (c, anim, secAnim) {
+          final name = settings.name;
+          if (name != null && name.isNotEmpty) {
+            final fun = routesMap[name];
+            if (fun != null) return fun(c);
+          }
+          return errorPage?.call(c) ?? const SizedBox();
+        },
+        name: name,
+        arguments: arguments,
+        opaque: opaque,
+        barrierColor: barrierColor,
+        barrierDismissible: barrierDismissible,
+        transitionDuration: transitionDuration,
+        reverseTransitionDuration: reverseTransitionDuration,
+        transitionsBuilder: transitionsBuilder,
+        fullscreenDialog: fullscreenDialog,
+      );
+    };
+  }
 }
 
 // 单例调用
