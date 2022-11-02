@@ -2,7 +2,7 @@ import 'package:client/common/model.dart';
 
 /*
 * 请求响应实体
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 14:35
 */
 class ResponseModel extends BaseModel {

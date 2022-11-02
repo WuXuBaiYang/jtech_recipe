@@ -6,12 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /*
 * 缓存管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 10:29
 */
 class CacheManage extends BaseManage {
   // 时效字段后缀
-  final String _expirationSuffix = "expiration";
+  final String _expirationSuffix = 'expiration';
 
   static final CacheManage _instance = CacheManage._internal();
 
@@ -20,50 +20,51 @@ class CacheManage extends BaseManage {
   CacheManage._internal();
 
   // sp存储方法
-  late SharedPreferences _sp;
+  SharedPreferences? _sp;
 
   @override
   Future<void> init() async {
     // 创建sp单例
-    _sp = await SharedPreferences.getInstance();
+    _sp ??= await SharedPreferences.getInstance();
   }
 
   // 获取int类型
-  int? getInt(String key, {int? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp.getInt(key) ?? def;
+  int? getInt(String key) {
+    if (_checkExpiration(key)) return _sp?.getInt(key);
+    return null;
   }
 
   // 获取bool类型
-  bool? getBool(String key, {bool? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp.getBool(key) ?? def;
+  bool? getBool(String key) {
+    if (_checkExpiration(key)) return _sp?.getBool(key);
+    return null;
   }
 
   // 获取double类型
-  double? getDouble(String key, {double? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp.getDouble(key) ?? def;
+  double? getDouble(String key) {
+    if (_checkExpiration(key)) return _sp?.getDouble(key);
+    return null;
   }
 
   // 获取String类型
-  String? getString(String key, {String? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp.getString(key) ?? def;
+  String? getString(String key) {
+    if (_checkExpiration(key)) return _sp?.getString(key);
+    return null;
   }
 
   // 获取StringList类型
-  List<String>? getStringList(String key, {List<String>? def}) {
-    if (!_checkExpiration(key)) return def;
-    return _sp.getStringList(key) ?? def;
+  List<String>? getStringList(String key) {
+    if (_checkExpiration(key)) return _sp?.getStringList(key);
+    return [];
   }
 
   // 获取json类型
-  dynamic getJson(String key, {dynamic def}) {
-    if (!_checkExpiration(key)) return def;
-    var value = _sp.getString(key);
-    if (null == value) return def;
-    return jsonDecode(value) ?? def;
+  dynamic getJson(String key) {
+    if (_checkExpiration(key)) {
+      final value = _sp?.getString(key);
+      if (null != value) return jsonDecode(value);
+    }
+    return null;
   }
 
   // 设置int类型
@@ -73,7 +74,7 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setInt(key, value);
+    return (await _sp?.setInt(key, value)) ?? false;
   }
 
   // 设置double类型
@@ -83,7 +84,7 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setDouble(key, value);
+    return (await _sp?.setDouble(key, value)) ?? false;
   }
 
   // 设置bool类型
@@ -93,7 +94,7 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setBool(key, value);
+    return (await _sp?.setBool(key, value)) ?? false;
   }
 
   // 设置string类型
@@ -103,7 +104,7 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setString(key, value);
+    return (await _sp?.setString(key, value)) ?? false;
   }
 
   // 设置List<string>类型
@@ -113,7 +114,7 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setStringList(key, value);
+    return (await _sp?.setStringList(key, value)) ?? false;
   }
 
   // 设置JsonMap类型
@@ -123,7 +124,7 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setString(key, jsonEncode(value));
+    return (await _sp?.setString(key, jsonEncode(value))) ?? false;
   }
 
   // 设置JsonList类型
@@ -133,25 +134,25 @@ class CacheManage extends BaseManage {
     Duration? expiration,
   }) async {
     if (!await _setupExpiration(key, expiration: expiration)) return false;
-    return _sp.setString(key, jsonEncode(value));
+    return (await _sp?.setString(key, jsonEncode(value))) ?? false;
   }
 
   // 移除字段
-  Future<bool> remove(String key) {
-    return _sp.remove(key);
+  Future<bool> remove(String key) async {
+    return (await _sp?.remove(key)) ?? false;
   }
 
   // 清空缓存的所有字段
-  Future<bool> removeAll() {
-    return _sp.clear();
+  Future<bool> removeAll() async {
+    return (await _sp?.clear()) ?? false;
   }
 
   // 检查有效期
   bool _checkExpiration(String key) {
-    var expirationKey = _getExpirationKey(key);
-    if (_sp.containsKey(expirationKey)) {
-      var expirationTime =
-          DateTime.fromMillisecondsSinceEpoch(_sp.getInt(expirationKey) ?? 0);
+    final expirationKey = _getExpirationKey(key);
+    if (_sp?.containsKey(expirationKey) ?? false) {
+      final expirationTime =
+          DateTime.fromMillisecondsSinceEpoch(_sp?.getInt(expirationKey) ?? 0);
       if (expirationTime.isBefore(DateTime.now())) {
         remove(expirationKey);
         remove(key);
@@ -164,15 +165,15 @@ class CacheManage extends BaseManage {
   // 设置有效期
   Future<bool> _setupExpiration(String key, {Duration? expiration}) async {
     if (null == expiration) return true;
-    var expirationKey = _getExpirationKey(key);
-    var inTime = DateTime.now().add(expiration).millisecondsSinceEpoch;
-    return _sp.setInt(expirationKey, inTime);
+    final expirationKey = _getExpirationKey(key);
+    final inTime = DateTime.now().add(expiration).millisecondsSinceEpoch;
+    return (await _sp?.setInt(expirationKey, inTime)) ?? false;
   }
 
   // 获取有效期的存储字段
   String _getExpirationKey(String key) {
-    key = "${key}_$_expirationSuffix";
-    return "${key}_${Tool.md5(key)}";
+    key = '${key}_$_expirationSuffix';
+    return '${key}_${Tool.md5(key)}';
   }
 }
 

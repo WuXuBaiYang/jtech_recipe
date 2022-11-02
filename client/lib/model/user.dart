@@ -1,5 +1,8 @@
 import 'package:client/common/model.dart';
+import 'package:client/manage/tag.dart';
+import 'package:client/model/tag.dart';
 import 'package:client/tool/date.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'model.dart';
 
@@ -8,143 +11,234 @@ import 'model.dart';
 * @author wuxubaiyang
 * @Time 2022/9/12 19:10
 */
-class UserModel extends BaseModel with BaseInfo {
-  // im用户id
-  final String imUserId;
-
-  // im授权信息
-  final String imToken;
-
-  // im过期时间
-  final DateTime imExpired;
-
-  // 用户名
-  final String userName;
-
-  // 用户信息
-  final UserProfileModel? profile;
-
-  UserModel.from(obj)
-      : imUserId = obj?["imUserId"] ?? "",
-        imToken = obj?["imToken"] ?? "",
-        imExpired = DateTime.fromMillisecondsSinceEpoch(
-            (obj?["imExpired"] ?? 0) * 1000),
-        userName = obj?["userName"] ?? "",
-        profile = null != obj?["profile"]
-            ? UserProfileModel.from(obj?["profile"] ?? {})
-            : null {
-    initialBaseInfo(obj);
-  }
-
-  @override
-  Map<String, dynamic> to() => {
-        ...baseInfoMap,
-        "imUserId": imUserId,
-        "imToken": imToken,
-        "imExpired": imExpired.millisecondsSinceEpoch ~/ 1000,
-        "userName": userName,
-      };
-}
-
-/*
-* 用户信息
-* @author wuxubaiyang
-* @Time 2022/9/12 19:38
-*/
-class UserProfileModel extends BaseModel with BaseInfo, CreatorInfo {
+class UserModel extends BaseModel with BasePart {
   // 昵称
-  final String nickName;
+  String nickName;
 
   // 头像
-  final String avatar;
-
-  // 手机号
-  final String telephone;
+  String avatar;
 
   // 简介
-  final String bio;
-
-  // 地址
-  final String address;
-
-  // 经纬度（逗号分隔）
-  final String location;
+  String bio;
 
   // 职业
-  final String profession;
+  String profession;
 
-  // 邮箱
-  final String email;
-
-  // 性别（0未选择|1男|2女|3武装直升机）
-  final GenderType gender;
+  // 性别
+  String genderCode;
 
   // 生日
-  final DateTime birthday;
+  DateTime? birth;
 
-  UserProfileModel.from(obj)
-      : nickName = obj?["nickName"] ?? "",
-        avatar = obj?["avatar"] ?? "",
-        telephone = obj?["telephone"] ?? "",
-        bio = obj?["bio"] ?? "",
-        address = obj?["address"] ?? "",
-        location = obj?["location"] ?? "",
-        profession = obj?["profession"] ?? "",
-        email = obj?["email"] ?? "",
-        gender = GenderType.values[obj?["gender"] ?? 0],
-        birthday = DateTool.parseDate(obj?["birthday"] ?? "") ?? DateTime(0) {
-    initialBaseInfo(obj);
-    initialCreatorInfo(obj);
+  // 个人评价
+  String evaluateCode;
+
+  // 偏好菜系
+  List<String> recipeCuisineCodes;
+
+  // 偏好口味
+  List<String> recipeTasteCodes;
+
+  // 手机号
+  final String phoneNumber;
+
+  // 勋章列表
+  final List<MedalModel> medals;
+
+  // 用户经验
+  final num exp;
+
+  // 用户等级
+  final num level;
+
+  // 当前等级已获得经验
+  final num levelExp;
+
+  // 升级所需经验
+  final num updateExp;
+
+  // 获取性别
+  Future<String> getGender(BuildContext context) async {
+    final result = await tagManage.findTag(
+      context,
+      source: TagSource.userGender,
+      code: genderCode,
+    );
+    return result?.tag ?? '未知';
+  }
+
+  // 获取个人评价
+  Future<String> getEvaluate(BuildContext context) async {
+    final result = await tagManage.findTag(
+      context,
+      source: TagSource.userEvaluate,
+      code: evaluateCode,
+    );
+    return result?.tag ?? '';
+  }
+
+  UserModel.from(obj)
+      : phoneNumber = obj?['phoneNumber'] ?? '',
+        nickName = obj?['nickName'] ?? '',
+        avatar = obj?['avatar'] ?? '',
+        bio = obj?['bio'] ?? '',
+        profession = obj?['profession'] ?? '',
+        genderCode = obj?['genderCode'] ?? '',
+        birth = DateTime.tryParse(obj['birth'] ?? ''),
+        medals = (obj?['medals'] ?? [])
+            .map<MedalModel>((e) => MedalModel.from(e))
+            .toList(),
+        evaluateCode = obj?['evaluateCode'] ?? '',
+        recipeCuisineCodes = (obj?['recipeCuisineCodes'] ?? [])
+            .map<String>((e) => '$e')
+            .toList(),
+        recipeTasteCodes =
+            (obj?['recipeTasteCodes'] ?? []).map<String>((e) => '$e').toList(),
+        exp = obj?['exp'] ?? 0,
+        level = obj?['level'] ?? 0,
+        levelExp = obj?['levelExp'] ?? 0,
+        updateExp = obj?['updateExp'] ?? 0 {
+    initBasePart(obj);
   }
 
   @override
   Map<String, dynamic> to() => {
-        "nickName": nickName,
-        "avatar": avatar,
-        "telephone": telephone,
-        "bio": bio,
-        "address": address,
-        "location": location,
-        "profession": profession,
-        "email": email,
-        "gender": gender.index,
-        "birthday": DateTool.formatDate(DatePattern.fullDate, birthday),
+        ...basePart,
+        'phoneNumber': phoneNumber,
+        'nickName': nickName,
+        'avatar': avatar,
+        'bio': bio,
+        'profession': profession,
+        'genderCode': genderCode,
+        'birth': birth?.toIso8601StringWithUTC(),
+        'medals': medals.map((e) => e.to()).toList(),
+        'evaluateCode': evaluateCode,
+        'recipeCuisineCodes': recipeCuisineCodes,
+        'recipeTasteCodes': recipeTasteCodes,
+        'exp': exp,
+        'level': level,
+        'levelExp': levelExp,
+        'updateExp': updateExp,
+      };
+
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
+        'nickName': nickName,
+        'avatar': avatar,
+        'bio': bio,
+        'profession': profession,
+        'genderCode': genderCode,
+        'birth': birth?.toIso8601StringWithUTC(),
+        'evaluateCode': evaluateCode,
+        'recipeCuisineCodes': recipeCuisineCodes,
+        'recipeTasteCodes': recipeTasteCodes,
       };
 }
 
 /*
-* 用户性别枚举
+* 勋章对象
 * @author wuxubaiyang
-* @Time 2022/9/12 20:20
+* @Time 2022/10/14 14:16
 */
-enum GenderType {
-  // 未选择
-  unknown,
-  // 男性
-  male,
-  // 女性
-  female,
-  // 武装直升机
-  militaryHelicopter,
+class MedalModel extends BaseModel with BasePart {
+  // 图标
+  final String logo;
+
+  // 名称
+  final String name;
+
+  // 稀有度
+  final String rarityCode;
+
+  MedalModel.from(obj)
+      : logo = obj?['logo'] ?? '',
+        name = obj?['name'] ?? '',
+        rarityCode = obj?['rarityCode'] ?? '' {
+    initBasePart(obj);
+  }
+
+  @override
+  Map<String, dynamic> to() => {
+        ...basePart,
+        'logo': logo,
+        'name': name,
+        'rarityCode': rarityCode,
+      };
+
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
+        'logo': logo,
+        'name': name,
+        'rarityCode': rarityCode,
+      };
 }
 
 /*
-* 用户性别枚举扩展
+* 用户收货地址
 * @author wuxubaiyang
-* @Time 2022/9/12 20:24
+* @Time 2022/10/14 14:26
 */
-extension GenderTypeExtension on GenderType {
-  // 获取性别名称
-  String get name {
-    switch (this) {
-      case GenderType.unknown:
-        return "未选择";
-      case GenderType.male:
-        return "男";
-      case GenderType.female:
-        return "女";
-      case GenderType.militaryHelicopter:
-        return "武装直升机";
-    }
+class UserAddressModel extends BaseModel with BasePart, CreatorPart {
+  // 收货人
+  final String receiver;
+
+  // 联系方式
+  final String contact;
+
+  // 地址字典码
+  final List<String> addressCodes;
+
+  // 地址详情
+  final String addressDetail;
+
+  // 标签字典码
+  final String tagCode;
+
+  // 标签
+  final TagModel? tag;
+
+  // 是否为默认地址
+  final bool isDefault;
+
+  // 排序
+  final num order;
+
+  UserAddressModel.from(obj)
+      : receiver = obj?['receiver'] ?? '',
+        contact = obj?['contact'] ?? '',
+        addressCodes =
+            (obj?['addressCodes'] ?? []).map<String>((e) => '$e').toList(),
+        addressDetail = obj?['addressDetail'] ?? '',
+        tagCode = obj?['tagCode'] ?? '',
+        tag = obj?['tag'] != null ? TagModel.from(obj?['tag'] ?? {}) : null,
+        isDefault = obj?['default'] ?? false,
+        order = obj?['order'] ?? 0 {
+    initBasePart(obj);
+    initCreatorPart(obj);
   }
+
+  @override
+  Map<String, dynamic> to() => {
+        ...basePart,
+        ...creatorPart,
+        'receiver': receiver,
+        'contact': contact,
+        'addressCodes': addressCodes,
+        'addressDetail': addressDetail,
+        'tag': tag?.to(),
+        'tagCode': tagCode,
+        'default': isDefault,
+        'order': order,
+      };
+
+  // 获取编辑结构
+  Map<String, dynamic> toModifyInfo() => {
+        'receiver': receiver,
+        'contact': contact,
+        'addressCodes': addressCodes,
+        'addressDetail': addressDetail,
+        'tagCode': tagCode,
+        'default': isDefault,
+        'order': order,
+      };
 }

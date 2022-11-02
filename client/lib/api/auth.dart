@@ -1,10 +1,6 @@
 import 'package:client/common/api/request.dart';
-import 'package:client/common/common.dart';
 import 'package:client/manage/auth.dart';
-import 'package:client/manage/im.dart';
 import 'package:client/model/model.dart';
-import 'package:client/tool/tool.dart';
-
 import 'base.dart';
 
 /*
@@ -13,46 +9,29 @@ import 'base.dart';
 * @Time 2022/9/12 18:48
 */
 class AuthAPI extends BaseJAPI {
-  // 注册
-  Future<AuthModel> register({
-    required String userName,
-    required String password,
-  }) {
+  // 获取短信验证码
+  Future<bool> sendSMS({required String phoneNumber}) {
     return handleResponseData(
-      post("/register",
-          requestModel: RequestModel.body(data: {
-            "userName": userName,
-            "password": _signPassword(userName, password),
-          })),
-      handle: (it) => AuthModel.from(it),
-    ).then(
-      (v) => Future.wait([
-        // 设置授权信息
-        authManage.setupAuthInfo(v),
-        // 登录到im
-        imManage.loginIM(),
-      ]).then((_) => v),
+      post('/sms/$phoneNumber'),
     );
   }
 
-  // 登录
-  Future<AuthModel> login({
-    required String userName,
-    required String password,
+  // 请求授权
+  Future<AuthModel> auth({
+    required String phoneNumber,
+    required String code,
   }) {
     return handleResponseData(
-      post("/login",
+      post('/auth',
           requestModel: RequestModel.body(data: {
-            "userName": userName,
-            "password": _signPassword(userName, password),
+            'phoneNumber': phoneNumber,
+            'code': code,
           })),
-      handle: (it) => AuthModel.from(it),
+      handle: (e) => AuthModel.from(e),
     ).then(
       (v) => Future.wait([
         // 设置授权信息
         authManage.setupAuthInfo(v),
-        // 登录到im
-        imManage.loginIM(),
       ]).then((_) => v),
     );
   }
@@ -60,11 +39,11 @@ class AuthAPI extends BaseJAPI {
   // 刷新token
   Future<AuthModel> refreshToken() {
     return handleResponseData(
-      post("/refreshToken",
+      post('/refreshToken',
           requestModel: RequestModel.create(headers: {
-            "RefreshToken": authManage.refreshToken,
+            'RefreshToken': authManage.refreshToken,
           })),
-      handle: (it) => AuthModel.from(it),
+      handle: (e) => AuthModel.from(e),
     ).then(
       (v) => Future.wait([
         // 设置授权信息
@@ -72,10 +51,6 @@ class AuthAPI extends BaseJAPI {
       ]).then((_) => v),
     );
   }
-
-  // 明文密码签名加密
-  String _signPassword(String userName, String password) =>
-      Tool.md5("$userName：${Common.salt}_${password}_${Common.salt}");
 }
 
 // 单例调用

@@ -2,49 +2,48 @@ import 'package:intl/intl.dart';
 
 /*
 * 日期工具方法
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 15:02
 */
-class DateTool {
+class DateTool {}
+
+// 日期方法扩展
+extension DatetimeExtension on DateTime {
   // 日期格式化
-  static String formatDate(String pattern, DateTime dateTime) =>
-      DateFormat(pattern).format(dateTime);
+  String format(String pattern) => DateFormat(pattern).format(this);
 
-  // 日期解析
-  static DateTime? parseDate(String date) => DateTime.tryParse(date);
+  // 获取utc格式字符串
+  String toIso8601StringWithUTC() =>
+      "${toIso8601String()}+${timeZoneOffset.format("hh:mm")}";
+}
 
+// 时长格式化替换表
+final Map<String, String Function(DateTime date, Duration dur)>
+    _durationFormatRegMap = {
+  'dd': (_, dur) => '${dur.inDays}'.padLeft(2, '0'),
+  'hh': (_, dur) => '${dur.inHours}'.padLeft(2, '0'),
+  'mm': (date, _) => '${date.minute}'.padLeft(2, '0'),
+  'ss': (date, _) => '${date.second}'.padLeft(2, '0'),
+  'd': (_, dur) => '${dur.inDays}',
+  'h': (_, dur) => '${dur.inHours}',
+  'm': (date, _) => '${date.minute}',
+  's': (date, _) => '${date.second}',
+};
+
+// duration方法扩展
+extension DurationExtension on Duration {
   // 时长格式化
-  static String formatDuration(String pattern, Duration duration) {
-    DateTime date = DateTime(0).add(duration);
+  String format(String pattern) {
+    DateTime date = DateTime(0).add(this);
     _durationFormatRegMap.forEach((key, fun) {
       if (pattern.contains(key)) {
-        var value = fun(date, duration);
+        final value = fun(date, this);
         pattern = pattern.replaceAll(key, value);
       }
     });
     return pattern;
   }
 
-  // 时长格式化替换表
-  static final Map<String, String Function(DateTime date, Duration dur)>
-      _durationFormatRegMap = {
-    "dd": (_, dur) => "${dur.inDays}".padLeft(2, '0'),
-    "hh": (_, dur) => "${dur.inHours}".padLeft(2, '0'),
-    "mm": (date, _) => "${date.minute}".padLeft(2, '0'),
-    "ss": (date, _) => "${date.second}".padLeft(2, '0'),
-    "d": (_, dur) => "${dur.inDays}",
-    "h": (_, dur) => "${dur.inHours}",
-    "m": (date, _) => "${date.minute}",
-    "s": (date, _) => "${date.second}",
-  };
-}
-
-/*
-* duration方法扩展
-* @author JTech JH
-* @Time 2022/3/17 15:32
-*/
-extension DurationExtension on Duration {
   // duration相减
   Duration subtract(Duration duration) {
     duration.isNotEmpty;
@@ -107,67 +106,59 @@ extension DurationExtension on Duration {
   bool get isNotEmpty => inMicroseconds != 0;
 }
 
-/*
-* 日期格式化模型
-* @author JTech JH
-* @Time 2022/3/17 15:25
-*/
+// 日期格式化模型
 class DatePattern {
   // 中文-完整日期/时间格式
-  static const String fullDateTimeZH = "yyyy年MM月dd日 hh时mm分ss秒";
+  static const String fullDateTimeZH = 'yyyy年MM月dd日 hh时mm分ss秒';
 
   // 中文-简略日期/时间格式
-  static const String dateTimeZH = "MM月dd日 hh时mm分";
+  static const String dateTimeZH = 'MM月dd日 hh时mm分';
 
   // 中文-完整日期格式
-  static const String fullDateZH = "yyyy年MM月dd日";
+  static const String fullDateZH = 'yyyy年MM月dd日';
 
   // 中文-简略日期格式
-  static const String dateZH = "MM月dd日";
+  static const String dateZH = 'MM月dd日';
 
   // 中文-完整时间格式
-  static const String fullTimeZH = "hh时mm分ss秒";
+  static const String fullTimeZH = 'hh时mm分ss秒';
 
   // 中文-时间格式
-  static const String timeZH = "hh时mm分";
+  static const String timeZH = 'hh时mm分';
 
   // 完整日期/时间格式
-  static const String fullDateTime = "yyyy/MM/dd hh-mm-ss";
+  static const String fullDateTime = 'yyyy/MM/dd hh-mm-ss';
 
   // 简略日期/时间格式
-  static const String dateTime = "MM/dd hh-mm";
+  static const String dateTime = 'MM/dd hh-mm';
 
   // 完整日期格式
-  static const String fullDate = "yyyy/MM/dd";
+  static const String fullDate = 'yyyy/MM/dd';
 
   // 简略日期格式
-  static const String date = "MM/dd";
+  static const String date = 'MM/dd';
 
   // 完整时间格式
-  static const String fullTime = "hh-mm-ss";
+  static const String fullTime = 'hh-mm-ss';
 
   // 简略时间格式
-  static const String time = "hh-mm";
+  static const String time = 'hh-mm';
 
   // 日期签名格式
-  static const String dateSign = "yyyyMMddHHmmssSSS";
+  static const String dateSign = 'yyyyMMddHHmmssSSS';
 }
 
-/*
-* 时长格式化模型
-* @author JTech JH
-* @Time 2022/3/17 15:36
-*/
+// 时长格式化模型
 class DurationPattern {
   // 完整格式
-  static const String fullDateTime = "dd:hh:mm:ss";
+  static const String fullDateTime = 'dd:hh:mm:ss';
 
   // 完整时分秒格式
-  static const String fullTime = "hh:mm:ss";
+  static const String fullTime = 'hh:mm:ss';
 
   // 简略时分格式
-  static const String hourMinute = "hh:mm";
+  static const String hourMinute = 'hh:mm';
 
   // 简略分秒格式
-  static const String minuteSecond = "mm:ss";
+  static const String minuteSecond = 'mm:ss';
 }

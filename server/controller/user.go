@@ -13,9 +13,9 @@ import (
 type userProfileReq struct {
 	userProfile
 
-	EvaluateCode       string   `json:"evaluateCode" binding:"required"`
-	RecipeCuisineCodes []string `json:"recipeCuisineCodes" binding:"required,unique,dict=recipe_cuisine"`
-	RecipeTasteCodes   []string `json:"recipeTasteCodes" binding:"required,unique,dict=recipe_taste"`
+	EvaluateCode       string   `json:"evaluateCode" binding:""`
+	RecipeCuisineCodes []string `json:"recipeCuisineCodes" binding:"unique,dict=recipe_cuisine"`
+	RecipeTasteCodes   []string `json:"recipeTasteCodes" binding:"unique,dict=recipe_taste"`
 }
 
 // 用户信息
@@ -26,8 +26,8 @@ type userProfile struct {
 	Avatar     string            `json:"avatar"`
 	Bio        string            `json:"bio"`
 	Profession string            `json:"profession"`
-	GenderCode string            `json:"genderCode" binding:"required,dict=user_gender"`
-	Birth      *time.Time        `json:"birth" binding:"ltToday"`
+	GenderCode string            `json:"genderCode" binding:"dict=user_gender"`
+	Birth      *time.Time        `json:"birth"`
 	Medals     []model.UserMedal `json:"medals"`
 }
 
@@ -37,6 +37,10 @@ func UpdateUserProfile(c *gin.Context) {
 	var req userProfileReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.FailParamsDef(c, err)
+		return
+	}
+	if req.Birth != nil && req.Birth.After(time.Now()) {
+		response.FailParams(c, "生日时间不能大于当前时间")
 		return
 	}
 	// 获取到当前用户信息并写入新的信息

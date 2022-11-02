@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 
 /*
 * 请求撤销管理
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 14:54
 */
 class APICancelManage extends BaseManage {
@@ -21,7 +21,7 @@ class APICancelManage extends BaseManage {
     if (null != _cancelKeyMap[key]) {
       return _cancelKeyMap[key]!;
     }
-    var cancelToken = JCancelToken();
+    final cancelToken = JCancelToken();
     _cancelKeyMap[key] = cancelToken;
     return cancelToken;
   }
@@ -45,7 +45,7 @@ final apiCancelManage = APICancelManage();
 
 /*
 * 请求撤销token
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 14:54
 */
 class JCancelToken extends CancelToken {}

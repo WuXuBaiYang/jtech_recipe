@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"server/common"
 	"server/controller/response"
@@ -34,7 +35,7 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 发送短信验证码
-	code := tool.GenSMSCode(4)
+	code := tool.If(gin.IsDebugging(), phone[len(phone)-4:], tool.GenSMSCode(4))
 	if err := common.SendSMSVerify(phone, code); err != nil {
 		response.FailDef(c, -1, "短信发送失败")
 		return
@@ -47,8 +48,54 @@ func GetSMS(c *gin.Context) {
 		return
 	}
 	// 响应发送成功的结果,调试模式则返回code
-	result := tool.If[any](gin.IsDebugging(), code, true)
-	response.SuccessDef(c, result)
+	response.SuccessDef(c, true)
+}
+
+// Auth 用户请求授权
+func Auth(c *gin.Context) {
+	// 获取请求体参数
+	var req authReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.FailParamsDef(c, err)
+		return
+	}
+	// 校验短信验证码
+	rdb := common.GetBaseRDB()
+	vCode := rdb.Get(c, req.PhoneNumber)
+	if vCode.Err() != nil || vCode.Val() != req.Code {
+		response.FailParams(c, "短信验证码校验失败")
+		return
+	}
+	// 判断用户（手机号）是否已存在
+	newUser := false
+	var result model.User
+	db := common.GetDB()
+	if err := db.Where("phone_number = ?", req.PhoneNumber).
+		First(&result).Error; err != nil {
+		newUser = true
+		// 用户不存在则创建用户
+		result.OrmBase = createBase()
+		result.Permission = model.GeneralUser
+		result.PhoneNumber = req.PhoneNumber
+		result.NickName = tool.GenInitUserNickName()
+		if err := db.Create(&result).Error; err != nil {
+			response.FailDef(c, -1, "用户创建失败")
+			return
+		}
+	}
+	// 构造授权信息并返回
+	auth, authErr := createAuthInfo(c, result)
+	if authErr != nil {
+		response.FailDef(c, -1, "授权失败")
+		return
+	}
+	// 删除使用过的短信验证码
+	rdb.Del(c, req.PhoneNumber)
+	// 写入用户授权信息
+	response.SuccessDef(c, struct {
+		*authRes
+		NewUser bool `json:"newUser"`
+	}{auth, newUser})
 }
 
 // Register 用户注册接口
@@ -76,8 +123,9 @@ func Register(c *gin.Context) {
 	// 插入用户信息
 	result := model.User{
 		OrmBase:     createBase(),
+		Permission:  model.GeneralUser,
 		PhoneNumber: req.PhoneNumber,
-		Password:    req.Password,
+		Password:    signPassword(req.Password),
 		NickName:    tool.GenInitUserNickName(),
 	}
 	if err := db.Create(&result).Error; err != nil {
@@ -119,15 +167,15 @@ func Login(c *gin.Context) {
 	}
 	// 存在密码则验证密码，否则验证校验码
 	smsRDB := common.GetBaseRDB()
-	if len(req.Password) != 0 {
-		if result.Password != req.Password {
-			response.FailParams(c, "密码错误")
-			return
-		}
-	} else if len(req.Code) != 0 {
+	if len(req.Code) != 0 {
 		vCode := smsRDB.Get(c, req.PhoneNumber)
 		if vCode.Err() != nil || vCode.Val() != req.Code {
 			response.FailParams(c, "短信验证码校验失败")
+			return
+		}
+	} else if len(req.Password) != 0 {
+		if result.Password != signPassword(req.Password) {
+			response.FailParams(c, "密码错误")
 			return
 		}
 	} else {
@@ -344,4 +392,13 @@ func hasNoRecord(target interface{}, id string) bool {
 		Where("id = ?", id).
 		Count(&count).First(&target)
 	return count == 0
+}
+
+// 密码加密盐
+const passwordSalt = "TxkytNwsL3uM9F"
+
+// 对密码加密
+func signPassword(password string) string {
+	return tool.MD5(fmt.Sprintf(
+		"%s_%s_%s", passwordSalt, password, passwordSalt))
 }

@@ -53,12 +53,16 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 func authRoutes(group *gin.RouterGroup) {
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
-	// 用户注册
-	group.POST("/register", controller.Register)
-	// 用户登录
-	group.POST("/login", controller.Login)
+	// 请求授权
+	group.POST("/auth", controller.Auth)
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken)
+	// 用户注册
+	group.POST("/register", middleware.
+		PermissionCheck(fullPermissionList), controller.Register)
+	// 用户登录
+	group.POST("/login", middleware.
+		PermissionCheck(fullPermissionList), controller.Login)
 	// 用户强制下线
 	group.POST("/forceOffline", middleware.
 		PermissionCheck(highPermissionList), controller.ForcedOffline)
@@ -176,6 +180,10 @@ func menuRoutes(group *gin.RouterGroup) {
 	group.POST("/comment", controller.CreateComment[model.Menu](model.MenuComment))
 	// 分页查询评论
 	group.GET("/comment", controller.GetCommentPagination[model.Menu](model.MenuComment))
+	// 添加菜单标签
+	group.POST("/tag", controller.AddDict(model.MenuTagDict))
+	// 分页查询菜单标签
+	group.GET("/tag", controller.GetDictPagination(model.MenuTagDict))
 }
 
 // 食谱相关路由
@@ -218,7 +226,8 @@ func activityRoutes(group *gin.RouterGroup) {
 	group.POST("/start/:activityId", middleware.
 		PermissionCheck(managePermissionList), controller.StartActivity)
 	// 获取全部活动列表
-	group.GET("", controller.GetAllActivityList)
+	group.GET("", middleware.
+		PermissionCheck(managePermissionList), controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
 	group.GET("/process", controller.GetAllActivityProcessList)
 	// 发布评论

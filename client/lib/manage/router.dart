@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 /*
 * 路由管理类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/17 14:19
 */
 class RouterManage extends BaseManage {
@@ -39,8 +39,8 @@ class RouterManage extends BaseManage {
   }
 
   // 页面跳转
-  Future<T?>? push<T>(
-    RoutePageBuilder builder, {
+  Future<T?>? push<T>({
+    required RoutePageBuilder builder,
     String? name,
     Object? arguments,
     bool? opaque,
@@ -67,7 +67,7 @@ class RouterManage extends BaseManage {
 
   // 页面跳转
   Future<T?>? pushNamed<T>(String url) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushNamed<T>(
       uri.path,
       arguments: uri.queryParameters,
@@ -75,8 +75,8 @@ class RouterManage extends BaseManage {
   }
 
   // 页面跳转并移除到目标页面
-  Future<T?>? pushAndRemoveUntil<T>(
-    RoutePageBuilder builder, {
+  Future<T?>? pushAndRemoveUntil<T>({
+    required RoutePageBuilder builder,
     required untilPath,
     String? name,
     Object? arguments,
@@ -107,7 +107,7 @@ class RouterManage extends BaseManage {
 
   // 跳转页面并一直退出到目标页面
   Future<T?>? pushNamedAndRemoveUntil<T>(String url, {required untilPath}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushNamedAndRemoveUntil<T>(
       uri.path,
       ModalRoute.withName(untilPath),
@@ -116,8 +116,8 @@ class RouterManage extends BaseManage {
   }
 
   // 跳转页面并一直退出到目标页面
-  Future<T?>? pushReplacement<T, TO>(
-    RoutePageBuilder builder, {
+  Future<T?>? pushReplacement<T, TO>({
+    required RoutePageBuilder builder,
     String? name,
     Object? arguments,
     bool? opaque,
@@ -144,7 +144,7 @@ class RouterManage extends BaseManage {
 
   // 跳转并替换当前页面
   Future<T?>? pushReplacementNamed<T, TO>(String url, {TO? result}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.pushReplacementNamed<T, TO>(
       uri.path,
       result: result,
@@ -154,7 +154,7 @@ class RouterManage extends BaseManage {
 
   // 退出当前页面并跳转目标页面
   Future<T?>? popAndPushNamed<T, TO>(String url, {TO? result}) {
-    var uri = Uri.parse(url);
+    final uri = Uri.parse(url);
     return navigator?.popAndPushNamed<T, TO>(
       uri.path,
       result: result,
@@ -203,10 +203,10 @@ class RouterManage extends BaseManage {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
-    var begin = const Offset(0, 1);
-    var end = Offset.zero;
-    var curve = Curves.ease;
-    var tween = Tween(
+    const begin = Offset(0, 1);
+    const end = Offset.zero;
+    const curve = Curves.ease;
+    final tween = Tween(
       begin: begin,
       end: end,
     ).chain(CurveTween(curve: curve));
@@ -228,6 +228,43 @@ class RouterManage extends BaseManage {
   // 页面连续退出
   void popUntil({required String untilPath}) =>
       navigator?.popUntil(ModalRoute.withName(untilPath));
+
+  // 处理路由动画
+  RouteFactory onGenerateRoute({
+    required Map<String, WidgetBuilder> routesMap,
+    WidgetBuilder? errorPage,
+    String? name,
+    Object? arguments,
+    bool? opaque,
+    Color? barrierColor,
+    bool? barrierDismissible,
+    Duration? transitionDuration,
+    Duration? reverseTransitionDuration,
+    RouteTransitionsBuilder? transitionsBuilder,
+    bool fullscreenDialog = false,
+  }) {
+    return (settings) {
+      return _createPageRoute(
+        builder: (c, anim, secAnim) {
+          final name = settings.name;
+          if (name != null && name.isNotEmpty) {
+            final fun = routesMap[name];
+            if (fun != null) return fun(c);
+          }
+          return errorPage?.call(c) ?? const SizedBox();
+        },
+        name: name,
+        arguments: arguments,
+        opaque: opaque,
+        barrierColor: barrierColor,
+        barrierDismissible: barrierDismissible,
+        transitionDuration: transitionDuration,
+        reverseTransitionDuration: reverseTransitionDuration,
+        transitionsBuilder: transitionsBuilder,
+        fullscreenDialog: fullscreenDialog,
+      );
+    };
+  }
 }
 
 // 单例调用

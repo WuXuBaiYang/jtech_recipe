@@ -2,7 +2,7 @@ import 'package:client/common/model.dart';
 
 /*
 * IOS通知相关字段
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2021/8/31 2:06 下午
 */
 class IOSNotificationConfig extends BaseModel {

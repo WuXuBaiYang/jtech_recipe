@@ -1,9 +1,12 @@
-import 'dart:io';
-
+import 'package:client/api/auth.dart';
 import 'package:client/common/api/base.dart';
+import 'package:client/common/api/request.dart';
 import 'package:client/common/api/response.dart';
 import 'package:client/common/common.dart';
+import 'package:client/common/model.dart';
 import 'package:client/manage/auth.dart';
+import 'package:client/manage/router.dart';
+import 'package:client/model/model.dart';
 import 'package:dio/dio.dart';
 
 // 数据结构解析回调
@@ -20,33 +23,71 @@ class BaseJAPI extends BaseAPI {
           baseUrl: Common.baseUrl,
           interceptors: [
             InterceptorsWrapper(
-              onResponse: (res, handler) {
+              onError: (e, handler) async {
                 // 拦截401授权失效
-                if (res.statusCode == 401) {
-                  /// 判断本地是否存在刷新token，存在则去服务器刷新token
-                  /// 不存在token或刷新失败，则路由到登录页重新登录
-                  // authManage.refreshToken
-                  return handler.reject(
-                    DioError(requestOptions: res.requestOptions),
-                  );
+                if (e.response?.statusCode == 401) {
+                  // 判断本地是否存在刷新token，存在则去服务器刷新token
+                  if (authManage.authorized) {
+                    try {
+                      await authApi.refreshToken();
+                      return handler.next(AuthError.success(e));
+                    } catch (_) {}
+                  }
+                  return handler.next(AuthError.fail(e));
                 }
-                return handler.next(res);
+                return handler.next(e);
               },
               onRequest: (options, handler) {
-                var headers = <String, dynamic>{
-                  "Platform": Platform.operatingSystem,
-                };
-                // 已登录则添加token
-                if (authManage.authorized) {
-                  headers["Authorization"] = "Bearer ${authManage.accessToken}";
-                }
                 // 添加请求头
-                options.headers.addAll(headers);
+                options.headers.addAll({
+                  if (authManage.authorized)
+                    'Authorization': 'Bearer ${authManage.accessToken}',
+                });
                 handler.next(options);
               },
             ),
           ],
         );
+
+  @override
+  // 重写request方法，实现授权失败业务
+  Future<ResponseModel> request(
+    String path, {
+    RequestModel? request,
+    String method = 'GET',
+    String? cancelKey,
+    Options? options,
+    OnResponseHandle? responseHandle,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    try {
+      return await super.request(path,
+          request: request,
+          method: method,
+          cancelKey: cancelKey,
+          options: options,
+          responseHandle: responseHandle,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress);
+    } on AuthError catch (e) {
+      if (e.success) {
+        return await super.request(path,
+            request: request,
+            method: method,
+            cancelKey: cancelKey,
+            options: options,
+            responseHandle: responseHandle,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress);
+      }
+      // 授权刷新失败，跳转到登录页面
+      routerManage.pushNamedAndRemoveUntil(RoutePath.auth, untilPath: '');
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   // 处理报文的状态和数据
   Future<T> handleResponseData<T>(
@@ -61,16 +102,63 @@ class BaseJAPI extends BaseAPI {
     });
   }
 
+  // 处理集合结构的报文
+  Future<List<T>> handleResponseListData<T>(
+    Future<ResponseModel> future, {
+    required OnModelParse<T> handle,
+  }) {
+    return handleResponseData<List<T>>(
+      future,
+      handle: (e) => (e ?? [])
+          .map<T>(
+            (it) => handle(it),
+          )
+          .toList(),
+    );
+  }
+
+  // 处理分页结构的报文
+  Future<PaginationModel<T>> handleResponsePaginationData<T extends BaseModel>(
+    Future<ResponseModel> future, {
+    required OnModelParse<T> handle,
+  }) {
+    return handleResponseData<PaginationModel<T>>(
+      future,
+      handle: (e) => PaginationModel<T>.from(
+        e,
+        itemParse: handle,
+      ),
+    );
+  }
+
   @override
   ResponseModel handleResponse(Response? response) {
-    var result = response?.data;
-    var code = result?["code"] ?? -1;
-    var message = result?["message"] ?? "";
+    final result = response?.data;
+    final code = result?['code'] ?? -1;
+    final message = result?['message'] ?? '';
     return ResponseModel(
       code: code,
       message: message,
       success: code == 200,
-      data: result?["data"],
+      data: result?['data'],
     );
   }
+}
+
+/*
+* 授权异常
+* @author wuxubaiyang
+* @Time 2022/10/14 16:27
+*/
+class AuthError extends DioError {
+  // 判断授权刷新是否成功
+  final bool success;
+
+  AuthError.success(DioError err)
+      : success = true,
+        super(requestOptions: err.requestOptions);
+
+  AuthError.fail(DioError err)
+      : success = false,
+        super(requestOptions: err.requestOptions);
 }

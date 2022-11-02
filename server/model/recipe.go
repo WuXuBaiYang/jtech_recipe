@@ -7,6 +7,7 @@ type Recipe struct {
 
 	Title                string          `json:"title" gorm:"varchar(40);not null;comment:食谱标题"`
 	Desc                 string          `json:"desc" gorm:"varchar(200);comment:食谱描述"`
+	Cover                string          `json:"cover" gorm:"comment:封面图"`
 	Images               []string        `json:"images" gorm:"type:json;serializer:json;not null;comment:食谱图片集合"`
 	Time                 int64           `json:"time" gorm:"comment:预计耗时"`
 	Rating               float32         `json:"rating" gorm:"comment:难度评分(0-1,0.5一个单位)"`

@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:client/common/common.dart';
+import 'package:client/common/logic.dart';
 import 'package:client/manage/api_cancel.dart';
 import 'package:client/manage/cache.dart';
 import 'package:client/manage/event.dart';
 import 'package:client/manage/notification/notification.dart';
 import 'package:client/manage/oss.dart';
 import 'package:client/manage/router.dart';
+import 'package:client/manage/tag.dart';
+import 'package:client/manage/theme.dart';
 import 'package:client/model/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'common/localization/chinese_cupertino_localizations.dart';
@@ -15,7 +21,28 @@ import 'manage/auth.dart';
 // 调试状态
 bool debugMode = true;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // 初始化各种manage
+  await routerManage.init(); // 路由服务
+  await noticeManage.init(); // 通知服务
+  await apiCancelManage.init(); // 请求撤销服务
+  await cacheManage.init(); // 缓存服务
+  await eventManage.init(); // 事件服务
+  await authManage.init(); // 初始化授权服务
+  await ossManage.init(); // oss服务
+  await themeManage.init(); // 初始化样式管理
+  await tagManage.init(); // 初始化标签管理
+  // 设置沉浸式状态栏
+  if (Platform.isAndroid) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness:
+          themeManage.currentTheme.brightness == Brightness.light
+              ? Brightness.dark
+              : Brightness.light,
+    ));
+  }
   runApp(const MyApp());
 }
 
@@ -32,11 +59,13 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<ThemeEvent>(
       stream: eventManage.on<ThemeEvent>(),
       builder: (c, snap) => MaterialApp(
-        title: "JTech IM",
+        title: 'JTech Recipe',
         navigatorKey: routerManage.navigateKey,
         debugShowCheckedModeBanner: debugMode,
-        theme: snap.data?.themeData,
-        routes: RoutePath.routes,
+        theme: snap.data?.themeData ?? themeManage.currentTheme,
+        onGenerateRoute: routerManage.onGenerateRoute(
+          routesMap: RoutePath.routes,
+        ),
         localizationsDelegates: const [
           GlobalWidgetsLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -70,45 +99,49 @@ class SplashPage extends StatefulWidget {
 * @Time 2022/9/8 14:48
 */
 class _SplashPageState extends State<SplashPage> {
+  // 逻辑管理
+  final _logic = _SplashPageLogic();
+
   @override
   void initState() {
     super.initState();
-    // 启动初始化方法
-    Future(() async {
-      // 路由服务
-      await routerManage.init();
-      // 通知服务
-      await noticeManage.init();
-      // 请求撤销服务
-      await apiCancelManage.init();
-      // 缓存服务
-      await cacheManage.init();
-      // 事件服务
-      await eventManage.init();
-      // 初始化授权服务
-      await authManage.init();
-      // oss服务
-      await ossManage.init();
-      // 启动im服务
-      // await imManage.init();
-    }).then(_goNextPage).onError(_onInitError);
+    // 延迟跳转到下一页
+    _logic.goNextPageDelay();
   }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text("还没写呢，看什么看"),
+        child: FlutterLogo(
+          size: 55,
+        ),
       ),
     );
   }
 
-  // 跳转到下一页
-  void _goNextPage(v) {
-    // 跳转首页
-    routerManage.pushNamed(RoutePath.home);
+  @override
+  void dispose() {
+    _logic.dispose();
+    super.dispose();
   }
+}
 
-  // 初始化失败
-  void _onInitError(err, StackTrace trace) {}
+/*
+* 欢迎页-逻辑
+* @author wuxubaiyang
+* @Time 2022/10/27 11:15
+*/
+class _SplashPageLogic extends BaseLogic {
+  // 延迟跳转到下一页
+  Future<void> goNextPageDelay() async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (authManage.authorized) {
+      // 已授权则跳转到首页
+      routerManage.pushReplacementNamed(RoutePath.home);
+    } else {
+      // 未授权跳转到授权页
+      routerManage.pushReplacementNamed(RoutePath.auth);
+    }
+  }
 }

@@ -16,13 +16,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 class Tool {
   // 生成id
   static String genID({int? seed}) {
-    var time = DateTime.now().millisecondsSinceEpoch;
-    return md5("${time}_${Random(seed ?? time).nextDouble()}");
+    final time = DateTime.now().millisecondsSinceEpoch;
+    return md5('${time}_${Random(seed ?? time).nextDouble()}');
   }
 
   // 生成时间戳签名
-  static String genDateSign() =>
-      DateTool.formatDate(DatePattern.dateSign, DateTime.now());
+  static String genDateSign() => DateTime.now().format(DatePattern.dateSign);
 
   // 计算md5
   static String md5(String value) =>
@@ -46,50 +45,38 @@ class Tool {
 
   // 获取应用名
   static Future<String> get appName async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.appName;
   }
 
   // 获取应用包名
   static Future<String> get packageName async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.packageName;
   }
 
   // 获取版本号
   static Future<String> get buildNumber async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.buildNumber;
   }
 
   // 获取版本名
   static Future<String> get version async {
-    var packageInfo = await PackageInfo.fromPlatform();
+    final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
+  }
+
+  // 手机号校验正则
+  static final _verifyPhoneRegExp =
+      RegExp(r'^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$');
+
+  // 校验手机号
+  static bool verifyPhone(String phone) {
+    return _verifyPhoneRegExp.hasMatch(phone);
   }
 }
 
 // 更新全局样式
 void updateGlobalTheme(ThemeData themeData) =>
     eventManage.send(ThemeEvent(themeData: themeData));
-
-// 将map转为query的url
-String toQueryUrl(String url, Map<String, dynamic> params) {
-  if (params.isNotEmpty) url += "?";
-  for (var entry in params.entries) {
-    url += "&${entry.key}=${entry.value}";
-  }
-  return url;
-}
-
-// map深层路径索引
-V? findInMap<V>(Map map, String path) {
-  if (path.isEmpty) return map as V;
-  var paths = path.split(".");
-  dynamic temp = map;
-  for (var it in paths) {
-    temp = temp[it];
-    if (null == temp) return null;
-  }
-  return temp as V;
-}

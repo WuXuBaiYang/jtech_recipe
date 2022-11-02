@@ -1,9 +1,42 @@
-import 'dart:io';
-
 import 'package:client/main.dart';
-import 'package:client/page/home/home.dart';
-import 'package:client/tool/file.dart';
+import 'package:client/page/auth/init.dart';
+import 'package:client/page/home.dart';
+import 'package:client/page/auth/auth.dart';
+import 'package:client/page/profile.dart';
 import 'package:flutter/widgets.dart';
+
+/*
+* 路由路径静态变量
+* @author wuxubaiyang
+* @Time 2022/9/8 14:55
+*/
+class RoutePath {
+  // 创建路由表
+  static Map<String, WidgetBuilder> get routes => {
+        auth: (c) => const AuthPage(),
+        authInit: (c) => const AuthInitPage(),
+        home: (c) => const HomePage(),
+        profile: (c) => const ProfilePage(),
+
+        /// 待补充
+        notice: (c) => const SizedBox(),
+      };
+
+  // 首页
+  static const String home = '/home';
+
+  // 授权页
+  static const String auth = '/auth';
+
+  // 授权初始化页
+  static const String authInit = '/authInit';
+
+  // 用户页
+  static const String profile = '/user/profile';
+
+  // 消息通知
+  static const String notice = '/notice';
+}
 
 /*
 * 静态资源/通用静态变量
@@ -15,32 +48,13 @@ class Common {
   static String baseUrl = debugMode ? _baseUrlDev : _baseUrlRelease;
 
   // api开发地址
-  static const String _baseUrlDev = "http://192.168.16.50:9527/api";
+  static const String _baseUrlDev = 'http://192.168.16.50:9527/api';
 
   // api正式地址
-  static const String _baseUrlRelease = "http://$remoteHost:9527/api";
-
-  // 远程域名
-  // static const String remoteHost = "api.jtech.live";
-  static const String remoteHost = "35.73.34.38";
+  static const String _baseUrlRelease = 'xxxxx';
 
   // 加密盐
-  static const String salt = "p5bDTyO6McoYeH";
-}
-
-/*
-* 路由路径静态变量
-* @author wuxubaiyang
-* @Time 2022/9/8 14:55
-*/
-class RoutePath {
-  // 创建路由表
-  static Map<String, WidgetBuilder> get routes => {
-        home: (c) => const HomePage(),
-      };
-
-  // 首页
-  static const String home = "/home";
+  static const String salt = 'p5bDTyO6McoYeH';
 }
 
 /*
@@ -53,10 +67,10 @@ class OSSConfig {
   static String endPoint = debugMode ? _endPointDev : _endPointRelease;
 
   // 开发版地址
-  static const String _endPointDev = Common.remoteHost;
+  static const String _endPointDev = '192.168.16.50';
 
   // 正式版地址
-  static const String _endPointRelease = "";
+  static const String _endPointRelease = '';
 
   // 端口号
   static const int port = 9000;
@@ -65,42 +79,10 @@ class OSSConfig {
   static const useSSL = false;
 
   // 授权key
-  static const accessKey = r"QFIknqJRoZOJV7E2";
+  static const accessKey = r'IkcLOGuLGKZRIN7b';
 
   // 密钥
-  static const secretKey = r"SV46qm1zsumsyz870q6nXytHTLOoyxZp";
-}
-
-/*
-* IM配置信息
-* @author wuxubaiyang
-* @Time 2022/9/9 19:17
-*/
-class IMConfig {
-  // 平台
-  static int get platformCode {
-    if (Platform.isAndroid) return 2;
-    if (Platform.isIOS) return 1;
-    return 0;
-  }
-
-  // api地址
-  static const String apiAddr = "http://${Common.remoteHost}:10002";
-
-  // ws地址
-  static const String wsAddr = "ws://${Common.remoteHost}:10003";
-
-  // 数据存储路径
-  static Future<String?> get dataDir => FileTool.getDirPath(
-        FileDirPath.imDocumentPath,
-        root: FileDir.applicationDocuments,
-      );
-
-  // oss类型
-  static const String objectStorage = "minio";
-
-  // 日志等级
-  static int get logLevel => debugMode ? 6 : 1;
+  static const secretKey = r'VvZPcT8SOPl5pQDDshMqLGvpbvIeIhpo';
 }
 
 /*
@@ -110,14 +92,14 @@ class IMConfig {
 */
 class FileDirPath {
   // 图片缓存路径
-  static const String imageCachePath = "imageCache";
+  static const String imageCachePath = 'imageCache';
 
   // 视频缓存路径
-  static const String videoCachePath = "videoCache";
+  static const String videoCachePath = 'videoCache';
 
   // 音频缓存路径
-  static const String audioCachePath = "audioCache";
+  static const String audioCachePath = 'audioCache';
 
   // im文档路径
-  static const String imDocumentPath = "imDocument";
+  static const String imDocumentPath = 'imDocument';
 }

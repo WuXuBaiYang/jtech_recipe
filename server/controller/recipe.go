@@ -12,6 +12,7 @@ import (
 type recipeReq struct {
 	Title                string   `json:"title" binding:"required,gte=4"`
 	Desc                 string   `json:"desc" binding:"required,gte=1"`
+	Cover                string   `json:"cover" binding:"required,gte=1"`
 	Images               []string `json:"images" binding:"required,gte=1"`
 	Time                 int64    `json:"time" binding:"required,gte=60000"`
 	Rating               float32  `json:"rating" binding:"required,min=0,max=1"`
@@ -45,6 +46,7 @@ func CreateRecipe(c *gin.Context) {
 		Creator:              createCreator(c),
 		Title:                req.Title,
 		Desc:                 req.Desc,
+		Cover:                req.Cover,
 		Images:               req.Images,
 		Time:                 req.Time,
 		Rating:               req.Rating,
@@ -92,6 +94,7 @@ func UpdateRecipe(c *gin.Context) {
 	result.Title = req.Title
 	result.Title = req.Title
 	result.Desc = req.Desc
+	result.Cover = req.Cover
 	result.Images = req.Images
 	result.Time = req.Time
 	result.Rating = req.Rating

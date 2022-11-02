@@ -1,6 +1,11 @@
+import 'package:client/api/tag.dart';
 import 'package:client/common/api/request.dart';
+import 'package:client/manage/auth.dart';
+import 'package:client/model/menu.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/post.dart';
+import 'package:client/model/recipe.dart';
+import 'package:client/model/tag.dart';
 import 'package:client/model/user.dart';
 
 import 'base.dart';
@@ -12,147 +17,278 @@ import 'base.dart';
 */
 class UserAPI extends BaseJAPI {
   // 获取用户信息
-  Future<UserModel> getInfo({
-    num userId = 0,
+  Future<UserModel> loadUserInfo({
+    String? userId,
   }) {
-    var path = "/user/info";
-    if (userId != 0) path = "$path/$userId";
+    var path = '/user/info';
+    if (userId != null) path = '$path/$userId';
     return handleResponseData(
       get(path),
-      handle: (it) => UserModel.from(it),
+      handle: (e) => UserModel.from(e),
+    ).then(
+      (v) => Future.wait([
+        authManage.updateUserInfo(v),
+      ]).then((_) => v),
     );
   }
 
   // 更新用户信息
-  Future<UserProfileModel> updateProfile({
-    required UserProfileModel profile,
+  Future<UserModel> updateUserInfo({
+    required UserModel model,
   }) {
     return handleResponseData(
-      put(
-        "/user/info",
-        requestModel: RequestModel.body(
-          data: profile.to(),
-        ),
-      ),
-      handle: (e) => UserProfileModel.from(e),
+      put('/user/info',
+          requestModel: RequestModel.body(
+            data: model.toModifyInfo(),
+          )),
+      handle: (e) => UserModel.from(e),
+    ).then(
+      (v) => Future.wait([
+        authManage.updateUserInfo(v),
+      ]).then((_) => v),
     );
   }
 
-  // 关注目标用户
-  Future<bool> subscribe({
-    required num userId,
+  // 批量添加收货地址标签
+  Future<List<TagModel>> addUserAddressTags({
+    required List<TagModel> tags,
+  }) {
+    return tagApi.addTags(
+      path: '/user/tag/address',
+      tags: tags,
+    );
+  }
+
+  // 分页获取收货地址标签
+  Future<PaginationModel<TagModel>> loadUserAddressTags({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return tagApi.loadTags(
+      path: '/user/tag/address',
+      pageIndex: pageIndex,
+      pageSize: pageSize,
+    );
+  }
+
+  // 添加收货地址
+  Future<UserAddressModel> addUserAddress({
+    required UserAddressModel model,
   }) {
     return handleResponseData(
-      post("/user/subscribe/$userId"),
+      post(
+        '/user/address',
+        requestModel: RequestModel.body(
+          data: model.toModifyInfo(),
+        ),
+      ),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 更新收货地址
+  Future<UserAddressModel> updateUserAddress({
+    required String addressId,
+    required UserAddressModel model,
+  }) {
+    return handleResponseData(
+      post(
+        '/user/address/$addressId',
+        requestModel: RequestModel.body(
+          data: model.toModifyInfo(),
+        ),
+      ),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 修改收货地址为默认
+  Future<bool> updateUserAddressDefault({
+    required String addressId,
+  }) {
+    return handleResponseData(
+      put('/user/address/$addressId/default'),
+    );
+  }
+
+  // 修改收货地址排序
+  Future<bool> updateUserAddressOrder({
+    required String addressId,
+    required int order,
+  }) {
+    return handleResponseData(
+      put('/user/address/$addressId/order',
+          requestModel: RequestModel.body(
+            data: {
+              'order': order,
+            },
+          )),
+    );
+  }
+
+  // 获取全部收货地址
+  Future<List<UserAddressModel>> loadAllUserAddress() {
+    return handleResponseListData(
+      get('/user/address'),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 获取收货地址详情
+  Future<UserAddressModel> loadUserAddressInfo({
+    required String addressId,
+  }) {
+    return handleResponseData(
+      get('/user/address/$addressId'),
+      handle: (e) => UserAddressModel.from(e),
+    );
+  }
+
+  // 获取我的帖子点赞列表
+  Future<PaginationModel<PostModel>> loadLikePosts({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get('/user/post/like',
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => PostModel.from(e),
+    );
+  }
+
+  // 获取我的帖子收藏列表
+  Future<PaginationModel<PostModel>> loadCollectPosts({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get('/user/post/collect',
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => PostModel.from(e),
+    );
+  }
+
+  // 获取我的菜单点赞列表
+  Future<PaginationModel<MenuModel>> loadLikeMenus({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get('/user/menu/like',
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => MenuModel.from(e),
+    );
+  }
+
+  // 获取我的菜单收藏列表
+  Future<PaginationModel<MenuModel>> loadCollectMenus({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get('/user/menu/collect',
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => MenuModel.from(e),
+    );
+  }
+
+  // 获取我的食谱点赞列表
+  Future<PaginationModel<RecipeModel>> loadLikeRecipe({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get('/user/recipe/like',
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => RecipeModel.from(e),
+    );
+  }
+
+  // 获取我的食谱收藏列表
+  Future<PaginationModel<RecipeModel>> loadCollectRecipe({
+    int pageIndex = 1,
+    int pageSize = 15,
+  }) {
+    return handleResponsePaginationData(
+      get('/user/recipe/collect',
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => RecipeModel.from(e),
+    );
+  }
+
+  // 关注用户
+  Future<bool> subscribeUser({
+    required String userId,
+  }) {
+    return handleResponseData(
+      post('/user/subscribe/$userId'),
     );
   }
 
   // 取消关注用户
-  Future<bool> unsubscribe({
-    required num userId,
+  Future<bool> unSubscribeUser({
+    required String userId,
   }) {
     return handleResponseData(
-      delete("/user/subscribe/$userId"),
+      delete('/user/subscribe/$userId'),
     );
   }
 
-  // 获取已关注的用户列表
-  Future<PaginationModel<UserModel>> getSubscribeList({
-    required num pageIndex,
+  // 获取用户关注列表
+  Future<PaginationModel<UserModel>> loadSubscribeUsers({
+    int pageIndex = 1,
     int pageSize = 15,
-    num userId = 0,
+    String? userId,
   }) {
-    var path = "/user/subscribe";
-    if (userId != 0) path = "$path/$userId";
-    return handleResponseData(
-      get(
-        path,
-        requestModel: RequestModel.query(
-          parameters: {
-            "pageIndex": pageIndex,
-            "pageSize": pageSize,
-          },
-        ),
-      ),
-      handle: (e) => PaginationModel<UserModel>.from(
-        e,
-        parseItem: (it) => UserModel.from(it),
-      ),
+    var path = '/user/subscribe';
+    if (userId != null) path = '$path/$userId';
+    return handleResponsePaginationData(
+      get(path,
+          requestModel: RequestModel.query(
+            parameters: {
+              'pageIndex': pageIndex,
+              'pageSize': pageSize,
+            },
+          )),
+      handle: (e) => UserModel.from(e),
     );
   }
 
-  // 获取浏览帖子记录
-  Future<PaginationModel<PostModel>> getPostViewList({
-    required num pageIndex,
-    int pageSize = 15,
-    num userId = 0,
-  }) {
-    var path = "/user/common/view";
-    if (userId != 0) path = "$path/$userId";
-    return handleResponseData(
-      get(
-        path,
-        requestModel: RequestModel.query(
-          parameters: {
-            "pageIndex": pageIndex,
-            "pageSize": pageSize,
-          },
-        ),
-      ),
-      handle: (e) => PaginationModel<PostModel>.from(
-        e,
-        parseItem: (it) => PostModel.from(it),
-      ),
-    );
-  }
-
-  // 获取点赞帖子记录
-  Future<PaginationModel<PostModel>> getPostLikeList({
-    required num pageIndex,
-    int pageSize = 15,
-    num userId = 0,
-  }) {
-    var path = "/user/common/like";
-    if (userId != 0) path = "$path/$userId";
-    return handleResponseData(
-      get(
-        path,
-        requestModel: RequestModel.query(
-          parameters: {
-            "pageIndex": pageIndex,
-            "pageSize": pageSize,
-          },
-        ),
-      ),
-      handle: (e) => PaginationModel<PostModel>.from(
-        e,
-        parseItem: (it) => PostModel.from(it),
-      ),
-    );
-  }
-
-  // 获取收藏帖子记录
-  Future<PaginationModel<PostModel>> getPostCollectList({
-    required num pageIndex,
-    int pageSize = 15,
-    num userId = 0,
-  }) {
-    var path = "/user/common/collect";
-    if (userId != 0) path = "$path/$userId";
-    return handleResponseData(
-      get(
-        path,
-        requestModel: RequestModel.query(
-          parameters: {
-            "pageIndex": pageIndex,
-            "pageSize": pageSize,
-          },
-        ),
-      ),
-      handle: (e) => PaginationModel<PostModel>.from(
-        e,
-        parseItem: (it) => PostModel.from(it),
-      ),
+  // 获取全部勋章
+  Future<List<MedalModel>> loadAllMedals() {
+    return handleResponseListData(
+      get('/user/medal'),
+      handle: (e) => MedalModel.from(e),
     );
   }
 }

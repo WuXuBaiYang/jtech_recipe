@@ -10,6 +10,7 @@ import (
 
 // 菜单请求结构体
 type menuReq struct {
+	Title            string  `json:"title" binding:"required,gte=1"`
 	Contents         []any   `json:"contents" binding:"required,gte=1"`
 	ActivityRecordId *string `json:"activityRecordId"`
 }
@@ -33,6 +34,7 @@ func CreateMenu(c *gin.Context) {
 	result := model.Menu{
 		OrmBase:          createBase(),
 		Creator:          createCreator(c),
+		Title:            req.Title,
 		Contents:         req.Contents,
 		ActivityRecordId: req.ActivityRecordId,
 	}
@@ -99,6 +101,7 @@ func UpdateMenu(c *gin.Context) {
 		return
 	}
 	// 数据插入
+	result.Title = req.Title
 	result.Contents = req.Contents
 	if err := db.Save(&result).Error; err != nil {
 		response.FailDef(c, -1, "菜单保存失败")
@@ -155,6 +158,10 @@ func GetMenuInfo(c *gin.Context) {
 		response.FailParams(c, "菜单不存在")
 		return
 	}
+	// 填充菜单标签字典
+	db.Table("sys_dict_menu_tag").
+		Where("code in ?", result.TagCodes).
+		Find(&result.Tags)
 	fillMenuInfo(c, &result)
 	response.SuccessDef(c, result)
 }

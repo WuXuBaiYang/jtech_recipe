@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:client/common/common.dart';
 import 'package:client/common/manage.dart';
 import 'package:client/tool/file.dart';
+import 'package:client/tool/log.dart';
 import 'package:client/tool/tool.dart';
 import 'package:minio/io.dart';
 import 'package:minio/minio.dart';
@@ -32,14 +33,14 @@ class OSSManage extends BaseManage {
   // 上传附件
   Future<List<String?>> uploadFiles(
     List<File> files, {
-    required String bucket,
     void Function(int)? onProgress,
+    OSSBucket bucket = OSSBucket.jTechRecipe,
   }) async {
-    var objects = <String?>[];
-    for (var it in files) {
+    final objects = <String?>[];
+    for (final it in files) {
       try {
-        var obj = _genObjectName(bucket, it);
-        await _minio.fPutObject(bucket, obj, it.path);
+        final obj = _genObjectName(bucket.name, it);
+        await _minio.fPutObject(bucket.name, obj, it.path);
         objects.add(obj);
         onProgress?.call(objects.length);
       } catch (e) {
@@ -49,48 +50,67 @@ class OSSManage extends BaseManage {
     return objects;
   }
 
-  // 上传附件到Profile
-  Future<List<String?>> uploadProfileFile(
-    List<File> files, {
-    void Function(int)? onProgress,
-  }) =>
-      uploadFiles(files, bucket: "profile", onProgress: onProgress);
+  // 上传单文件
+  Future<String?> uploadFile(
+    File file, {
+    OSSBucket bucket = OSSBucket.jTechRecipe,
+  }) async {
+    try {
+      final result = await uploadFiles([file]);
+      if (result.isNotEmpty && result.first != null) {
+        return result.first;
+      }
+    } catch (e) {
+      LogTool.e('附件上传失败');
+    }
+    return null;
+  }
 
-  // 上传附件到Post
-  Future<List<String?>> uploadPostFile(
-    List<File> files, {
-    void Function(int)? onProgress,
-  }) =>
-      uploadFiles(files, bucket: "post", onProgress: onProgress);
+  // 文件请求缓存
+  final _objectGetCacheMap = <String, String>{};
 
   // 获取附件流
   Future<String> getObjectUrl(
     String object, {
-    required String bucket,
     int? expires,
-  }) =>
-      _minio.presignedGetObject(bucket, object, expires: expires);
-
-  // 获取Profile附件流
-  Future<String> getProfileObjectUrl(
-    String object, {
-    int? expires,
-  }) =>
-      getObjectUrl(object, bucket: "profile", expires: expires);
-
-  // 获取Post附件流
-  Future<String> getPostObjectUrl(
-    String object, {
-    int? expires,
-  }) =>
-      getObjectUrl(object, bucket: "post", expires: expires);
+    OSSBucket bucket = OSSBucket.jTechRecipe,
+    bool cached = true,
+  }) async {
+    try {
+      if (object.isEmpty) return "";
+      final cacheUrl = _objectGetCacheMap[object];
+      if (cacheUrl != null) return cacheUrl;
+      final url = await _minio.presignedGetObject(
+        bucket.name,
+        object,
+        expires: expires,
+      );
+      if (cached) _objectGetCacheMap[object] = url;
+      return url;
+    } catch (e) {
+      LogTool.e(e.toString());
+    }
+    return "";
+  }
 
   // 生成附件对象名称
   String _genObjectName(String bucket, File file) {
-    var name = "${file.path}_${Random(9527).nextDouble()}";
-    return "${bucket}_${Tool.md5(name)}${file.suffixes ?? ""}";
+    final name =
+        '${file.path}_${Random(9527).nextDouble()}_${DateTime.now().toString()}';
+    return '${bucket}_${Tool.md5(name)}${file.suffixes ?? ''}';
   }
 }
 
 // 单例调用
 final ossManage = OSSManage();
+
+// oss桶类型
+enum OSSBucket { jTechRecipe }
+
+// oss桶扩展
+extension OSSBucketExtension on OSSBucket {
+  // 获取桶的名称
+  String get name => {
+        OSSBucket.jTechRecipe: 'jtechrecipe',
+      }[this]!;
+}

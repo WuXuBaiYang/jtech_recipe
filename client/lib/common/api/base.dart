@@ -11,7 +11,7 @@ typedef OnResponseHandle = ResponseModel Function(Response? response);
 
 /*
 * 接口方法基类
-* @author JTech JH
+* @author wuxubaiyang
 * @Time 2022/3/29 15:05
 */
 abstract class BaseAPI {
@@ -44,7 +44,7 @@ abstract class BaseAPI {
     String path, {
     required String savePath,
     RequestModel? request,
-    String method = "GET",
+    String method = 'GET',
     String? cancelKey,
     Options? options,
     bool deleteOnError = true,
@@ -55,7 +55,7 @@ abstract class BaseAPI {
     // 默认值
     cancelKey ??= path;
     options ??= Options();
-    return handleRequest(
+    return _handleRequest(
       onRequest: _dio.download(
         path,
         savePath,
@@ -77,7 +77,7 @@ abstract class BaseAPI {
   Future<ResponseModel> request(
     String path, {
     RequestModel? request,
-    String method = "GET",
+    String method = 'GET',
     String? cancelKey,
     Options? options,
     OnResponseHandle? responseHandle,
@@ -87,7 +87,7 @@ abstract class BaseAPI {
     // 默认值
     cancelKey ??= path;
     options ??= Options();
-    return handleRequest(
+    return _handleRequest(
       onRequest: _dio.request(
         path,
         queryParameters: request?.parameters,
@@ -112,7 +112,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "GET",
+        method: 'GET',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
@@ -127,7 +127,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "POST",
+        method: 'POST',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
@@ -142,7 +142,7 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "PUT",
+        method: 'PUT',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
@@ -157,14 +157,14 @@ abstract class BaseAPI {
   }) =>
       request(
         path,
-        method: "DELETE",
+        method: 'DELETE',
         request: requestModel,
         cancelKey: cancelKey,
         responseHandle: responseHandle,
       );
 
   // 处理请求响应
-  Future<ResponseModel> handleRequest({
+  Future<ResponseModel> _handleRequest({
     required Future<Response> onRequest,
     OnResponseHandle? responseHandle,
   }) async {

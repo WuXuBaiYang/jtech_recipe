@@ -1,5 +1,5 @@
 name: client
-description: JTech im client
+description: JTech recipe client
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -45,7 +45,7 @@ dependencies:
   path_provider: ^2.0.11
 
   # 通知栏消息
-  flutter_local_notifications: ^9.9.1
+  flutter_local_notifications: ^12.0.2
 
   # sp缓存
   shared_preferences: ^2.0.15
@@ -63,19 +63,25 @@ dependencies:
   logger: ^1.1.0
 
   # 权限管理
-  permission_handler: ^10.0.0
+  permission_handler: ^10.2.0
 
   # 网络请求框架
   dio: ^4.0.6
 
   # 网络请求
-  http_parser: ^4.0.1
+  http_parser: ^4.0.2
 
   # 媒体选择器
-  image_picker: ^0.8.5+3
+  image_picker: ^0.8.6
 
-  # openIM
-  flutter_openim_sdk: ^2.3.2
+  # json匹配
+  json_path: ^0.4.2
+
+  # 图片框架
+  extended_image: ^6.3.1
+
+  # 图标
+  font_awesome_flutter: ^10.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -104,8 +110,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-#  assets:
+  assets:
 #    - assets/images/
+    - assets/tags/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
