@@ -3,13 +3,13 @@ import 'package:client/api/auth.dart';
 import 'package:client/common/common.dart';
 import 'package:client/common/logic.dart';
 import 'package:client/common/notifier.dart';
-import 'package:client/main.dart';
 import 'package:client/manage/router.dart';
 import 'package:client/model/model.dart';
 import 'package:client/tool/snack.dart';
 import 'package:client/tool/tool.dart';
 import 'package:client/widget/loading.dart';
 import 'package:client/widget/value_listenable_builder.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -204,7 +204,7 @@ class _AuthLogic extends BaseLogic {
       return await authApi.auth(phoneNumber: phoneNumber, code: code);
     } catch (e) {
       SnackTool.showMessage(context,
-          message: debugMode ? e.toString() : '请求授权失败');
+          message: kDebugMode ? e.toString() : '请求授权失败');
       authStateNotifier.setValue(false);
     }
     return null;
@@ -221,7 +221,7 @@ class _AuthLogic extends BaseLogic {
       final phoneNumber = phoneController.value.text;
       if (await authApi.sendSMS(phoneNumber: phoneNumber)) {
         _startSmsCountdown();
-        if (debugMode) {
+        if (kDebugMode) {
           // 开发模式，不会发送验证码，默认使用手机号后四位
           smsCodeController.text =
               phoneNumber.substring(phoneNumber.length - 4);
@@ -242,7 +242,7 @@ class _AuthLogic extends BaseLogic {
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
     smsCodeStateNotifier.setValue(SMSCodeState.loaded);
-    final countDown = debugMode ? 5 : 60;
+    final countDown = kDebugMode ? 5 : 60;
     countdownSecondsNotifier.setValue(countDown);
     _countdownTimer = Timer.periodic(
       const Duration(seconds: 1),

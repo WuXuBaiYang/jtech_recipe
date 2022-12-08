@@ -10,16 +10,11 @@ import 'package:client/manage/oss.dart';
 import 'package:client/manage/router.dart';
 import 'package:client/manage/tag.dart';
 import 'package:client/manage/theme.dart';
-import 'package:client/model/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'common/localization/chinese_cupertino_localizations.dart';
 import 'manage/auth.dart';
-
-// 调试状态
-bool debugMode = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,7 +56,6 @@ class MyApp extends StatelessWidget {
       builder: (c, snap) => MaterialApp(
         title: 'JTech Recipe',
         navigatorKey: routerManage.navigateKey,
-        debugShowCheckedModeBanner: debugMode,
         theme: snap.data?.themeData ?? themeManage.currentTheme,
         onGenerateRoute: routerManage.onGenerateRoute(
           routesMap: RoutePath.routes,

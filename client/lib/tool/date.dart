@@ -1,12 +1,5 @@
 import 'package:intl/intl.dart';
 
-/*
-* 日期工具方法
-* @author wuxubaiyang
-* @Time 2022/3/17 15:02
-*/
-class DateTool {}
-
 // 日期方法扩展
 extension DatetimeExtension on DateTime {
   // 日期格式化

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:client/common/model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -360,7 +359,7 @@ class PermissionTool {
 * @author wuxubaiyang
 * @Time 2022/3/18 13:49
 */
-class PermissionRequest extends BaseModel {
+class PermissionRequest {
   // 要申请的权限
   final Permission _permission;
 
@@ -527,7 +526,7 @@ class PermissionRequest extends BaseModel {
 * @author wuxubaiyang
 * @Time 2022/3/18 13:49
 */
-class PermissionResult extends BaseModel {
+class PermissionResult {
   // 存储权限申请结果
   final PermissionStatus _status;
 

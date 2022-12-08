@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:client/common/manage.dart';
 import 'package:client/manage/cache.dart';
 import 'package:client/manage/event.dart';
-import 'package:client/model/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /*
 * 样式管理
@@ -83,4 +79,16 @@ extension ThemeTypeExtension on ThemeType {
         contentPadding: EdgeInsets.all(12),
         alignLabelWithHint: true,
       );
+}
+
+/*
+* 全局样式控制事件
+* @author wuxubaiyang
+* @Time 2022/4/1 15:14
+*/
+class ThemeEvent extends EventModel {
+  // 全局样式
+  final ThemeData themeData;
+
+  const ThemeEvent({required this.themeData});
 }

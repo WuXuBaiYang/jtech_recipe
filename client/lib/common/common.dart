@@ -1,8 +1,8 @@
-import 'package:client/main.dart';
 import 'package:client/page/auth/init.dart';
 import 'package:client/page/home.dart';
 import 'package:client/page/auth/auth.dart';
 import 'package:client/page/profile.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /*
@@ -45,7 +45,7 @@ class RoutePath {
 */
 class Common {
   // api基础地址
-  static String baseUrl = debugMode ? _baseUrlDev : _baseUrlRelease;
+  static String baseUrl = kDebugMode ? _baseUrlDev : _baseUrlRelease;
 
   // api开发地址
   static const String _baseUrlDev = 'http://192.168.16.50:9527/api';
@@ -64,7 +64,7 @@ class Common {
 */
 class OSSConfig {
   // 地址
-  static String endPoint = debugMode ? _endPointDev : _endPointRelease;
+  static String endPoint = kDebugMode ? _endPointDev : _endPointRelease;
 
   // 开发版地址
   static const String _endPointDev = '192.168.16.50';

@@ -1,8 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-
-import 'package:client/manage/event.dart';
-import 'package:client/model/event.dart';
 import 'package:client/tool/date.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/material.dart';
@@ -76,7 +73,3 @@ class Tool {
     return _verifyPhoneRegExp.hasMatch(phone);
   }
 }
-
-// 更新全局样式
-void updateGlobalTheme(ThemeData themeData) =>
-    eventManage.send(ThemeEvent(themeData: themeData));

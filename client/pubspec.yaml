@@ -68,7 +68,7 @@ dependencies:
   # 网络请求框架
   dio: ^4.0.6
 
-  # 网络请求
+  # 网络框架
   http_parser: ^4.0.2
 
   # 媒体选择器
