@@ -57,16 +57,13 @@ func authRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	group.POST("/login", controller.Login)
 	// 用户强制下线
 	group.POST("/forceOffline",
-		auth.RequiresRoles([]string{"root"}, middleware.WithLogic(middleware.AND)),
-		controller.ForcedOffline)
+		auth.RequiresRoles([]string{"root"}), controller.ForcedOffline)
 	// 封锁用户
 	group.POST("/blockOut",
-		auth.RequiresRoles([]string{"root"}, middleware.WithLogic(middleware.AND)),
-		controller.BlockOut)
+		auth.RequiresRoles([]string{"root"}), controller.BlockOut)
 	// 解除用户封锁
 	group.POST("/unBlockOut",
-		auth.RequiresRoles([]string{"root"}, middleware.WithLogic(middleware.AND)),
-		controller.UnBlockOut)
+		auth.RequiresRoles([]string{"root"}), controller.UnBlockOut)
 }
 
 // 用户相关路由
