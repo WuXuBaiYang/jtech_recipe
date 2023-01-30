@@ -75,7 +75,6 @@ func Auth(c *gin.Context) {
 		newUser = true
 		// 用户不存在则创建用户
 		result.OrmBase = createBase()
-		result.Permission = model.GeneralUser
 		result.PhoneNumber = req.PhoneNumber
 		result.NickName = tool.GenInitUserNickName()
 		if err := db.Create(&result).Error; err != nil {
@@ -123,7 +122,6 @@ func Register(c *gin.Context) {
 	// 插入用户信息
 	result := model.User{
 		OrmBase:     createBase(),
-		Permission:  model.GeneralUser,
 		PhoneNumber: req.PhoneNumber,
 		Password:    signPassword(req.Password),
 		NickName:    tool.GenInitUserNickName(),

@@ -44,7 +44,7 @@ func ReleaseAccessToken(c context.Context, user model.User) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    jwtConfig.Issuer,
-			Subject:   fmt.Sprintf("%s", user.ID),
+			Subject:   user.PhoneNumber,
 		},
 	}
 	token, err := ReleaseToken(claims)
@@ -56,11 +56,6 @@ func ReleaseAccessToken(c context.Context, user model.User) (string, error) {
 			Score:  float64(expiresAt.UnixMilli()),
 			Member: user.ID,
 		})
-		// 如果非普通用户登录，则记录用户权限等级
-		if user.Permission != model.GeneralUser {
-			rdb.Set(c, userPermissionKey+user.ID,
-				int64(user.Permission), jwtConfig.ExpirationTime)
-		}
 	}
 	return token, err
 }
@@ -144,15 +139,4 @@ func ClearRDBToken(c context.Context, ids ...string) *redis.IntCmd {
 	}
 	rdb.ZRem(c, onlineUserKey, ids)
 	return rdb.Del(c, keys...)
-}
-
-// GetUserPermission 获取用户权限等级
-func GetUserPermission(c context.Context, userId string) model.PermissionLevel {
-	rdb := GetBaseRDB()
-	cmd := rdb.Get(c, userPermissionKey+userId)
-	if cmd.Err() != nil {
-		return model.GeneralUser
-	}
-	v, _ := cmd.Int64()
-	return model.PermissionLevel(v)
 }

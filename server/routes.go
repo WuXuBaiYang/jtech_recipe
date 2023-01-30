@@ -2,36 +2,30 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"server/common"
 	"server/controller"
 	"server/middleware"
 	"server/model"
+	"strings"
 )
-
-// 完整权限列表
-var fullPermissionList = []model.PermissionLevel{
-	model.OMUser, model.DevUser, model.AdminUser,
-}
-
-// 获取om和管理员权限列表
-var managePermissionList = []model.PermissionLevel{
-	model.OMUser, model.AdminUser,
-}
-
-// 获取最高权限列表
-var highPermissionList = []model.PermissionLevel{
-	model.AdminUser,
-}
 
 // CollectRoutes 统一注册路由方法
 func CollectRoutes(r *gin.Engine) *gin.Engine {
+	//** 授权校验 **//
+	auth, err := middleware.NewCasbinMiddleware(
+		"config/rbac_model.conf", "config/rbac_policy.csv", subjectFromJWT)
+	if err != nil {
+		common.LogError(err.Error())
+		panic(err.Error())
+	}
 	//** 根节点，使用api版本区分 **//
 	group := r.Group("/api", middleware.Common)
 	//** 授权校验组 **//
 	authGroup := group.Group("", middleware.AuthCheck)
 	//** 授权相关 **//
-	authRoutes(group)
+	authRoutes(group, auth)
 	//** 用户相关 **//
-	userRoutes(authGroup.Group("/user"))
+	userRoutes(authGroup.Group("/user"), auth)
 	//** 帖子相关 **//
 	postRoutes(authGroup.Group("/post"))
 	//** 菜单相关 **//
@@ -43,14 +37,14 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 回复相关 **//
 	replayRoutes(authGroup.Group("/replay"))
 	//** 活动相关 **//
-	activityRoutes(authGroup.Group("/activity"))
+	activityRoutes(authGroup.Group("/activity"), auth)
 	//** 通知相关 **//
-	notifyRoutes(authGroup.Group("/notification"))
+	notifyRoutes(authGroup.Group("/notification"), auth)
 	return r
 }
 
 // 授权相关路由
-func authRoutes(group *gin.RouterGroup) {
+func authRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
 	// 请求授权
@@ -58,24 +52,25 @@ func authRoutes(group *gin.RouterGroup) {
 	// token刷新
 	group.POST("/refreshToken", controller.RefreshToken)
 	// 用户注册
-	group.POST("/register", middleware.
-		PermissionCheck(fullPermissionList), controller.Register)
+	group.POST("/register", controller.Register)
 	// 用户登录
-	group.POST("/login", middleware.
-		PermissionCheck(fullPermissionList), controller.Login)
+	group.POST("/login", controller.Login)
 	// 用户强制下线
-	group.POST("/forceOffline", middleware.
-		PermissionCheck(highPermissionList), controller.ForcedOffline)
+	group.POST("/forceOffline",
+		auth.RequiresRoles([]string{"root"}, middleware.WithLogic(middleware.AND)),
+		controller.ForcedOffline)
 	// 封锁用户
-	group.POST("/blockOut", middleware.
-		PermissionCheck(highPermissionList), controller.BlockOut)
+	group.POST("/blockOut",
+		auth.RequiresRoles([]string{"root"}, middleware.WithLogic(middleware.AND)),
+		controller.BlockOut)
 	// 解除用户封锁
-	group.POST("/unBlockOut", middleware.
-		PermissionCheck(highPermissionList), controller.UnBlockOut)
+	group.POST("/unBlockOut",
+		auth.RequiresRoles([]string{"root"}, middleware.WithLogic(middleware.AND)),
+		controller.UnBlockOut)
 }
 
 // 用户相关路由
-func userRoutes(group *gin.RouterGroup) {
+func userRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 订阅用户
 	group.POST("/subscribe/:userId", controller.SubscribeUser)
 	// 取消订阅用户
@@ -105,11 +100,11 @@ func userRoutes(group *gin.RouterGroup) {
 	// 获取全部勋章列表
 	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
-	group.POST("/medal", middleware.
-		PermissionCheck(managePermissionList), controller.AddUserMedal)
+	group.POST("/medal",
+		auth.RequiresPermissions([]string{"medal:write"}), controller.AddUserMedal)
 	// 更新勋章信息[权限]
-	group.PUT("/medal/:medalId", middleware.
-		PermissionCheck(managePermissionList), controller.UpdateUserMedal)
+	group.PUT("/medal/:medalId",
+		auth.RequiresPermissions([]string{"medal:write"}), controller.UpdateUserMedal)
 	// 添加用户地址标签
 	group.POST("/tag/address", controller.AddDict(model.UserAddressTagDict))
 	// 分页查询用户地址标签
@@ -215,19 +210,19 @@ func recipeRoutes(group *gin.RouterGroup) {
 }
 
 // 活动相关路由
-func activityRoutes(group *gin.RouterGroup) {
+func activityRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 发布一个活动
-	group.POST("", middleware.
-		PermissionCheck(managePermissionList), controller.CreateActivity)
+	group.POST("",
+		auth.RequiresPermissions([]string{"activity:write"}), controller.CreateActivity)
 	// 编辑一个活动
-	group.PUT("/:activityId", middleware.
-		PermissionCheck(managePermissionList), controller.UpdateActivity)
+	group.PUT("/:activityId",
+		auth.RequiresPermissions([]string{"activity:write"}), controller.UpdateActivity)
 	// 开始一个活动
-	group.POST("/start/:activityId", middleware.
-		PermissionCheck(managePermissionList), controller.StartActivity)
+	group.POST("/start/:activityId",
+		auth.RequiresPermissions([]string{"activity:write"}), controller.StartActivity)
 	// 获取全部活动列表
-	group.GET("", middleware.
-		PermissionCheck(managePermissionList), controller.GetAllActivityList)
+	group.GET("",
+		auth.RequiresPermissions([]string{"activity:read"}), controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
 	group.GET("/process", controller.GetAllActivityProcessList)
 	// 发布评论
@@ -257,10 +252,23 @@ func replayRoutes(group *gin.RouterGroup) {
 }
 
 // 通知相关路由
-func notifyRoutes(group *gin.RouterGroup) {
+func notifyRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 分页获取通知列表
 	group.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
-	group.POST("", middleware.
-		PermissionCheck(fullPermissionList), controller.PushNotify)
+	group.POST("",
+		auth.RequiresPermissions([]string{"notification:write"}), controller.PushNotify)
+}
+
+// subjectFromJWT parses a JWT and extract subject from sub claim.
+func subjectFromJWT(c *gin.Context) string {
+	tokenString := c.GetHeader("Authorization")
+	if len(tokenString) == 0 || !strings.HasPrefix(tokenString, "Bearer ") {
+		return ""
+	}
+	token, claims, err := common.ParseAccessToken(c, tokenString[7:])
+	if err != nil || !token.Valid {
+		return ""
+	}
+	return claims.Subject
 }

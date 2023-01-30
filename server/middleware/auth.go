@@ -22,23 +22,6 @@ func AuthCheck(c *gin.Context) {
 	c.Next()
 }
 
-// PermissionCheck 权限校验
-func PermissionCheck(permissions []model.PermissionLevel) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		userId := GetCurrUId(c)
-		permission := common.GetUserPermission(c, userId)
-		for _, it := range permissions {
-			if it == permission {
-				c.Next()
-				return
-			}
-		}
-		response.FailDef(c, -1, "无访问权限")
-		c.Abort()
-		return
-	}
-}
-
 // GetAccessToken 获取token
 func GetAccessToken(c *gin.Context) string {
 	return c.GetHeader("Authorization")

@@ -1,0 +1,6 @@
+p,om,medal,write
+p,om,activity,write
+p,om,activity,read
+p,om,notification,write
+g,18600000000,root
+g,18700000000,om
