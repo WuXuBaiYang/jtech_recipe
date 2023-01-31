@@ -11,21 +11,14 @@ import (
 
 // CollectRoutes 统一注册路由方法
 func CollectRoutes(r *gin.Engine) *gin.Engine {
-	//** 授权校验 **//
-	auth, err := middleware.NewCasbinMiddleware(
-		"config/rbac_model.conf", "config/rbac_policy.csv", subjectFromJWT)
-	if err != nil {
-		common.LogError(err.Error())
-		panic(err.Error())
-	}
 	//** 根节点，使用api版本区分 **//
 	group := r.Group("/api", middleware.Common)
 	//** 授权校验组 **//
 	authGroup := group.Group("", middleware.AuthCheck)
 	//** 授权相关 **//
-	authRoutes(group, auth)
+	authRoutes(group)
 	//** 用户相关 **//
-	userRoutes(authGroup.Group("/user"), auth)
+	userRoutes(authGroup.Group("/user"))
 	//** 帖子相关 **//
 	postRoutes(authGroup.Group("/post"))
 	//** 菜单相关 **//
@@ -37,14 +30,15 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 回复相关 **//
 	replayRoutes(authGroup.Group("/replay"))
 	//** 活动相关 **//
-	activityRoutes(authGroup.Group("/activity"), auth)
+	activityRoutes(authGroup.Group("/activity"))
 	//** 通知相关 **//
-	notifyRoutes(authGroup.Group("/notification"), auth)
+	notifyRoutes(authGroup.Group("/notification"))
 	return r
 }
 
 // 授权相关路由
-func authRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
+func authRoutes(group *gin.RouterGroup) {
+	auth := middleware.GetDefAuth(subjectFromJWT)
 	// 发送短信验证码
 	group.POST("/sms/:phone", controller.GetSMS)
 	// 请求授权
@@ -56,18 +50,16 @@ func authRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 用户登录
 	group.POST("/login", controller.Login)
 	// 用户强制下线
-	group.POST("/forceOffline",
-		auth.RequiresRoles([]string{"root"}), controller.ForcedOffline)
+	group.POST("/forceOffline", auth.RequiresRoles([]string{"root"}), controller.ForcedOffline)
 	// 封锁用户
-	group.POST("/blockOut",
-		auth.RequiresRoles([]string{"root"}), controller.BlockOut)
+	group.POST("/blockOut", auth.RequiresRoles([]string{"root"}), controller.BlockOut)
 	// 解除用户封锁
-	group.POST("/unBlockOut",
-		auth.RequiresRoles([]string{"root"}), controller.UnBlockOut)
+	group.POST("/unBlockOut", auth.RequiresRoles([]string{"root"}), controller.UnBlockOut)
 }
 
 // 用户相关路由
-func userRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
+func userRoutes(group *gin.RouterGroup) {
+	auth := middleware.GetDefAuth(subjectFromJWT)
 	// 订阅用户
 	group.POST("/subscribe/:userId", controller.SubscribeUser)
 	// 取消订阅用户
@@ -97,11 +89,9 @@ func userRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 获取全部勋章列表
 	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
-	group.POST("/medal",
-		auth.RequiresRoles([]string{"om", "root"}), controller.AddUserMedal)
+	group.POST("/medal", auth.RequiresRoles([]string{"om", "root"}), controller.AddUserMedal)
 	// 更新勋章信息[权限]
-	group.PUT("/medal/:medalId",
-		auth.RequiresRoles([]string{"om", "root"}), controller.UpdateUserMedal)
+	group.PUT("/medal/:medalId", auth.RequiresRoles([]string{"om", "root"}), controller.UpdateUserMedal)
 	// 添加用户地址标签
 	group.POST("/tag/address", controller.AddDict(model.UserAddressTagDict))
 	// 分页查询用户地址标签
@@ -207,7 +197,8 @@ func recipeRoutes(group *gin.RouterGroup) {
 }
 
 // 活动相关路由
-func activityRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
+func activityRoutes(group *gin.RouterGroup) {
+	auth := middleware.GetDefAuth(subjectFromJWT)
 	// 发布一个活动
 	group.POST("",
 		auth.RequiresRoles([]string{"om", "root"}), controller.CreateActivity)
@@ -249,15 +240,15 @@ func replayRoutes(group *gin.RouterGroup) {
 }
 
 // 通知相关路由
-func notifyRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
+func notifyRoutes(group *gin.RouterGroup) {
+	auth := middleware.GetDefAuth(subjectFromJWT)
 	// 分页获取通知列表
 	group.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
-	group.POST("",
-		auth.RequiresRoles([]string{"om", "root"}), controller.PushNotify)
+	group.POST("", auth.RequiresRoles([]string{"om", "root"}), controller.PushNotify)
 }
 
-// subjectFromJWT parses a JWT and extract subject from sub claim.
+// subjectFromJWT 解析JWT中的请求者信息
 func subjectFromJWT(c *gin.Context) string {
 	tokenString := c.GetHeader("Authorization")
 	if len(tokenString) == 0 || !strings.HasPrefix(tokenString, "Bearer ") {

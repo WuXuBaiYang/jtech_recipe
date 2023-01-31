@@ -32,6 +32,22 @@ var (
 	ErrSubFnNil = errors.New("subFn is nil")
 )
 
+// 缓存授权模块
+var auth *CasbinMiddleware
+
+// GetDefAuth 获取默认创建的授权中间件
+func GetDefAuth(subFn SubjectFn) *CasbinMiddleware {
+	if auth == nil {
+		Auth, err := NewCasbinMiddleware(
+			"config/rbac_model.conf", "config/rbac_policy.csv", subFn)
+		if err != nil {
+			panic("权限中间件初始化失败：" + err.Error())
+		}
+		auth = Auth
+	}
+	return auth
+}
+
 // NewCasbinMiddleware returns a new CasbinMiddleware using Casbin's Enforcer internally.
 // modelFile is the file path to Casbin model file e.g. path/to/rbac_model.conf.
 // policyAdapter can be a file or a DB adapter.
