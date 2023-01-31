@@ -171,7 +171,7 @@ func (am *CasbinMiddleware) RequiresRoles(requiredRoles []string, opts ...Option
 
 		// Here we provide default options.
 		actualOptions := options{
-			logic: AND,
+			logic: OR,
 		}
 		// Apply actual options.
 		for _, opt := range opts {

@@ -98,10 +98,10 @@ func userRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	group.GET("/medal", controller.GetAllUserMedalList)
 	// 添加勋章[权限]
 	group.POST("/medal",
-		auth.RequiresPermissions([]string{"medal:write"}), controller.AddUserMedal)
+		auth.RequiresRoles([]string{"om", "root"}), controller.AddUserMedal)
 	// 更新勋章信息[权限]
 	group.PUT("/medal/:medalId",
-		auth.RequiresPermissions([]string{"medal:write"}), controller.UpdateUserMedal)
+		auth.RequiresRoles([]string{"om", "root"}), controller.UpdateUserMedal)
 	// 添加用户地址标签
 	group.POST("/tag/address", controller.AddDict(model.UserAddressTagDict))
 	// 分页查询用户地址标签
@@ -210,16 +210,16 @@ func recipeRoutes(group *gin.RouterGroup) {
 func activityRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	// 发布一个活动
 	group.POST("",
-		auth.RequiresPermissions([]string{"activity:write"}), controller.CreateActivity)
+		auth.RequiresRoles([]string{"om", "root"}), controller.CreateActivity)
 	// 编辑一个活动
 	group.PUT("/:activityId",
-		auth.RequiresPermissions([]string{"activity:write"}), controller.UpdateActivity)
+		auth.RequiresRoles([]string{"om", "root"}), controller.UpdateActivity)
 	// 开始一个活动
 	group.POST("/start/:activityId",
-		auth.RequiresPermissions([]string{"activity:write"}), controller.StartActivity)
+		auth.RequiresRoles([]string{"om", "root"}), controller.StartActivity)
 	// 获取全部活动列表
 	group.GET("",
-		auth.RequiresPermissions([]string{"activity:read"}), controller.GetAllActivityList)
+		auth.RequiresRoles([]string{"om", "root"}), controller.GetAllActivityList)
 	// 获取全部进行中的活动列表
 	group.GET("/process", controller.GetAllActivityProcessList)
 	// 发布评论
@@ -254,7 +254,7 @@ func notifyRoutes(group *gin.RouterGroup, auth *middleware.CasbinMiddleware) {
 	group.GET("", controller.GetNotifyPagination)
 	// 发送消息通知[权限]
 	group.POST("",
-		auth.RequiresPermissions([]string{"notification:write"}), controller.PushNotify)
+		auth.RequiresRoles([]string{"om", "root"}), controller.PushNotify)
 }
 
 // subjectFromJWT parses a JWT and extract subject from sub claim.
