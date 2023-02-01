@@ -13,6 +13,7 @@ import 'package:client/manage/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'common/localization/chinese_cupertino_localizations.dart';
 import 'manage/auth.dart';
 
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
       stream: eventManage.on<ThemeEvent>(),
       builder: (c, snap) => MaterialApp(
         title: 'JTech Recipe',
+        debugShowCheckedModeBanner: false,
         navigatorKey: routerManage.navigateKey,
         theme: snap.data?.themeData ?? themeManage.currentTheme,
         onGenerateRoute: routerManage.onGenerateRoute(

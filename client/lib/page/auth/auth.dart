@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:client/api/auth.dart';
 import 'package:client/common/common.dart';
 import 'package:client/common/logic.dart';
@@ -7,8 +8,8 @@ import 'package:client/manage/router.dart';
 import 'package:client/model/model.dart';
 import 'package:client/tool/snack.dart';
 import 'package:client/tool/tool.dart';
-import 'package:client/widget/loading.dart';
 import 'package:client/widget/listenable_builders.dart';
+import 'package:client/widget/loading.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -242,7 +243,7 @@ class _AuthLogic extends BaseLogic {
   // 短信验证码获取倒计时
   void _startSmsCountdown() {
     smsCodeStateNotifier.setValue(SMSCodeState.loaded);
-    final countDown = kDebugMode ? 5 : 60;
+    const countDown = kDebugMode ? 5 : 60;
     countdownSecondsNotifier.setValue(countDown);
     _countdownTimer = Timer.periodic(
       const Duration(seconds: 1),
