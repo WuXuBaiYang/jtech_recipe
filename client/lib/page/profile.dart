@@ -21,9 +21,9 @@ class ProfilePage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/10/25 9:58
 */
-class _ProfilePageState extends State<ProfilePage> {
-  // 逻辑管理
-  final _logic = _ProfilePageLogic();
+class _ProfilePageState extends LogicState<ProfilePage, _ProfilePageLogic> {
+  @override
+  _ProfilePageLogic initLogic() => _ProfilePageLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +86,6 @@ class _ProfilePageState extends State<ProfilePage> {
   // 构建系统设置
   Widget _buildSettings() {
     return Text('a');
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

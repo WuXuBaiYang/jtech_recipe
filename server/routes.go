@@ -13,10 +13,10 @@ import (
 func CollectRoutes(r *gin.Engine) *gin.Engine {
 	//** 根节点，使用api版本区分 **//
 	group := r.Group("/api", middleware.Common)
-	//** 授权校验组 **//
-	authGroup := group.Group("", middleware.AuthCheck)
 	//** 授权相关 **//
 	authRoutes(group)
+	//** 授权校验组 **//
+	authGroup := group.Group("", middleware.AuthCheck)
 	//** 用户相关 **//
 	userRoutes(authGroup.Group("/user"))
 	//** 帖子相关 **//

@@ -31,9 +31,9 @@ class AuthPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/9/8 15:02
 */
-class _AuthPageState extends State<AuthPage> {
-  // 逻辑管理
-  final _logic = _AuthLogic();
+class _AuthPageState extends LogicState<AuthPage, _AuthPageLogic> {
+  @override
+  initLogic() => _AuthPageLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +44,11 @@ class _AuthPageState extends State<AuthPage> {
         child: _buildAuthForm(context),
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
-        valueListenable: _logic.authStateNotifier,
+        valueListenable: logic.authStateNotifier,
         builder: (_, authState, __) {
           return FloatingActionButton(
             onPressed: !authState
-                ? () => _logic.authSaved(context).then((v) {
+                ? () => logic.authSaved(context).then((v) {
                       if (v != null) {
                         routerManage.pushReplacementNamed(
                             v.newUser ? RoutePath.authInit : RoutePath.home);
@@ -68,7 +68,7 @@ class _AuthPageState extends State<AuthPage> {
   // 构建授权表单
   Widget _buildAuthForm(BuildContext context) {
     return Form(
-      key: _logic.formKey,
+      key: logic.formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -86,11 +86,10 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildPhoneField() {
     return TextFormField(
       autofocus: true,
-      controller: _logic.phoneController,
+      controller: logic.phoneController,
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
-      onChanged: (v) =>
-          _logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
+      onChanged: (v) => logic.phoneVerifyNotifier.setValue(Tool.verifyPhone(v)),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -100,7 +99,7 @@ class _AuthPageState extends State<AuthPage> {
         hintText: '000 0000 0000',
         prefixIcon: const Icon(Icons.phone),
         suffixIcon: ValueListenableBuilder<bool>(
-          valueListenable: _logic.phoneVerifyNotifier,
+          valueListenable: logic.phoneVerifyNotifier,
           builder: (_, v, __) {
             return Visibility(
               visible: v,
@@ -125,7 +124,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildSMSCodeField(BuildContext context) {
     return TextFormField(
       maxLength: 4,
-      controller: _logic.smsCodeController,
+      controller: logic.smsCodeController,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.done,
       inputFormatters: [
@@ -138,16 +137,16 @@ class _AuthPageState extends State<AuthPage> {
         hintText: '0000',
         prefixIcon: const Icon(Icons.sms),
         suffixIcon: ValueListenableBuilder3<bool, int, SMSCodeState>(
-          first: _logic.phoneVerifyNotifier,
-          second: _logic.countdownSecondsNotifier,
-          third: _logic.smsCodeStateNotifier,
+          first: logic.phoneVerifyNotifier,
+          second: logic.countdownSecondsNotifier,
+          third: logic.smsCodeStateNotifier,
           builder: (_, phoneVerified, countdownSeconds, smsCodeState, __) {
             final text = smsCodeState == SMSCodeState.loaded
                 ? '验证码已发送($countdownSeconds)'
                 : '获取验证码';
             return TextButton(
               onPressed: phoneVerified && smsCodeState == SMSCodeState.normal
-                  ? () => _logic.sendSMS(context)
+                  ? () => logic.sendSMS(context)
                   : null,
               child: Loading(
                 loading: smsCodeState == SMSCodeState.loading,
@@ -165,12 +164,6 @@ class _AuthPageState extends State<AuthPage> {
       },
     );
   }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
-  }
 }
 
 /*
@@ -178,7 +171,7 @@ class _AuthPageState extends State<AuthPage> {
 * @author wuxubaiyang
 * @Time 2022/10/20 10:00
 */
-class _AuthLogic extends BaseLogic {
+class _AuthPageLogic extends BaseLogic {
   // 表单key
   final formKey = GlobalKey<FormState>();
 

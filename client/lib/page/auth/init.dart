@@ -31,9 +31,9 @@ class AuthInitPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/10/21 14:18
 */
-class _AuthInitPageState extends State<AuthInitPage> {
-  // 逻辑管理
-  final _logic = _AuthInitLogic();
+class _AuthInitPageState extends LogicState<AuthInitPage, _AuthInitPageLogic> {
+  @override
+  initLogic() => _AuthInitPageLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +50,19 @@ class _AuthInitPageState extends State<AuthInitPage> {
               ),
             ),
             Form(
-              key: _logic.formKey,
+              key: logic.formKey,
               child: Padding(
                 padding: const EdgeInsets.all(45),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     FormField<String>(
-                      initialValue: _logic.userInfo.avatar,
+                      initialValue: logic.userInfo.avatar,
                       builder: (f) {
                         return Avatar.file(
                           file: File(f.value ?? ''),
                           avatarSize: AvatarSize.large,
-                          onTap: () => _logic.pickAvatar(context).then(
+                          onTap: () => logic.pickAvatar(context).then(
                                 (v) => f.didChange(v),
                               ),
                         );
@@ -71,8 +71,8 @@ class _AuthInitPageState extends State<AuthInitPage> {
                     const SizedBox(height: 25),
                     TextFormField(
                       maxLength: 16,
-                      onSaved: (v) => _logic.userInfo.nickName = v ?? '',
-                      initialValue: _logic.userInfo.nickName,
+                      onSaved: (v) => logic.userInfo.nickName = v ?? '',
+                      initialValue: logic.userInfo.nickName,
                       decoration: const InputDecoration(
                         label: Text('昵称'),
                       ),
@@ -85,11 +85,11 @@ class _AuthInitPageState extends State<AuthInitPage> {
         ),
       ),
       floatingActionButton: ValueListenableBuilder<bool>(
-        valueListenable: _logic.saveStateNotifier,
+        valueListenable: logic.saveStateNotifier,
         builder: (_, authState, __) {
           return FloatingActionButton(
             onPressed: !authState
-                ? () => _logic.saveUserInfo(context).then((v) {
+                ? () => logic.saveUserInfo(context).then((v) {
                       if (v != null) {
                         routerManage.pushReplacementNamed(RoutePath.home);
                       }
@@ -111,7 +111,7 @@ class _AuthInitPageState extends State<AuthInitPage> {
 * @author wuxubaiyang
 * @Time 2022/10/21 14:25
 */
-class _AuthInitLogic extends BaseLogic {
+class _AuthInitPageLogic extends BaseLogic {
   // 表单key
   final formKey = GlobalKey<FormState>();
 

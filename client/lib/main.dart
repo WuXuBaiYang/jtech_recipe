@@ -94,15 +94,15 @@ class SplashPage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/9/8 14:48
 */
-class _SplashPageState extends State<SplashPage> {
-  // 逻辑管理
-  final _logic = _SplashPageLogic();
+class _SplashPageState extends LogicState<SplashPage, _SplashPageLogic> {
+  @override
+  _SplashPageLogic initLogic() => _SplashPageLogic();
 
   @override
   void initState() {
     super.initState();
     // 延迟跳转到下一页
-    _logic.goNextPageDelay();
+    logic.goNextPageDelay();
   }
 
   @override
@@ -114,12 +114,6 @@ class _SplashPageState extends State<SplashPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
   }
 }
 

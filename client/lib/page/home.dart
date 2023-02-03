@@ -23,9 +23,9 @@ class HomePage extends StatefulWidget {
 * @author wuxubaiyang
 * @Time 2022/9/8 15:02
 */
-class _HomePageState extends State<HomePage> {
-  // 逻辑管理
-  final _logic = _HomeLogic();
+class _HomePageState extends LogicState<HomePage, _HomePageLogic> {
+  @override
+  initLogic() => _HomePageLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +48,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _logic.dispose();
-    super.dispose();
-  }
 }
 
 /*
@@ -61,4 +55,4 @@ class _HomePageState extends State<HomePage> {
 * @author wuxubaiyang
 * @Time 2022/10/25 9:18
 */
-class _HomeLogic extends BaseLogic {}
+class _HomePageLogic extends BaseLogic {}
